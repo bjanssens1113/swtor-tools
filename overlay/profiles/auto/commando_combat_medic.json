@@ -1,0 +1,87 @@
+{
+ "name": "Combat Medic Commando (mirrored)",
+ "match": {
+  "class": "Commando",
+  "discipline": "Combat Medic"
+ },
+ "_auto": true,
+ "_mirrored_from": "Bodyguard Mercenary",
+ "_kind": "mirrored-hand",
+ "_source": "mirrored-hand: translated from 'Bodyguard Mercenary' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Protected']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Supercharge",
+   "max_stacks": 10
+  },
+  {
+   "type": "target",
+   "effect": "Trauma Probe"
+  },
+  {
+   "type": "target",
+   "effect": "Protected"
+  },
+  {
+   "type": "target",
+   "effect": "Successive Treatment",
+   "duration": 3
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Kolto Cell",
+   "label": "SC Kolto Gas",
+   "duration": 8
+  },
+  {
+   "type": "self",
+   "effect": "Preventative Medicine",
+   "duration": 8.5
+  },
+  {
+   "type": "self",
+   "effect": "Field Triage",
+   "duration": 5
+  },
+  {
+   "type": "self",
+   "effect": "Reactive Shield",
+   "duration": 12
+  },
+  {
+   "type": "cooldown",
+   "ability": "Advanced Medical Probe",
+   "seconds": 9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Bomb",
+   "seconds": 9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bacta Infusion",
+   "seconds": 21
+  },
+  {
+   "type": "cooldown",
+   "ability": "Successive Treatment",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recharge Cells",
+   "seconds": 120
+  },
+  {
+   "type": "cooldown",
+   "ability": "Adrenaline Rush",
+   "seconds": 180
+  },
+  {
+   "type": "cooldown",
+   "ability": "Emergency Medical Probe",
+   "seconds": 300
+  }
+ ]
+}

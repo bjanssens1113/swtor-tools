@@ -1,0 +1,135 @@
+{
+ "name": "Saboteur Gunslinger (mirrored)",
+ "match": {
+  "class": "Gunslinger",
+  "discipline": "Saboteur"
+ },
+ "_auto": true,
+ "_mirrored_from": "Engineering Sniper (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Engineering Sniper (auto)' via Parsely Empire/Republic name pairs. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Ready for Anything",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Blazing Speed",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Ballistic Dampers",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Blazing Speed",
+   "duration": 9.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Shock Charge",
+   "duration": 19.5,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Seize the Moment",
+   "duration": 7.4
+  },
+  {
+   "type": "self",
+   "effect": "Sequence Break",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Smuggler's Luck",
+   "duration": 4.6
+  },
+  {
+   "type": "self",
+   "effect": "Defense Screen",
+   "duration": 7.3
+  },
+  {
+   "type": "self",
+   "effect": "Scrambling Field",
+   "duration": 5.2
+  },
+  {
+   "type": "self",
+   "effect": "Hunker Down",
+   "duration": 20.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Speed Shot",
+   "seconds": 8.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thermal Grenade",
+   "seconds": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Incendiary Grenade",
+   "seconds": 8.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shock Charge",
+   "seconds": 10.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Explosive Charge",
+   "seconds": 14.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bombing Run",
+   "seconds": 30.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sabotage",
+   "seconds": 17.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smuggler's Luck",
+   "seconds": 31.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Defense Screen",
+   "seconds": 30.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Quickdraw",
+   "seconds": 18.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hightail It",
+   "seconds": 20.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Leg Shot",
+   "seconds": 25.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hunker Down",
+   "seconds": 77.5
+  }
+ ]
+}

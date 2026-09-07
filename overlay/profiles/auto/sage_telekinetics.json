@@ -1,0 +1,47 @@
+{
+ "name": "Telekinetics Sage (auto)",
+ "match": {
+  "class": "Sage",
+  "discipline": "Telekinetics"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 8 log sessions / 2 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Telekinetic Effusion",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Weaken Mind",
+   "duration": 17.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Tidal Force",
+   "duration": 10.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Project",
+   "seconds": 11.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Telekinetic Throw",
+   "seconds": 9.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Crush",
+   "seconds": 19.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Weaken Mind",
+   "seconds": 13.4
+  }
+ ]
+}

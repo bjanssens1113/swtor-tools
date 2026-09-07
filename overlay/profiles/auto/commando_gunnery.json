@@ -1,0 +1,178 @@
+{
+ "name": "Gunnery Commando (auto)",
+ "match": {
+  "class": "Commando",
+  "discipline": "Gunnery"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 26 log sessions / 5 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Greased Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Supercharge",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Charged Barrel",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Charged Barrier",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Electro Net",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Supercharged Velocity",
+   "max_stacks": 6
+  },
+  {
+   "type": "target",
+   "effect": "Electro Net",
+   "duration": 9.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Radiation Burns",
+   "duration": 5.4,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Target Lock",
+   "duration": 12.6
+  },
+  {
+   "type": "proc",
+   "effect": "Grav Primer",
+   "duration": 1.5
+  },
+  {
+   "type": "proc",
+   "effect": "Energy Redoubt",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Cell",
+   "duration": 8.1
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 5.8
+  },
+  {
+   "type": "self",
+   "effect": "Parallactic Combat Stims",
+   "duration": 5.2
+  },
+  {
+   "type": "self",
+   "effect": "Echoing Deterrence",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Reactive Shield",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "High Velocity Supercharged Cell",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Hold the Line",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "High Impact Bolt",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vortex Bolt",
+   "seconds": 16.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Demolition Round",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mortar Volley",
+   "seconds": 49.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Electro Net",
+   "seconds": 84.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Supercharged Cell",
+   "seconds": 49.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Full Auto",
+   "seconds": 15.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Plasma Grenade",
+   "seconds": 28.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Echoing Deterrence",
+   "seconds": 181.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Tenacity",
+   "seconds": 126.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disabling Shot",
+   "seconds": 27.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "High Velocity Supercharged Cell",
+   "seconds": 29.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Concussion Charge",
+   "seconds": 38.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hold the Line",
+   "seconds": 176.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bacta Infusion",
+   "seconds": 87.6
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "name": "Assault Specialist Commando (mirrored)",
+ "match": {
+  "class": "Commando",
+  "discipline": "Assault Specialist"
+ },
+ "_auto": true,
+ "_mirrored_from": "Innovative Ordnance Mercenary",
+ "_kind": "mirrored-hand",
+ "_source": "mirrored-hand: translated from 'Innovative Ordnance Mercenary' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Advanced Kyrprax Attack Adrenal', 'Bleeding', 'Prototype Kyrprax Attack Adrenal', 'Supercharged Burn']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Boosted Bolts",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Supercharge",
+   "max_stacks": 10
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Incendiary Round)",
+   "label": "Incendiary",
+   "duration": 14,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding",
+   "label": "Serrated",
+   "duration": 14,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Assault Plastique)",
+   "label": "TD burn",
+   "duration": 11
+  },
+  {
+   "type": "target",
+   "effect": "Supercharged Burn",
+   "duration": 8
+  },
+  {
+   "type": "target",
+   "effect": "Electro Net",
+   "duration": 9.5
+  },
+  {
+   "type": "proc",
+   "effect": "Ionic Accelerator",
+   "text": "MAG SHOT",
+   "duration": 6
+  },
+  {
+   "type": "proc",
+   "effect": "Hyper Assault Rounds",
+   "text": "FREE MISSILE",
+   "duration": 15
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Cell",
+   "duration": 16
+  },
+  {
+   "type": "self",
+   "effect": "Relentless Assault",
+   "duration": 20
+  },
+  {
+   "type": "self",
+   "effect": "Prototype Kyrprax Attack Adrenal",
+   "label": "Adrenal",
+   "duration": 15
+  },
+  {
+   "type": "self",
+   "effect": "Advanced Kyrprax Attack Adrenal",
+   "label": "Adrenal",
+   "duration": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Assault Plastique",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Serrated Bolt",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Incendiary Round",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Electro Net",
+   "seconds": 90
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recharge Cells",
+   "seconds": 120
+  }
+ ]
+}

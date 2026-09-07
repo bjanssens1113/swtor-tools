@@ -1,0 +1,121 @@
+{
+ "name": "Corruption Sorcerer (auto)",
+ "match": {
+  "class": "Sorcerer",
+  "discipline": "Corruption"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 43 log sessions / 2 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Corrupted Bastion",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Sustaining Darkness",
+   "max_stacks": 9
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Surge",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Unhindered Resolve",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Revivification",
+   "duration": 9.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Sustaining Darkness",
+   "duration": 21.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Static Barrier",
+   "duration": 21.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Roaming Mend",
+   "duration": 17.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Resurgence",
+   "duration": 13.9,
+   "warn_at": 2
+  },
+  {
+   "type": "proc",
+   "effect": "Force Bending",
+   "duration": 2.5
+  },
+  {
+   "type": "self",
+   "effect": "Dark Concentration",
+   "duration": 4.2
+  },
+  {
+   "type": "self",
+   "effect": "Fueled Corruption",
+   "duration": 11.4
+  },
+  {
+   "type": "self",
+   "effect": "Revivification",
+   "duration": 9.3
+  },
+  {
+   "type": "self",
+   "effect": "Reverse Corruptions",
+   "duration": 11.7
+  },
+  {
+   "type": "self",
+   "effect": "Static Barrier",
+   "duration": 30.0
+  },
+  {
+   "type": "self",
+   "effect": "Resurgence",
+   "duration": 14.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Resurgence",
+   "seconds": 6.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Innervate",
+   "seconds": 8.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Revivification",
+   "seconds": 14.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Roaming Mend",
+   "seconds": 16.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rally",
+   "seconds": 15.0
+  }
+ ]
+}

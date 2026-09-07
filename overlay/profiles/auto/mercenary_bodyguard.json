@@ -1,0 +1,137 @@
+{
+ "name": "Bodyguard Mercenary (auto)",
+ "match": {
+  "class": "Mercenary",
+  "discipline": "Bodyguard"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 102 log sessions / 4 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Supercharge",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Kolto Shell",
+   "max_stacks": 7
+  },
+  {
+   "type": "stacks",
+   "effect": "Power Barrier",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Critical Efficiency",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Trauma Regulators",
+   "max_stacks": 10
+  },
+  {
+   "type": "target",
+   "effect": "Proactive Medicine",
+   "duration": 8.5,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Advanced Targeting",
+   "duration": 12.1
+  },
+  {
+   "type": "proc",
+   "effect": "Emergency Response",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Integrated Scanning",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Proactive Medicine",
+   "duration": 8.5
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Gas",
+   "duration": 8.1
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Kolto Gas",
+   "duration": 8.1
+  },
+  {
+   "type": "self",
+   "effect": "Gyroscopic Alignment Jets",
+   "duration": 9.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Emergency Scan",
+   "seconds": 19.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Progressive Scan",
+   "seconds": 16.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unload",
+   "seconds": 15.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Missile",
+   "seconds": 10.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Supercharged Gas",
+   "seconds": 21.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Death from Above",
+   "seconds": 49.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rail Shot",
+   "seconds": 28.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Supercharged Kolto Gas",
+   "seconds": 21.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sweeping Blasters",
+   "seconds": 20.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Overload",
+   "seconds": 251.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vent Heat",
+   "seconds": 131.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Power Surge",
+   "seconds": 43.2
+  }
+ ]
+}

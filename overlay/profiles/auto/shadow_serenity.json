@@ -1,0 +1,151 @@
+{
+ "name": "Serenity Shadow (auto)",
+ "match": {
+  "class": "Shadow",
+  "discipline": "Serenity"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 8 log sessions / 1 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Force Suppression",
+   "max_stacks": 15
+  },
+  {
+   "type": "stacks",
+   "effect": "Hallowing",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Potency",
+   "max_stacks": 1
+  },
+  {
+   "type": "target",
+   "effect": "Sever Force",
+   "duration": 13.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Breach",
+   "duration": 12.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Suppression",
+   "duration": 16.9,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Crushed (Squelch)",
+   "duration": 5.7,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Ensue",
+   "duration": 9.7,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Force Strike",
+   "duration": 4.8
+  },
+  {
+   "type": "self",
+   "effect": "Crush Spirit",
+   "duration": 6.4
+  },
+  {
+   "type": "self",
+   "effect": "Kinetic Surge",
+   "duration": 9.1
+  },
+  {
+   "type": "self",
+   "effect": "Force Synergy",
+   "duration": 27.8
+  },
+  {
+   "type": "proc",
+   "effect": "Resilience",
+   "duration": 3.1
+  },
+  {
+   "type": "self",
+   "effect": "Meditation",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Battle Readiness",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Deflection",
+   "duration": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force in Balance",
+   "seconds": 6.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Squelch",
+   "seconds": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sever Force",
+   "seconds": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Breach",
+   "seconds": 7.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Spinning Strike",
+   "seconds": 9.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Potency",
+   "seconds": 48.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Resilience",
+   "seconds": 65.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Meditation",
+   "seconds": 40.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battle Readiness",
+   "seconds": 129.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Snap",
+   "seconds": 19.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deflection",
+   "seconds": 152.7
+  }
+ ]
+}

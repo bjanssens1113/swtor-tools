@@ -1,0 +1,106 @@
+{
+ "name": "Ruffian Scoundrel (mirrored)",
+ "match": {
+  "class": "Scoundrel",
+  "discipline": "Ruffian"
+ },
+ "_auto": true,
+ "_mirrored_from": "Lethality Operative",
+ "_kind": "mirrored-hand",
+ "_source": "mirrored-hand: translated from 'Lethality Operative' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Advanced Kyrprax Critical Adrenal']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Upper Hand",
+   "label": "TA",
+   "max_stacks": 3,
+   "warn_below": 0
+  },
+  {
+   "type": "target",
+   "effect": "Shrap Bomb",
+   "duration": 22,
+   "warn_at": 3
+  },
+  {
+   "type": "target",
+   "effect": "Vital Shot",
+   "duration": 22,
+   "warn_at": 3
+  },
+  {
+   "type": "target",
+   "effect": "Sanguinary Shot",
+   "duration": 10,
+   "warn_at": 2
+  },
+  {
+   "type": "proc",
+   "effect": "Unfair Advantage",
+   "text": "FATALITY",
+   "duration": 5
+  },
+  {
+   "type": "self",
+   "effect": "Cut to the Quick",
+   "duration": 6
+  },
+  {
+   "type": "self",
+   "effect": "Pugnacity",
+   "duration": 15
+  },
+  {
+   "type": "self",
+   "effect": "Defense Screen",
+   "duration": 10
+  },
+  {
+   "type": "self",
+   "effect": "Concussion",
+   "duration": 6
+  },
+  {
+   "type": "self",
+   "effect": "Advanced Kyrprax Critical Adrenal",
+   "label": "Adrenal",
+   "duration": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Point Blank Shot",
+   "seconds": 10.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sanguinary Shot",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bushwhack",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Defense Screen",
+   "seconds": 30
+  },
+  {
+   "type": "cooldown",
+   "ability": "Pugnacity",
+   "seconds": 90
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cool Head",
+   "seconds": 90
+  },
+  {
+   "type": "cooldown",
+   "ability": "Advanced Kyrprax Critical Adrenal",
+   "label": "Adrenal",
+   "seconds": 180
+  }
+ ]
+}

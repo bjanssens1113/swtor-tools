@@ -1,0 +1,133 @@
+{
+ "name": "Engineering Sniper (auto)",
+ "match": {
+  "class": "Sniper",
+  "discipline": "Engineering"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 11 log sessions / 5 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Spotter",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Electrified Railgun",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Ballistic Dampers",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Electrified Railgun",
+   "duration": 9.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Interrogation Probe",
+   "duration": 19.5,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Energy Overrides",
+   "duration": 7.4
+  },
+  {
+   "type": "self",
+   "effect": "Systems Upgrade",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Laze Target",
+   "duration": 4.6
+  },
+  {
+   "type": "self",
+   "effect": "Shield Probe",
+   "duration": 7.3
+  },
+  {
+   "type": "self",
+   "effect": "Ballistic Shield",
+   "duration": 5.2
+  },
+  {
+   "type": "self",
+   "effect": "Entrench",
+   "duration": 20.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Series of Shots",
+   "seconds": 8.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Fragmentation Grenade",
+   "seconds": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Plasma Probe",
+   "seconds": 8.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Interrogation Probe",
+   "seconds": 10.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Explosive Probe",
+   "seconds": 14.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Orbital Strike",
+   "seconds": 30.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "EMP Discharge",
+   "seconds": 17.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Laze Target",
+   "seconds": 31.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shield Probe",
+   "seconds": 30.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Takedown",
+   "seconds": 18.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Covered Escape",
+   "seconds": 20.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Leg Shot",
+   "seconds": 25.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Entrench",
+   "seconds": 77.5
+  }
+ ]
+}

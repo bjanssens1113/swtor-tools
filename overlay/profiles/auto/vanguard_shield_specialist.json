@@ -1,0 +1,166 @@
+{
+ "name": "Shield Specialist Vanguard (mirrored)",
+ "match": {
+  "class": "Vanguard",
+  "discipline": "Shield Specialist"
+ },
+ "_auto": true,
+ "_mirrored_from": "Shield Tech Powertech (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Shield Tech Powertech (auto)' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Accuracy Reduced (Tech)', 'Energy Heal', 'Impaired (Mental)', 'Taunt']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Power Screen",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Frontline Solider",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Shield Enhancers",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Shoulder Cannon",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Static Surge",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Infused Kolto Packs",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Energy Heal",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Cortosis Weave Armor",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Impaired (Mental)",
+   "duration": 9.6,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Accuracy Reduced (Tech)",
+   "duration": 11.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Pulse Engine",
+   "duration": 5.1
+  },
+  {
+   "type": "self",
+   "effect": "Energy Blast",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Battle Focus",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Soldier's Grit",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 4.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Stockstrike",
+   "seconds": 7.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Blast",
+   "seconds": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Pulse Cannon",
+   "seconds": 11.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "High Impact Bolt",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Impact Charge",
+   "seconds": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Artillery Blitz",
+   "seconds": 32.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Neural Jolt",
+   "seconds": 16.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sonic Round",
+   "seconds": 52.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Riot Gas",
+   "seconds": 61.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Infused Kolto Packs",
+   "seconds": 58.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ion Storm",
+   "seconds": 11.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Riot Strike",
+   "seconds": 13.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battle Focus",
+   "seconds": 136.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Flak Shell",
+   "seconds": 21.2
+  }
+ ]
+}

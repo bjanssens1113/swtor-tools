@@ -1,0 +1,91 @@
+{
+ "name": "Sharpshooter Gunslinger (auto)",
+ "match": {
+  "class": "Gunslinger",
+  "discipline": "Sharpshooter"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 5 log sessions / 4 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Ready for Anything",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Charged Aim",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Honed Shots",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Sharpshooter's Touch",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Smoking Barrels",
+   "max_stacks": 2
+  },
+  {
+   "type": "self",
+   "effect": "Hot Pursuit",
+   "duration": 10.9
+  },
+  {
+   "type": "self",
+   "effect": "Snap Shot",
+   "duration": 9.0
+  },
+  {
+   "type": "self",
+   "effect": "Hunker Down",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Burst Volley",
+   "duration": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thermal Grenade",
+   "seconds": 6.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Aimed Shot",
+   "seconds": 11.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Leg Shot",
+   "seconds": 28.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smuggler's Luck",
+   "seconds": 14.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Trickshot",
+   "seconds": 8.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Burst Volley",
+   "seconds": 45.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hunker Down",
+   "seconds": 20.3
+  }
+ ]
+}

@@ -1,0 +1,208 @@
+{
+ "name": "Watchman Sentinel (mirrored)",
+ "match": {
+  "class": "Sentinel",
+  "discipline": "Watchman"
+ },
+ "_auto": true,
+ "_mirrored_from": "Annihilation Marauder (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Annihilation Marauder (auto)' via Parsely Empire/Republic name pairs. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Centering",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Zen",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Overload Saber",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Bleeding (Overload Saber)",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Juyo Form",
+   "max_stacks": 6
+  },
+  {
+   "type": "target",
+   "effect": "Force Melt",
+   "duration": 8.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Cauterize)",
+   "duration": 8.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Overload Saber)",
+   "duration": 8.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Transcendence",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Inspiration",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Blazing Ward",
+   "duration": 9.0
+  },
+  {
+   "type": "self",
+   "effect": "Smoldering Burns",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Mind Sear",
+   "duration": 3.9
+  },
+  {
+   "type": "self",
+   "effect": "Steel Self",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Rebuke",
+   "duration": 18.4
+  },
+  {
+   "type": "self",
+   "effect": "Transcendence",
+   "duration": 10.1
+  },
+  {
+   "type": "proc",
+   "effect": "Blade Blitz",
+   "duration": 1.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Ward",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Inspiration",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Melt",
+   "seconds": 12.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cauterize",
+   "seconds": 8.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Twin Saber Throw",
+   "seconds": 8.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Overload Saber",
+   "seconds": 11.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Merciless Slash",
+   "seconds": 10.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Leap",
+   "seconds": 15.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zen",
+   "seconds": 12.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Barrage",
+   "seconds": 19.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zealous Strike",
+   "seconds": 16.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Sweep",
+   "seconds": 7.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dispatch",
+   "seconds": 14.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rebuke",
+   "seconds": 61.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Transcendence",
+   "seconds": 32.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Kick",
+   "seconds": 24.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Blitz",
+   "seconds": 51.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Storm",
+   "seconds": 12.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Valorous Call",
+   "seconds": 202.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Ward",
+   "seconds": 184.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Resolute",
+   "seconds": 161.9
+  }
+ ]
+}

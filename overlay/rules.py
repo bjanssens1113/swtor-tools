@@ -55,7 +55,11 @@ class Profile:
 
     @staticmethod
     def load_all(directory=PROFILE_DIR) -> list["Profile"]:
-        return [Profile.load(p) for p in sorted(Path(directory).glob("*.json"))]
+        """Hand-written profiles first, then generated ones in profiles/auto/. First match wins,
+        so a hand-written profile always beats an auto/mirrored one for the same discipline."""
+        d = Path(directory)
+        paths = sorted(d.glob("*.json")) + sorted((d / "auto").glob("*.json"))
+        return [Profile.load(p) for p in paths]
 
 
 @dataclass

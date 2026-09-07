@@ -1,0 +1,205 @@
+{
+ "name": "Immortal Juggernaut (auto)",
+ "match": {
+  "class": "Juggernaut",
+  "discipline": "Immortal"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 26 log sessions / 8 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Revenge",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Defensive Slashes",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Enraged Defense",
+   "max_stacks": 11
+  },
+  {
+   "type": "target",
+   "effect": "Impaired (Mental)",
+   "duration": 11.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Aegis Shield",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Choke",
+   "duration": 3.9,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Sonic Barrier",
+   "duration": 5.0
+  },
+  {
+   "type": "self",
+   "effect": "Blade Barricade",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Warmonger",
+   "duration": 15.0
+  },
+  {
+   "type": "self",
+   "effect": "Aegis Assault",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Consuming Power",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Aegis Shield",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Rule of Two",
+   "duration": 7.8
+  },
+  {
+   "type": "self",
+   "effect": "War Machine",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Reflect",
+   "duration": 5.1
+  },
+  {
+   "type": "self",
+   "effect": "Invincible",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Ward",
+   "duration": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Retaliation",
+   "seconds": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Crushing Blow",
+   "seconds": 12.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Aegis Assault",
+   "seconds": 13.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Scream",
+   "seconds": 12.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Charge",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smash",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ravage",
+   "seconds": 19.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vicious Throw",
+   "seconds": 16.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Throw",
+   "seconds": 21.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Threatening Scream",
+   "seconds": 51.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Backhand",
+   "seconds": 65.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Choke",
+   "seconds": 64.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Enrage",
+   "seconds": 34.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Taunt",
+   "seconds": 16.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Reflect",
+   "seconds": 61.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Threatening Rage",
+   "seconds": 27.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Enraged Defense",
+   "seconds": 109.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Push",
+   "seconds": 80.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Invincible",
+   "seconds": 160.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Ward",
+   "seconds": 117.2
+  }
+ ]
+}

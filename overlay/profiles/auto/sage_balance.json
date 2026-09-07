@@ -1,0 +1,200 @@
+{
+ "name": "Balance Sage (mirrored)",
+ "match": {
+  "class": "Sage",
+  "discipline": "Balance"
+ },
+ "_auto": true,
+ "_mirrored_from": "Madness Sorcerer (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Madness Sorcerer (auto)' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Death Brand (Slow)', 'Greased Lightning']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Force Suppression",
+   "max_stacks": 15
+  },
+  {
+   "type": "stacks",
+   "effect": "Presence of Mind",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Psychokinetic Torrent",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Greased Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Sever Force",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Weaken Mind",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Vanquish",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Warden of the Force",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Potency",
+   "max_stacks": 1
+  },
+  {
+   "type": "target",
+   "effect": "Sever Force",
+   "duration": 12.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Weaken Mind",
+   "duration": 11.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Suppression",
+   "duration": 11.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Crushed (Vanquish)",
+   "duration": 8.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Vanquish",
+   "duration": 5.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Armor",
+   "duration": 30.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Death Brand (Slow)",
+   "duration": 5.7,
+   "warn_at": 2
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.6
+  },
+  {
+   "type": "self",
+   "effect": "Force Armor",
+   "duration": 25.4
+  },
+  {
+   "type": "self",
+   "effect": "Mental Alacrity",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Rejuvenate",
+   "duration": 8.5
+  },
+  {
+   "type": "self",
+   "effect": "Metaphysical Alacrity",
+   "duration": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sever Force",
+   "seconds": 7.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Weaken Mind",
+   "seconds": 8.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force in Balance",
+   "seconds": 16.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vanquish",
+   "seconds": 14.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Project",
+   "seconds": 9.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 20.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Serenity",
+   "seconds": 15.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shifted Balance",
+   "seconds": 14.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Crush",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rejuvenate",
+   "seconds": 25.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Mend",
+   "seconds": 32.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mental Alacrity",
+   "seconds": 95.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Potency",
+   "seconds": 49.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Snap",
+   "seconds": 55.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Wave",
+   "seconds": 30.8
+  }
+ ]
+}

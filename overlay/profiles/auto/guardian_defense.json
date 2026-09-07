@@ -1,0 +1,207 @@
+{
+ "name": "Defense Guardian (mirrored)",
+ "match": {
+  "class": "Guardian",
+  "discipline": "Defense"
+ },
+ "_auto": true,
+ "_mirrored_from": "Immortal Juggernaut (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Immortal Juggernaut (auto)' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Impaired (Mental)']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Courage",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Defensive Swings",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Focused Defense",
+   "max_stacks": 11
+  },
+  {
+   "type": "target",
+   "effect": "Impaired (Mental)",
+   "duration": 11.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Warding Shield",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Stasis",
+   "duration": 3.9,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Blade Barrier",
+   "duration": 5.0
+  },
+  {
+   "type": "self",
+   "effect": "Blade Barricade",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Battlefield Command",
+   "duration": 15.0
+  },
+  {
+   "type": "self",
+   "effect": "Warding Strike",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Warding Power",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Warding Shield",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Expeditious Protector",
+   "duration": 7.8
+  },
+  {
+   "type": "self",
+   "effect": "Critical Defense",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Reflect",
+   "duration": 5.1
+  },
+  {
+   "type": "self",
+   "effect": "Warding Call",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Ward",
+   "duration": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Riposte",
+   "seconds": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Guardian Slash",
+   "seconds": 12.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Warding Strike",
+   "seconds": 13.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Storm",
+   "seconds": 12.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Leap",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Sweep",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Barrage",
+   "seconds": 19.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dispatch",
+   "seconds": 16.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Throw",
+   "seconds": 21.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Challenging Call",
+   "seconds": 51.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hilt Bash",
+   "seconds": 65.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Stasis",
+   "seconds": 64.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Combat Focus",
+   "seconds": 34.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Taunt",
+   "seconds": 16.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Reflect",
+   "seconds": 61.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Threatening Focus",
+   "seconds": 27.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Focused Defense",
+   "seconds": 109.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Push",
+   "seconds": 80.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Warding Call",
+   "seconds": 160.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Ward",
+   "seconds": 117.2
+  }
+ ]
+}

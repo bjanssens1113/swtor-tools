@@ -1,0 +1,78 @@
+{
+ "name": "Sawbones Scoundrel (mirrored)",
+ "match": {
+  "class": "Scoundrel",
+  "discipline": "Sawbones"
+ },
+ "_auto": true,
+ "_mirrored_from": "Medicine Operative",
+ "_kind": "mirrored-hand",
+ "_source": "mirrored-hand: translated from 'Medicine Operative' via Parsely Empire/Republic name pairs. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Upper Hand",
+   "label": "TA",
+   "max_stacks": 3,
+   "warn_below": 0
+  },
+  {
+   "type": "target",
+   "effect": "Slow-release Medpac",
+   "duration": 18,
+   "warn_at": 3
+  },
+  {
+   "type": "target",
+   "effect": "Kolto Cloud",
+   "label": "Nanotech",
+   "duration": 8.5
+  },
+  {
+   "type": "self",
+   "effect": "Pugnacity",
+   "duration": 15
+  },
+  {
+   "type": "self",
+   "effect": "Bedside Manner",
+   "duration": 8
+  },
+  {
+   "type": "self",
+   "effect": "Defense Screen",
+   "duration": 10
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Cloud",
+   "label": "Nanotech",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Waves",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bushwhack",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Pugnacity",
+   "seconds": 90
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cool Head",
+   "seconds": 90
+  },
+  {
+   "type": "cooldown",
+   "ability": "Heartrigger Patch",
+   "seconds": 300
+  }
+ ]
+}

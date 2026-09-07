@@ -1,0 +1,175 @@
+{
+ "name": "Infiltration Shadow (mirrored)",
+ "match": {
+  "class": "Shadow",
+  "discipline": "Infiltration"
+ },
+ "_auto": true,
+ "_mirrored_from": "Deception Assassin (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Deception Assassin (auto)' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Burning Bolts', 'Static Charge', 'Voltage']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Static Charge",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Circling Shadows",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Potency",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Kinetic Field",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Voltage",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Shadow Stride",
+   "duration": 4.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning Bolts",
+   "duration": 5.6,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Shadow's Respite",
+   "duration": 18.6
+  },
+  {
+   "type": "self",
+   "effect": "Profundity",
+   "duration": 8.8
+  },
+  {
+   "type": "self",
+   "effect": "Infiltration Tactics",
+   "duration": 6.5
+  },
+  {
+   "type": "self",
+   "effect": "Force Synergy",
+   "duration": 13.1
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.1
+  },
+  {
+   "type": "proc",
+   "effect": "Shadow Stride",
+   "duration": 3.1
+  },
+  {
+   "type": "proc",
+   "effect": "Stalker's Swiftness",
+   "duration": 3.3
+  },
+  {
+   "type": "proc",
+   "effect": "Force Phase",
+   "duration": 3.1
+  },
+  {
+   "type": "self",
+   "effect": "Kinetic Surge",
+   "duration": 9.1
+  },
+  {
+   "type": "self",
+   "effect": "Deflection",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Absolver",
+   "duration": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Psychokinetic Blast",
+   "seconds": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vaulting Slash",
+   "seconds": 16.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 24.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Project",
+   "seconds": 7.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shadow Stride",
+   "seconds": 7.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Potency",
+   "seconds": 27.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Spinning Strike",
+   "seconds": 7.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Low Slash",
+   "seconds": 19.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cleaving Cut",
+   "seconds": 14.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Maze",
+   "seconds": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Stun",
+   "seconds": 73.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Snap",
+   "seconds": 40.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force of Will",
+   "seconds": 199.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deflection",
+   "seconds": 124.6
+  }
+ ]
+}

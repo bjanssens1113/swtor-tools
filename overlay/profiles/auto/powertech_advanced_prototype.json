@@ -1,0 +1,149 @@
+{
+ "name": "Advanced Prototype Powertech (auto)",
+ "match": {
+  "class": "Powertech",
+  "discipline": "Advanced Prototype"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 7 log sessions / 3 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Greased Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Energy Lode",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Shoulder Cannon",
+   "max_stacks": 7
+  },
+  {
+   "type": "target",
+   "effect": "Thermal Detonator",
+   "duration": 3.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Retractable Blade)",
+   "duration": 12.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Lingering Heat",
+   "duration": 7.5,
+   "warn_at": 2
+  },
+  {
+   "type": "proc",
+   "effect": "Prototype Particle Accelerator",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Battering Ram",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 5.4
+  },
+  {
+   "type": "self",
+   "effect": "Power Yield",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Power Burst",
+   "duration": 13.4
+  },
+  {
+   "type": "self",
+   "effect": "Explosive Fuel",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Hydraulic Overrides",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Energy Shield",
+   "duration": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rocket Punch",
+   "seconds": 9.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thermal Detonator",
+   "seconds": 15.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Burst",
+   "seconds": 6.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Jet Charge",
+   "seconds": 19.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deadly Onslaught",
+   "seconds": 24.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Power Yield",
+   "seconds": 71.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Grapple",
+   "seconds": 56.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shatter Slug",
+   "seconds": 22.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Explosive Fuel",
+   "seconds": 145.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hydraulic Overrides",
+   "seconds": 50.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Neural Dart",
+   "seconds": 15.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Quell",
+   "seconds": 25.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Shield",
+   "seconds": 67.6
+  }
+ ]
+}

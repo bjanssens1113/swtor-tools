@@ -1,0 +1,164 @@
+{
+ "name": "Fury Marauder (auto)",
+ "match": {
+  "class": "Marauder",
+  "discipline": "Fury"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 5 log sessions / 5 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Fury",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Berserk",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Bloody Slashes",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Predation",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bloody Slashes",
+   "duration": 8.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Crush",
+   "duration": 3.0,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Dominate",
+   "duration": 3.6
+  },
+  {
+   "type": "self",
+   "effect": "Cascading Domination",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Dark Synergy",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Battle Cry",
+   "duration": 14.1
+  },
+  {
+   "type": "proc",
+   "effect": "Destruction",
+   "duration": 3.4
+  },
+  {
+   "type": "self",
+   "effect": "Furious Defense",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Furious Rage",
+   "duration": 9.6
+  },
+  {
+   "type": "self",
+   "effect": "Seething Defense",
+   "duration": 10.0
+  },
+  {
+   "type": "self",
+   "effect": "Obliteration",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Predation",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Obliterate",
+   "seconds": 10.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smash",
+   "seconds": 12.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Scream",
+   "seconds": 12.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Raging Burst",
+   "seconds": 10.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battering Assault",
+   "seconds": 14.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Charge",
+   "seconds": 14.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ravage",
+   "seconds": 18.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dual Saber Throw",
+   "seconds": 20.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Furious Strike",
+   "seconds": 9.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Berserk",
+   "seconds": 15.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vicious Throw",
+   "seconds": 13.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Crush",
+   "seconds": 28.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Predation",
+   "seconds": 31.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disruption",
+   "seconds": 15.1
+  }
+ ]
+}

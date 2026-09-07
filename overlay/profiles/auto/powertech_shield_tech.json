@@ -1,0 +1,164 @@
+{
+ "name": "Shield Tech Powertech (auto)",
+ "match": {
+  "class": "Powertech",
+  "discipline": "Shield Tech"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 9 log sessions / 5 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Heat Screen",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Contracted Defense",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Shield Enhancers",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Shoulder Cannon",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Flame Surge",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Energy Yield",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Energy Heal",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Mandalorian Iron",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Impaired (Mental)",
+   "duration": 9.6,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Accuracy Reduced (Tech)",
+   "duration": 11.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Flame Engine",
+   "duration": 5.1
+  },
+  {
+   "type": "self",
+   "effect": "Heat Blast",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Explosive Fuel",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Coolant",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 4.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rocket Punch",
+   "seconds": 7.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Heat Blast",
+   "seconds": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Heavy Flamethrower",
+   "seconds": 11.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rail Shot",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rising Phoenix",
+   "seconds": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deadly Onslaught",
+   "seconds": 32.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Neural Dart",
+   "seconds": 16.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sonic Missile",
+   "seconds": 52.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Oil Slick",
+   "seconds": 61.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Yield",
+   "seconds": 58.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Firestorm",
+   "seconds": 11.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Quell",
+   "seconds": 13.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Explosive Fuel",
+   "seconds": 136.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shatter Slug",
+   "seconds": 21.2
+  }
+ ]
+}

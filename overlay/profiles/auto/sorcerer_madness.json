@@ -1,0 +1,198 @@
+{
+ "name": "Madness Sorcerer (auto)",
+ "match": {
+  "class": "Sorcerer",
+  "discipline": "Madness"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 8 log sessions / 8 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Deathmark",
+   "max_stacks": 15
+  },
+  {
+   "type": "stacks",
+   "effect": "Wrath",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Fulminating Current",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Greased Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Creeping Terror",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Affliction",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Demolish",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Corrupted Defense",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Recklessness",
+   "max_stacks": 1
+  },
+  {
+   "type": "target",
+   "effect": "Creeping Terror",
+   "duration": 12.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Affliction",
+   "duration": 11.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Deathmark",
+   "duration": 11.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Crushed (Demolish)",
+   "duration": 8.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Demolish",
+   "duration": 5.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Static Barrier",
+   "duration": 30.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Death Brand (Slow)",
+   "duration": 5.7,
+   "warn_at": 2
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.6
+  },
+  {
+   "type": "self",
+   "effect": "Static Barrier",
+   "duration": 25.4
+  },
+  {
+   "type": "self",
+   "effect": "Polarity Shift",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Resurgence",
+   "duration": 8.5
+  },
+  {
+   "type": "self",
+   "effect": "Surging Speed",
+   "duration": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Creeping Terror",
+   "seconds": 7.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Affliction",
+   "seconds": 8.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Death Field",
+   "seconds": 16.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Demolish",
+   "seconds": 14.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shock",
+   "seconds": 9.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 20.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Leech",
+   "seconds": 15.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Death Brand",
+   "seconds": 14.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Crushing Darkness",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Resurgence",
+   "seconds": 25.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unnatural Preservation",
+   "seconds": 32.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Polarity Shift",
+   "seconds": 95.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recklessness",
+   "seconds": 49.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Jolt",
+   "seconds": 55.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Overload",
+   "seconds": 30.8
+  }
+ ]
+}

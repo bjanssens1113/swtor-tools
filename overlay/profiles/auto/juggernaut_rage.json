@@ -1,0 +1,139 @@
+{
+ "name": "Rage Juggernaut (mirrored)",
+ "match": {
+  "class": "Juggernaut",
+  "discipline": "Rage"
+ },
+ "_auto": true,
+ "_mirrored_from": "Focus Guardian (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Focus Guardian (auto)' via Parsely Empire/Republic name pairs. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Enraged Defense",
+   "max_stacks": 11
+  },
+  {
+   "type": "target",
+   "effect": "Force Crush",
+   "duration": 3.0,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Dominate",
+   "duration": 3.9
+  },
+  {
+   "type": "self",
+   "effect": "Cascading Power",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Dark Synergy",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Shockwave",
+   "duration": 8.7
+  },
+  {
+   "type": "proc",
+   "effect": "Seething Defense",
+   "duration": 1.8
+  },
+  {
+   "type": "self",
+   "effect": "Battle Cry",
+   "duration": 20.2
+  },
+  {
+   "type": "proc",
+   "effect": "Fuming Rage",
+   "duration": 3.0
+  },
+  {
+   "type": "self",
+   "effect": "Saber Reflect",
+   "duration": 5.1
+  },
+  {
+   "type": "self",
+   "effect": "Channel Hatred",
+   "duration": 7.0
+  },
+  {
+   "type": "self",
+   "effect": "Endure Pain",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Raging Burst",
+   "seconds": 9.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Obliterate",
+   "seconds": 9.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Enrage",
+   "seconds": 19.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sundering Assault",
+   "seconds": 12.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Retaliation",
+   "seconds": 7.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Crush",
+   "seconds": 20.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Charge",
+   "seconds": 20.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Scream",
+   "seconds": 20.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Reflect",
+   "seconds": 72.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Channel Hatred",
+   "seconds": 59.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Endure Pain",
+   "seconds": 62.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Throw",
+   "seconds": 34.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disruption",
+   "seconds": 31.4
+  }
+ ]
+}

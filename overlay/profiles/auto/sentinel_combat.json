@@ -1,0 +1,137 @@
+{
+ "name": "Combat Sentinel (auto)",
+ "match": {
+  "class": "Sentinel",
+  "discipline": "Combat"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 5 log sessions / 4 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Centering",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Zen",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Saber Screen",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Precision",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Inspiration",
+   "duration": 36.0,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Opportune Attack",
+   "duration": 9.8
+  },
+  {
+   "type": "self",
+   "effect": "Hand of Justice",
+   "duration": 4.2
+  },
+  {
+   "type": "self",
+   "effect": "Introspection",
+   "duration": 4.2
+  },
+  {
+   "type": "self",
+   "effect": "Combat Trance",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Blade Rush",
+   "duration": 7.2
+  },
+  {
+   "type": "self",
+   "effect": "Steel Self",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Leap",
+   "seconds": 15.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cyclone Slash",
+   "seconds": 6.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zealous Strike",
+   "seconds": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Barrage",
+   "seconds": 18.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Clashing Blast",
+   "seconds": 8.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Sweep",
+   "seconds": 15.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dispatch",
+   "seconds": 9.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Lance",
+   "seconds": 14.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Storm",
+   "seconds": 9.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zen",
+   "seconds": 32.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Precision",
+   "seconds": 8.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Introspection",
+   "seconds": 73.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Kick",
+   "seconds": 22.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Twin Saber Throw",
+   "seconds": 18.4
+  }
+ ]
+}

@@ -1,0 +1,206 @@
+{
+ "name": "Annihilation Marauder (auto)",
+ "match": {
+  "class": "Marauder",
+  "discipline": "Annihilation"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 12 log sessions / 6 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Fury",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Berserk",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Deadly Saber",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Bleeding (Deadly Saber)",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Juyo Form",
+   "max_stacks": 6
+  },
+  {
+   "type": "target",
+   "effect": "Force Rend",
+   "duration": 8.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Rupture)",
+   "duration": 8.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Deadly Saber)",
+   "duration": 8.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Predation",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bloodthirst",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Blood Guard",
+   "duration": 9.0
+  },
+  {
+   "type": "self",
+   "effect": "Devious Wounds",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Pulverize",
+   "duration": 3.9
+  },
+  {
+   "type": "self",
+   "effect": "Steel Self",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Cloak of Pain",
+   "duration": 18.4
+  },
+  {
+   "type": "self",
+   "effect": "Predation",
+   "duration": 10.1
+  },
+  {
+   "type": "proc",
+   "effect": "Mad Dash",
+   "duration": 1.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Ward",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Bloodthirst",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Rend",
+   "seconds": 12.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rupture",
+   "seconds": 8.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dual Saber Throw",
+   "seconds": 8.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deadly Saber",
+   "seconds": 11.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Annihilate",
+   "seconds": 10.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Charge",
+   "seconds": 15.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Berserk",
+   "seconds": 12.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ravage",
+   "seconds": 19.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battering Assault",
+   "seconds": 16.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smash",
+   "seconds": 7.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vicious Throw",
+   "seconds": 14.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cloak of Pain",
+   "seconds": 61.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Predation",
+   "seconds": 32.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disruption",
+   "seconds": 24.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mad Dash",
+   "seconds": 51.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Scream",
+   "seconds": 12.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Frenzy",
+   "seconds": 202.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Ward",
+   "seconds": 184.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unleash",
+   "seconds": 161.9
+  }
+ ]
+}

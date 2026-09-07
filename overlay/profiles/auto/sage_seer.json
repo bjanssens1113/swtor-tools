@@ -1,0 +1,111 @@
+{
+ "name": "Seer Sage (auto)",
+ "match": {
+  "class": "Sage",
+  "discipline": "Seer"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 2 log sessions / 2 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Soothing Protection",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Wandering Mend Charges",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Resurging Power",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Defense",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Resplendence",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Salvation",
+   "duration": 9.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Wandering Mend",
+   "duration": 5.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Soothing Protection",
+   "duration": 30.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Armor",
+   "duration": 30.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Rejuvenate",
+   "duration": 14.3,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Altruism",
+   "duration": 15.0
+  },
+  {
+   "type": "proc",
+   "effect": "Conveyance",
+   "duration": 3.0
+  },
+  {
+   "type": "self",
+   "effect": "Salvation",
+   "duration": 9.5
+  },
+  {
+   "type": "self",
+   "effect": "Wandering Mend",
+   "duration": 12.4
+  },
+  {
+   "type": "self",
+   "effect": "Force Armor",
+   "duration": 14.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rejuvenate",
+   "seconds": 10.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Salvation",
+   "seconds": 16.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Wandering Mend",
+   "seconds": 19.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Healing Trance",
+   "seconds": 13.5
+  }
+ ]
+}

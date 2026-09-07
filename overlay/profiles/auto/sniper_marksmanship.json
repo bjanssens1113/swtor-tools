@@ -1,0 +1,62 @@
+{
+ "name": "Marksmanship Sniper (auto)",
+ "match": {
+  "class": "Sniper",
+  "discipline": "Marksmanship"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 6 log sessions / 5 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Spotter",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Honed Shots",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Zeroing Shots",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Diversion (Tech)",
+   "duration": 6.6,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Snap Shot",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ambush",
+   "seconds": 16.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Fragmentation Grenade",
+   "seconds": 9.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Penetrating Blasts",
+   "seconds": 16.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Leg Shot",
+   "seconds": 22.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cover Pulse",
+   "seconds": 35.3
+  }
+ ]
+}

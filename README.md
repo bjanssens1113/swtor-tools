@@ -45,12 +45,23 @@ Regenerate the "what do I actually use" catalog from every log on this PC:
 `.venv\Scripts\python.exe overlay\catalog.py` → `docs\CATALOG.md` + `overlay\catalog.json`.
 
 ## Profiles (what the overlay shows)
-| Profile | Source of timings |
-|---|---|
-| Lethality Operative | Parsely #1 parse, `docs/PARSELY_LETHALITY.md` |
-| Innovative Ordnance Mercenary | Parsely #1 parse, `docs/PARSELY_IO.md` |
-| Medicine Operative | Brad's own logs (`docs/CATALOG.md`); cooldowns approximate |
-| Bodyguard Mercenary | Brad's own logs; cooldowns approximate |
+Every one of the 48 disciplines has a profile. Three tiers, best wins:
+
+| Tier | Where | How it was made |
+|---|---|---|
+| Hand-written | `overlay/profiles/*.json` | Lethality + IO from Parsely #1 parses (`docs/PARSELY_*.md`); Medicine + Bodyguard from Brad's logs |
+| Auto (mined) | `overlay/profiles/auto/*_(auto)` | `overlay/discover.py` mined every player in all 557 logs: 38 disciplines, real effect names, 75th-pct durations, 10th-pct re-use gaps as cooldowns, filtered through Parsely's ability list |
+| Mirrored | `overlay/profiles/auto/*_(mirrored)` | `overlay/mirror.py` translated a profile to its Empire/Republic twin using Parsely name pairs (Tactical Advantage → Upper Hand …) |
+
+Auto and mirrored profiles are **drafts**: prune rules you don't want and fix cooldowns in game. Copy one to
+`overlay/profiles/` (drop the `_auto` flag, give it a name) once you've tuned it, and it becomes hand-written.
+
+Reference material for tuning:
+- `docs/DISCIPLINES.md` — per discipline: abilities with re-use gaps, self buffs and target effects with measured durations, stack effects. All from real logs.
+- `docs/ABILITIES_ALL.md` — Parsely's full ability/passive/mod list for all 16 classes, Empire and Republic names (2 155 rows).
+- `docs/CATALOG.md` — what *Brad's own* characters have used, with counts.
+
+Regenerate after new logs: `python overlay/discover.py` then `python overlay/mirror.py`.
 
 Rule types: `self` (buff on you → countdown bar), `target` (your effect on an enemy/ally → bar per target),
 `stacks` (ModifyCharges → number, red when low), `proc` (big flash text), `cooldown` (bar after AbilityActivate,

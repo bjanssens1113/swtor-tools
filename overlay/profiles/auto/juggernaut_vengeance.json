@@ -1,0 +1,182 @@
+{
+ "name": "Vengeance Juggernaut (auto)",
+ "match": {
+  "class": "Juggernaut",
+  "discipline": "Vengeance"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 11 log sessions / 11 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Savagery",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Enraged Defense",
+   "max_stacks": 11
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Shatter)",
+   "duration": 11.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Draining Scream)",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding (Eviscerate)",
+   "duration": 9.7,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Force Choke",
+   "duration": 3.9,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Intercede",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Destroyer",
+   "duration": 4.8
+  },
+  {
+   "type": "self",
+   "effect": "Warmonger",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Blood Rites",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Focused Defense",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Saber Ward",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Endure Pain",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shatter",
+   "seconds": 9.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Scream",
+   "seconds": 9.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ravage",
+   "seconds": 9.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Impale",
+   "seconds": 8.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Charge",
+   "seconds": 14.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vengeful Slam",
+   "seconds": 8.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sundering Assault",
+   "seconds": 14.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smash",
+   "seconds": 10.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Enrage",
+   "seconds": 17.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hew",
+   "seconds": 9.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Retaliation",
+   "seconds": 6.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Throw",
+   "seconds": 19.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Choke",
+   "seconds": 59.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Skewering Strike",
+   "seconds": 10.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mad Dash",
+   "seconds": 74.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disruption",
+   "seconds": 18.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Endure Pain",
+   "seconds": 71.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Intercede",
+   "seconds": 106.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Taunt",
+   "seconds": 30.0
+  }
+ ]
+}

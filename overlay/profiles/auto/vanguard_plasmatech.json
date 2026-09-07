@@ -1,0 +1,155 @@
+{
+ "name": "Plasmatech Vanguard (auto)",
+ "match": {
+  "class": "Vanguard",
+  "discipline": "Plasmatech"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 10 log sessions / 3 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Durasteel Armor",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Pulse Generator",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Shoulder Cannon",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Suppressive Heat",
+   "max_stacks": 4
+  },
+  {
+   "type": "target",
+   "effect": "Burning",
+   "duration": 8.7,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Plasmatize",
+   "duration": 17.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Incendiary Round)",
+   "duration": 14.3,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Primed Rail Shot)",
+   "duration": 11.6,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Incendiary Bolt",
+   "duration": 6.4
+  },
+  {
+   "type": "self",
+   "effect": "Hyper Assault Cell",
+   "duration": 7.7
+  },
+  {
+   "type": "self",
+   "effect": "Plasma Barrage",
+   "duration": 4.3
+  },
+  {
+   "type": "self",
+   "effect": "Battering Blitz",
+   "duration": 6.1
+  },
+  {
+   "type": "proc",
+   "effect": "Overcharged Plasma",
+   "duration": 2.0
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 6.5
+  },
+  {
+   "type": "self",
+   "effect": "Battle Focus",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Electro Shield",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Reactive Shield",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Elite Vanguard",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "High Impact Bolt",
+   "seconds": 15.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ion Wave",
+   "seconds": 16.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shockstrike",
+   "seconds": 10.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Plasma Flare",
+   "seconds": 16.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Artillery Blitz",
+   "seconds": 30.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Durasteel Armor",
+   "seconds": 68.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Harpoon",
+   "seconds": 62.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battle Focus",
+   "seconds": 144.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Reactive Shield",
+   "seconds": 125.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Riot Strike",
+   "seconds": 18.7
+  }
+ ]
+}

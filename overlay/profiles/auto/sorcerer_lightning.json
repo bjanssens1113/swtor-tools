@@ -1,0 +1,209 @@
+{
+ "name": "Lightning Sorcerer (auto)",
+ "match": {
+  "class": "Sorcerer",
+  "discipline": "Lightning"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 35 log sessions / 12 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Lightning Effusion",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Focal Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Charged Reaction",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Fulgurous Fortification",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Reserved Darkness",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Convection",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Recklessness",
+   "max_stacks": 1
+  },
+  {
+   "type": "stacks",
+   "effect": "Forbidden Knowledge",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Barrier",
+   "max_stacks": 4
+  },
+  {
+   "type": "target",
+   "effect": "Crushed (Crushing Darkness)",
+   "duration": 5.5,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Stormwatch",
+   "duration": 15.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Affliction",
+   "duration": 16.3,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Lightning Storm",
+   "duration": 7.2
+  },
+  {
+   "type": "self",
+   "effect": "Subversion",
+   "duration": 13.3
+  },
+  {
+   "type": "self",
+   "effect": "Thunder and Lightning",
+   "duration": 8.9
+  },
+  {
+   "type": "proc",
+   "effect": "Force Flash",
+   "duration": 3.0
+  },
+  {
+   "type": "self",
+   "effect": "Insulating Blast",
+   "duration": 18.1
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.1
+  },
+  {
+   "type": "self",
+   "effect": "Polarity Shift",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Static Barrier",
+   "duration": 30.0
+  },
+  {
+   "type": "self",
+   "effect": "Resurgence",
+   "duration": 8.5
+  },
+  {
+   "type": "self",
+   "effect": "Surging Speed",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Unnatural Vigor",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thundering Blast",
+   "seconds": 9.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shock",
+   "seconds": 12.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Lightning Flash",
+   "seconds": 17.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Crushing Darkness",
+   "seconds": 18.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Lightning",
+   "seconds": 9.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 20.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Chain Lightning",
+   "seconds": 6.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Polarity Shift",
+   "seconds": 108.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recklessness",
+   "seconds": 113.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Static Barrier",
+   "seconds": 23.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unnatural Preservation",
+   "seconds": 30.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Electrocute",
+   "seconds": 72.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Resurgence",
+   "seconds": 21.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Jolt",
+   "seconds": 24.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Overload",
+   "seconds": 84.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Barrier",
+   "seconds": 189.8
+  }
+ ]
+}

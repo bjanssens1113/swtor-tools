@@ -1,0 +1,174 @@
+{
+ "name": "Kinetic Combat Shadow (mirrored)",
+ "match": {
+  "class": "Shadow",
+  "discipline": "Kinetic Combat"
+ },
+ "_auto": true,
+ "_mirrored_from": "Darkness Assassin (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Darkness Assassin (auto)' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Dark Protection', 'Taunt']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Kinetic Ward",
+   "max_stacks": 15
+  },
+  {
+   "type": "stacks",
+   "effect": "Kinetic Bulwark",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Harnessed Shadows",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Dark Protection",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Force Potency",
+   "max_stacks": 1
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Double-bladed Saber Tactics",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Particle Acceleration",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Shadow Wrap",
+   "duration": 7.5
+  },
+  {
+   "type": "self",
+   "effect": "Force Synergy",
+   "duration": 20.7
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.1
+  },
+  {
+   "type": "self",
+   "effect": "Kinetic Surge",
+   "duration": 9.1
+  },
+  {
+   "type": "self",
+   "effect": "Mental Fortitude",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Shadowsight",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Battle Readiness",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Deflection",
+   "duration": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Breach",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Project",
+   "seconds": 6.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cascading Debris",
+   "seconds": 8.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Slow Time",
+   "seconds": 10.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kinetic Ward",
+   "seconds": 12.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 22.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Spinning Kick",
+   "seconds": 22.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Control",
+   "seconds": 18.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shadow Stride",
+   "seconds": 37.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Spinning Strike",
+   "seconds": 7.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mass Mind Control",
+   "seconds": 63.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Potency",
+   "seconds": 91.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battle Readiness",
+   "seconds": 121.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Pull",
+   "seconds": 65.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deflection",
+   "seconds": 120.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Resilience",
+   "seconds": 46.0
+  }
+ ]
+}

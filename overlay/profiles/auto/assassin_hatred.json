@@ -1,0 +1,96 @@
+{
+ "name": "Hatred Assassin (auto)",
+ "match": {
+  "class": "Assassin",
+  "discipline": "Hatred"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 4 log sessions / 3 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Deathmark",
+   "max_stacks": 15
+  },
+  {
+   "type": "target",
+   "effect": "Deathmark",
+   "duration": 10.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Discharge",
+   "duration": 14.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Creeping Terror",
+   "duration": 7.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Befall",
+   "duration": 4.7,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Phantom Stride",
+   "duration": 7.5,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Raze",
+   "duration": 3.6
+  },
+  {
+   "type": "self",
+   "effect": "Bloodletting",
+   "duration": 3.8
+  },
+  {
+   "type": "self",
+   "effect": "Languishing Lashes",
+   "duration": 17.5
+  },
+  {
+   "type": "self",
+   "effect": "Reaper's Rush",
+   "duration": 6.8
+  },
+  {
+   "type": "self",
+   "effect": "Exploitive Strikes",
+   "duration": 20.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Discharge",
+   "seconds": 12.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recklessness",
+   "seconds": 21.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Phantom Stride",
+   "seconds": 12.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Leeching Strike",
+   "seconds": 13.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 28.0
+  }
+ ]
+}

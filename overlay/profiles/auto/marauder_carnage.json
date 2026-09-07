@@ -1,0 +1,163 @@
+{
+ "name": "Carnage Marauder (auto)",
+ "match": {
+  "class": "Marauder",
+  "discipline": "Carnage"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 10 log sessions / 6 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Fury",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Berserk",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Ferocity",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Frenzied Sabers",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Predation",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bloodthirst",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Execute",
+   "duration": 9.2
+  },
+  {
+   "type": "self",
+   "effect": "Massacre",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Slaughter",
+   "duration": 14.0
+  },
+  {
+   "type": "self",
+   "effect": "Cloak of Pain",
+   "duration": 17.0
+  },
+  {
+   "type": "self",
+   "effect": "Blood Frenzy",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Predation",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Saber Ward",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Driving Gore",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Battering Assault",
+   "seconds": 12.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Charge",
+   "seconds": 11.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ravage",
+   "seconds": 19.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Gore",
+   "seconds": 15.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Scream",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Devastating Blast",
+   "seconds": 7.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smash",
+   "seconds": 19.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dual Saber Throw",
+   "seconds": 18.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vicious Throw",
+   "seconds": 11.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ferocity",
+   "seconds": 9.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Berserk",
+   "seconds": 57.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disruption",
+   "seconds": 13.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cloak of Pain",
+   "seconds": 65.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Predation",
+   "seconds": 32.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Ward",
+   "seconds": 189.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Driving Gore",
+   "seconds": 11.4
+  }
+ ]
+}

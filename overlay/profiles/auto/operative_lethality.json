@@ -1,0 +1,185 @@
+{
+ "name": "Lethality Operative (auto)",
+ "match": {
+  "class": "Operative",
+  "discipline": "Lethality"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 79 log sessions / 8 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Tactical Advantage",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Kolto Probe",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Corrosive Dart",
+   "duration": 6.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Corrosive Grenade",
+   "duration": 9.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Toxic Blast",
+   "duration": 10.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Tactical Superiority",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Augmented Toxins",
+   "duration": 6.1
+  },
+  {
+   "type": "proc",
+   "effect": "Fatality",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Critical Tactics",
+   "duration": 19.4
+  },
+  {
+   "type": "self",
+   "effect": "Revitalizers",
+   "duration": 15.1
+  },
+  {
+   "type": "proc",
+   "effect": "Exfiltrate",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Quickening",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Shield Probe",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Toxic Regulators",
+   "duration": 6.0
+  },
+  {
+   "type": "proc",
+   "effect": "Holotraverse",
+   "duration": 3.1
+  },
+  {
+   "type": "self",
+   "effect": "Evasion",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Tactical Superiority",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Cloaking Screen",
+   "duration": 10.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Corrosive Dart",
+   "seconds": 6.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Corrosive Grenade",
+   "seconds": 6.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shiv",
+   "seconds": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Toxic Blast",
+   "seconds": 12.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Lethal Strike",
+   "seconds": 12.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Toxic Haze",
+   "seconds": 18.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shield Probe",
+   "seconds": 36.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Distraction",
+   "seconds": 24.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Fragmentation Grenade",
+   "seconds": 8.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Holotraverse",
+   "seconds": 54.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Evasion",
+   "seconds": 27.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Backstab",
+   "seconds": 13.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Infusion",
+   "seconds": 10.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sleep Dart",
+   "seconds": 7.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cloaking Screen",
+   "seconds": 120.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Debilitate",
+   "seconds": 69.1
+  }
+ ]
+}

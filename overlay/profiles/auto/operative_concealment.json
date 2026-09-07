@@ -1,0 +1,72 @@
+{
+ "name": "Concealment Operative (auto)",
+ "match": {
+  "class": "Operative",
+  "discipline": "Concealment"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 11 log sessions / 3 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Tactical Critical",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Tactical Advantage",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Volatile Substance",
+   "duration": 5.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Calculated Frenzy",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Acid Blade",
+   "duration": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Fragmentation Grenade",
+   "seconds": 7.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Veiled Strike",
+   "seconds": 13.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Crippling Slice",
+   "seconds": 20.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Holotraverse",
+   "seconds": 36.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Volatile Substance",
+   "seconds": 28.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Toxic Haze",
+   "seconds": 14.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Backstab",
+   "seconds": 16.8
+  }
+ ]
+}

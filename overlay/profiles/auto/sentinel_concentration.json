@@ -1,0 +1,158 @@
+{
+ "name": "Concentration Sentinel (auto)",
+ "match": {
+  "class": "Sentinel",
+  "discipline": "Concentration"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 3 log sessions / 3 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Centering",
+   "max_stacks": 30
+  },
+  {
+   "type": "stacks",
+   "effect": "Zen",
+   "max_stacks": 5
+  },
+  {
+   "type": "target",
+   "effect": "Transcendence",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Inspiration",
+   "duration": 10.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Momentum",
+   "duration": 11.5
+  },
+  {
+   "type": "self",
+   "effect": "Heightened Blows",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Koan",
+   "duration": 5.7
+  },
+  {
+   "type": "self",
+   "effect": "Zenith",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Concentrated Defense",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Centered Focus",
+   "duration": 7.7
+  },
+  {
+   "type": "self",
+   "effect": "Gravity Vortex",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Zealous Annihilation",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Transcendence",
+   "duration": 10.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Storm",
+   "seconds": 13.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Focused Burst",
+   "seconds": 11.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Leap",
+   "seconds": 12.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zealous Leap",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Concentrated Slice",
+   "seconds": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zen",
+   "seconds": 21.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Exhaustion",
+   "seconds": 21.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Sweep",
+   "seconds": 11.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Barrage",
+   "seconds": 19.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Zealous Strike",
+   "seconds": 32.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dispatch",
+   "seconds": 28.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Introspection",
+   "seconds": 33.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Twin Saber Throw",
+   "seconds": 19.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Camouflage",
+   "seconds": 46.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Kick",
+   "seconds": 13.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Transcendence",
+   "seconds": 46.2
+  }
+ ]
+}

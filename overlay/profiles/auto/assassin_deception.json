@@ -1,0 +1,173 @@
+{
+ "name": "Deception Assassin (auto)",
+ "match": {
+  "class": "Assassin",
+  "discipline": "Deception"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 21 log sessions / 17 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Static Charge",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Induction",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Recklessness",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Entropic Field",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Voltage",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Phantom Stride",
+   "duration": 4.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning Bolts",
+   "duration": 5.6,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Dark Embrace",
+   "duration": 18.6
+  },
+  {
+   "type": "self",
+   "effect": "Saber Conduit",
+   "duration": 8.8
+  },
+  {
+   "type": "self",
+   "effect": "Duplicity",
+   "duration": 6.5
+  },
+  {
+   "type": "self",
+   "effect": "Exploitive Strikes",
+   "duration": 13.1
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.1
+  },
+  {
+   "type": "proc",
+   "effect": "Phantom Stride",
+   "duration": 3.1
+  },
+  {
+   "type": "proc",
+   "effect": "Reaper's Rush",
+   "duration": 3.3
+  },
+  {
+   "type": "proc",
+   "effect": "Force Phase",
+   "duration": 3.1
+  },
+  {
+   "type": "self",
+   "effect": "Obfuscating Speed",
+   "duration": 9.1
+  },
+  {
+   "type": "self",
+   "effect": "Deflection",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Reaper",
+   "duration": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Ball Lightning",
+   "seconds": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Reaping Strike",
+   "seconds": 16.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 24.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shock",
+   "seconds": 7.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Phantom Stride",
+   "seconds": 7.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recklessness",
+   "seconds": 27.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Assassinate",
+   "seconds": 7.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Low Slash",
+   "seconds": 19.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Severing Slash",
+   "seconds": 14.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Trap",
+   "seconds": 6.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Electrocute",
+   "seconds": 73.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Jolt",
+   "seconds": 40.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unbreakable Will",
+   "seconds": 199.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deflection",
+   "seconds": 124.6
+  }
+ ]
+}

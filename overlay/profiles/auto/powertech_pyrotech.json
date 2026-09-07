@@ -1,0 +1,211 @@
+{
+ "name": "Pyrotech Powertech (auto)",
+ "match": {
+  "class": "Powertech",
+  "discipline": "Pyrotech"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 19 log sessions / 13 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Superheated Flamethrower",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Shoulder Cannon",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Heatstroke",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Thermal Yield",
+   "max_stacks": 5
+  },
+  {
+   "type": "target",
+   "effect": "Burning",
+   "duration": 7.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Scorch",
+   "duration": 14.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Incendiary Missile)",
+   "duration": 13.9,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Primed Rail Shot)",
+   "duration": 11.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Whistling Birds",
+   "duration": 5.0,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Charged Gauntlets",
+   "duration": 13.4
+  },
+  {
+   "type": "proc",
+   "effect": "Consuming Flames",
+   "duration": 3.3
+  },
+  {
+   "type": "self",
+   "effect": "Primed Rail Shot",
+   "duration": 7.9
+  },
+  {
+   "type": "proc",
+   "effect": "Flame Barrage",
+   "duration": 2.5
+  },
+  {
+   "type": "self",
+   "effect": "Battering Ram",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 3.9
+  },
+  {
+   "type": "self",
+   "effect": "Explosive Fuel",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Hydraulic Overrides",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Energy Shield",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Pyro Shield",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Chilled Retribution",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Flaming Fist",
+   "seconds": 9.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Searing Wave",
+   "seconds": 14.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rail Shot",
+   "seconds": 14.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Incendiary Missile",
+   "seconds": 6.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Immolate",
+   "seconds": 14.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Jet Charge",
+   "seconds": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deadly Onslaught",
+   "seconds": 23.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thermal Yield",
+   "seconds": 60.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rocket Punch",
+   "seconds": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Explosive Fuel",
+   "seconds": 115.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hydraulic Overrides",
+   "seconds": 39.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Neural Dart",
+   "seconds": 17.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Quell",
+   "seconds": 17.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Shield",
+   "seconds": 124.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Overload",
+   "seconds": 139.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sonic Missile",
+   "seconds": 45.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vent Heat",
+   "seconds": 111.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Grapple",
+   "seconds": 64.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Carbonize",
+   "seconds": 95.7
+  }
+ ]
+}

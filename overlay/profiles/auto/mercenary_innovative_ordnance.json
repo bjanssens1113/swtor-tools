@@ -1,0 +1,244 @@
+{
+ "name": "Innovative Ordnance Mercenary (auto)",
+ "match": {
+  "class": "Mercenary",
+  "discipline": "Innovative Ordnance"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 147 log sessions / 5 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Surging Shots",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Supercharge",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Greased Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Electro Net",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Power Barrier",
+   "max_stacks": 3
+  },
+  {
+   "type": "target",
+   "effect": "Burning",
+   "duration": 7.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Incendiary Missile)",
+   "duration": 11.6,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Bleeding",
+   "duration": 11.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Thermal Detonator)",
+   "duration": 11.2,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Electro Net",
+   "duration": 9.1,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Supercharged Burn",
+   "duration": 7.7,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Radiation Burns",
+   "duration": 5.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Hindered",
+   "duration": 9.0,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Innovative Particle Accelerator",
+   "duration": 6.8
+  },
+  {
+   "type": "self",
+   "effect": "Relentless Ordnance",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Volatile Warhead",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Advanced Targeting",
+   "duration": 17.0
+  },
+  {
+   "type": "proc",
+   "effect": "Speed to Burn",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Gas",
+   "duration": 16.1
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 6.8
+  },
+  {
+   "type": "self",
+   "effect": "Concentrated Fire",
+   "duration": 9.3
+  },
+  {
+   "type": "self",
+   "effect": "Gyroscopic Alignment Jets",
+   "duration": 8.0
+  },
+  {
+   "type": "proc",
+   "effect": "Energy Redoubt",
+   "duration": 1.6
+  },
+  {
+   "type": "self",
+   "effect": "Tag and Bag",
+   "duration": 9.0
+  },
+  {
+   "type": "self",
+   "effect": "Responsive Safeguards",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Energy Shield",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Improved Vents",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Hydraulic Overrides",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Incendiary Missile",
+   "seconds": 6.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Serrated Shot",
+   "seconds": 7.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unload",
+   "seconds": 14.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thermal Detonator",
+   "seconds": 14.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Power Shot",
+   "seconds": 14.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Death from Above",
+   "seconds": 48.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Supercharged Gas",
+   "seconds": 26.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Electro Net",
+   "seconds": 91.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Missile Blast",
+   "seconds": 12.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Fusion Missile",
+   "seconds": 31.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Responsive Safeguards",
+   "seconds": 130.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Overload",
+   "seconds": 243.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disabling Shot",
+   "seconds": 31.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vent Heat",
+   "seconds": 87.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Emergency Scan",
+   "seconds": 26.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Determination",
+   "seconds": 173.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Shield",
+   "seconds": 79.3
+  }
+ ]
+}

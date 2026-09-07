@@ -1,0 +1,172 @@
+{
+ "name": "Darkness Assassin (auto)",
+ "match": {
+  "class": "Assassin",
+  "discipline": "Darkness"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 10 log sessions / 6 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Dark Ward",
+   "max_stacks": 15
+  },
+  {
+   "type": "stacks",
+   "effect": "Dark Bulwark",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Harnessed Darkness",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Dark Protection",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Recklessness",
+   "max_stacks": 1
+  },
+  {
+   "type": "target",
+   "effect": "Taunt",
+   "duration": 6.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Lightning Reflexes",
+   "duration": 10.1
+  },
+  {
+   "type": "self",
+   "effect": "Energize",
+   "duration": 6.0
+  },
+  {
+   "type": "self",
+   "effect": "Conspirator's Cloak",
+   "duration": 7.5
+  },
+  {
+   "type": "self",
+   "effect": "Exploitive Strikes",
+   "duration": 20.7
+  },
+  {
+   "type": "proc",
+   "effect": "Force Speed",
+   "duration": 2.1
+  },
+  {
+   "type": "self",
+   "effect": "Obfuscating Speed",
+   "duration": 9.1
+  },
+  {
+   "type": "self",
+   "effect": "Shroud of Darkness",
+   "duration": 20.1
+  },
+  {
+   "type": "self",
+   "effect": "Premonition",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Overcharge Saber",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Deflection",
+   "duration": 12.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Discharge",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shock",
+   "seconds": 6.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Depredating Volts",
+   "seconds": 8.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Wither",
+   "seconds": 10.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dark Ward",
+   "seconds": 12.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Speed",
+   "seconds": 22.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Spike",
+   "seconds": 22.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mind Control",
+   "seconds": 18.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Phantom Stride",
+   "seconds": 37.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Assassinate",
+   "seconds": 7.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Mass Mind Control",
+   "seconds": 63.5
+  },
+  {
+   "type": "cooldown",
+   "ability": "Recklessness",
+   "seconds": 91.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Overcharge Saber",
+   "seconds": 121.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Pull",
+   "seconds": 65.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Deflection",
+   "seconds": 120.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Shroud",
+   "seconds": 46.0
+  }
+ ]
+}

@@ -1,0 +1,232 @@
+{
+ "name": "Arsenal Mercenary (auto)",
+ "match": {
+  "class": "Mercenary",
+  "discipline": "Arsenal"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 71 log sessions / 14 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Supercharge",
+   "max_stacks": 10
+  },
+  {
+   "type": "stacks",
+   "effect": "Greased Lightning",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Tracer Lock",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Power Barrier",
+   "max_stacks": 3
+  },
+  {
+   "type": "stacks",
+   "effect": "Electro Net",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Supercharged Velocity",
+   "max_stacks": 6
+  },
+  {
+   "type": "stacks",
+   "effect": "Priming Bolts",
+   "max_stacks": 4
+  },
+  {
+   "type": "stacks",
+   "effect": "Power Surge",
+   "max_stacks": 1
+  },
+  {
+   "type": "target",
+   "effect": "Heat Signature",
+   "duration": 13.9,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Burning (Priming Shot)",
+   "duration": 13.4,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Electro Net",
+   "duration": 9.0,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Radiation Burns",
+   "duration": 5.8,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Hindered",
+   "duration": 7.9,
+   "warn_at": 2
+  },
+  {
+   "type": "target",
+   "effect": "Sticky Dart",
+   "duration": 3.5,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Advanced Targeting",
+   "duration": 13.3
+  },
+  {
+   "type": "self",
+   "effect": "Tracer Beacon",
+   "duration": 3.6
+  },
+  {
+   "type": "proc",
+   "effect": "Energy Redoubt",
+   "duration": 1.7
+  },
+  {
+   "type": "self",
+   "effect": "Recharge and Reload",
+   "duration": 5.8
+  },
+  {
+   "type": "self",
+   "effect": "High Velocity Supercharged Gas",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Supercharged Gas",
+   "duration": 8.1
+  },
+  {
+   "type": "self",
+   "effect": "Gyroscopic Alignment Jets",
+   "duration": 4.0
+  },
+  {
+   "type": "self",
+   "effect": "Tag and Bag",
+   "duration": 9.0
+  },
+  {
+   "type": "self",
+   "effect": "Responsive Safeguards",
+   "duration": 6.1
+  },
+  {
+   "type": "self",
+   "effect": "Energy Shield",
+   "duration": 12.1
+  },
+  {
+   "type": "self",
+   "effect": "Hydraulic Overrides",
+   "duration": 6.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Priming Shot",
+   "seconds": 17.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Heatseeker Missiles",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Rail Shot",
+   "seconds": 16.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Death from Above",
+   "seconds": 47.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Electro Net",
+   "seconds": 84.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "High Velocity Supercharged Gas",
+   "seconds": 21.9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Supercharged Gas",
+   "seconds": 36.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Fusion Missile",
+   "seconds": 21.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Unload",
+   "seconds": 16.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Kolto Overload",
+   "seconds": 244.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Emergency Scan",
+   "seconds": 25.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Responsive Safeguards",
+   "seconds": 174.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Disabling Shot",
+   "seconds": 29.7
+  },
+  {
+   "type": "cooldown",
+   "ability": "Energy Shield",
+   "seconds": 131.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sticky Dart",
+   "seconds": 16.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Determination",
+   "seconds": 115.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hydraulic Overrides",
+   "seconds": 135.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Power Surge",
+   "seconds": 41.4
+  }
+ ]
+}

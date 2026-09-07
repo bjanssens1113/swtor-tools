@@ -1,0 +1,27 @@
+{
+ "name": "Virulence Sniper",
+ "match": {"class": "Sniper", "discipline": "Virulence"},
+ "_source": "APPROXIMATE. No Virulence player appears in the logs, so names come from Parsely's ability list (docs/ABILITIES_ALL.md) and durations/cooldowns from general 7.x knowledge (poisons are the same effects Lethality uses). Verify against a fresh log and tune.",
+ "rules": [
+  {"type": "target",   "effect": "Corrosive Dart",    "duration": 22, "warn_at": 3},
+  {"type": "target",   "effect": "Corrosive Grenade", "duration": 22, "warn_at": 3},
+  {"type": "target",   "effect": "Weakening Blast",   "duration": 10, "warn_at": 2},
+
+  {"type": "self",     "effect": "Laze Target",       "duration": 20},
+  {"type": "self",     "effect": "Target Acquired",   "duration": 15},
+  {"type": "self",     "effect": "Ballistic Shield",  "duration": 15},
+  {"type": "self",     "effect": "Evasion",           "duration": 3},
+  {"type": "self",     "effect": "Entrench",          "duration": 20},
+  {"type": "self",     "effect": "Advanced Kyrprax Critical Adrenal", "label": "Adrenal", "duration": 15},
+
+  {"type": "cooldown", "ability": "Cull",             "seconds": 9},
+  {"type": "cooldown", "ability": "Weakening Blast",  "seconds": 15},
+  {"type": "cooldown", "ability": "Lethal Shot",      "seconds": 15},
+  {"type": "cooldown", "ability": "Series of Shots",  "seconds": 15},
+  {"type": "cooldown", "ability": "Laze Target",      "seconds": 60},
+  {"type": "cooldown", "ability": "Target Acquired",  "seconds": 120},
+  {"type": "cooldown", "ability": "Adrenaline Probe", "seconds": 90},
+  {"type": "cooldown", "ability": "Entrench",         "seconds": 45},
+  {"type": "cooldown", "ability": "Ballistic Shield", "seconds": 180}
+ ]
+}

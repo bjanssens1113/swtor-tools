@@ -1,0 +1,81 @@
+{
+ "name": "Vigilance Guardian (auto)",
+ "match": {
+  "class": "Guardian",
+  "discipline": "Vigilance"
+ },
+ "_auto": true,
+ "_source": "drafted by overlay/discover.py from 2 log sessions / 2 players; durations = 75th percentile of Apply->Remove, cooldowns = 10th percentile re-use gap. TUNE IN GAME.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Force Rush",
+   "max_stacks": 2
+  },
+  {
+   "type": "stacks",
+   "effect": "Focused Defense",
+   "max_stacks": 11
+  },
+  {
+   "type": "self",
+   "effect": "Keening",
+   "duration": 7.4
+  },
+  {
+   "type": "self",
+   "effect": "Introspection",
+   "duration": 4.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Vigilant Thrust",
+   "seconds": 9.4
+  },
+  {
+   "type": "cooldown",
+   "ability": "Overhead Slash",
+   "seconds": 8.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Barrage",
+   "seconds": 10.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blade Storm",
+   "seconds": 8.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Whirling Blade",
+   "seconds": 11.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Saber Throw",
+   "seconds": 24.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Force Leap",
+   "seconds": 26.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Plasma Brand",
+   "seconds": 10.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Sundering Strike",
+   "seconds": 17.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Riposte",
+   "seconds": 6.8
+  }
+ ]
+}

@@ -1,0 +1,74 @@
+{
+ "name": "Scrapper Scoundrel (mirrored)",
+ "match": {
+  "class": "Scoundrel",
+  "discipline": "Scrapper"
+ },
+ "_auto": true,
+ "_mirrored_from": "Concealment Operative (auto)",
+ "_kind": "mirrored-auto",
+ "_source": "mirrored-auto: translated from 'Concealment Operative (auto)' via Parsely Empire/Republic name pairs. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "stacks",
+   "effect": "Upper Critical",
+   "max_stacks": 5
+  },
+  {
+   "type": "stacks",
+   "effect": "Upper Hand",
+   "max_stacks": 2
+  },
+  {
+   "type": "target",
+   "effect": "Blood Boiler",
+   "duration": 5.1,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Rolling Punches",
+   "duration": 15.1
+  },
+  {
+   "type": "self",
+   "effect": "Flechette Round",
+   "duration": 15.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Thermal Grenade",
+   "seconds": 7.0
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bludgeon",
+   "seconds": 13.3
+  },
+  {
+   "type": "cooldown",
+   "ability": "Shank Shot",
+   "seconds": 20.1
+  },
+  {
+   "type": "cooldown",
+   "ability": "Trick Move",
+   "seconds": 36.2
+  },
+  {
+   "type": "cooldown",
+   "ability": "Blood Boiler",
+   "seconds": 28.6
+  },
+  {
+   "type": "cooldown",
+   "ability": "Bushwhack",
+   "seconds": 14.8
+  },
+  {
+   "type": "cooldown",
+   "ability": "Back Blast",
+   "seconds": 16.8
+  }
+ ]
+}

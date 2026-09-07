@@ -1,0 +1,107 @@
+{
+ "name": "Dirty Fighting Gunslinger (mirrored)",
+ "match": {
+  "class": "Gunslinger",
+  "discipline": "Dirty Fighting"
+ },
+ "_auto": true,
+ "_mirrored_from": "Virulence Sniper",
+ "_kind": "mirrored-hand",
+ "_source": "mirrored-hand: translated from 'Virulence Sniper' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Advanced Kyrprax Critical Adrenal', 'Evasion']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "rules": [
+  {
+   "type": "target",
+   "effect": "Vital Shot",
+   "duration": 22,
+   "warn_at": 3
+  },
+  {
+   "type": "target",
+   "effect": "Shrap Bomb",
+   "duration": 22,
+   "warn_at": 3
+  },
+  {
+   "type": "target",
+   "effect": "Hemorrhaging Blast",
+   "duration": 10,
+   "warn_at": 2
+  },
+  {
+   "type": "self",
+   "effect": "Smuggler's Luck",
+   "duration": 20
+  },
+  {
+   "type": "self",
+   "effect": "Illegal Mods",
+   "duration": 15
+  },
+  {
+   "type": "self",
+   "effect": "Scrambling Field",
+   "duration": 15
+  },
+  {
+   "type": "self",
+   "effect": "Evasion",
+   "duration": 3
+  },
+  {
+   "type": "self",
+   "effect": "Hunker Down",
+   "duration": 20
+  },
+  {
+   "type": "self",
+   "effect": "Advanced Kyrprax Critical Adrenal",
+   "label": "Adrenal",
+   "duration": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Wounding Shots",
+   "seconds": 9
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hemorrhaging Blast",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Dirty Blast",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Speed Shot",
+   "seconds": 15
+  },
+  {
+   "type": "cooldown",
+   "ability": "Smuggler's Luck",
+   "seconds": 60
+  },
+  {
+   "type": "cooldown",
+   "ability": "Illegal Mods",
+   "seconds": 120
+  },
+  {
+   "type": "cooldown",
+   "ability": "Cool Head",
+   "seconds": 90
+  },
+  {
+   "type": "cooldown",
+   "ability": "Hunker Down",
+   "seconds": 45
+  },
+  {
+   "type": "cooldown",
+   "ability": "Scrambling Field",
+   "seconds": 180
+  }
+ ]
+}
