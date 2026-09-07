@@ -1,0 +1,25 @@
+{
+ "name": "Bodyguard Mercenary",
+ "match": {"class": "Mercenary", "discipline": "Bodyguard"},
+ "_source": "effect names from Brad's own Bodyguard logs (docs/CATALOG.md); durations: Supercharged Kolto Gas measured 8.1 s, Proactive Medicine 8.5 s; cooldowns approximate — tune in game",
+ "rules": [
+  {"type": "stacks",   "effect": "Supercharge", "max_stacks": 10},
+
+  {"type": "target",   "effect": "Kolto Shell"},
+  {"type": "target",   "effect": "Protected"},
+  {"type": "target",   "effect": "Progressive Scan", "duration": 3},
+
+  {"type": "self",     "effect": "Supercharged Kolto Gas", "label": "SC Kolto Gas", "duration": 8},
+  {"type": "self",     "effect": "Proactive Medicine", "duration": 8.5},
+  {"type": "self",     "effect": "Critical Efficiency", "duration": 5},
+  {"type": "self",     "effect": "Energy Shield", "duration": 12},
+
+  {"type": "cooldown", "ability": "Healing Scan",   "seconds": 9},
+  {"type": "cooldown", "ability": "Kolto Missile",  "seconds": 9},
+  {"type": "cooldown", "ability": "Emergency Scan", "seconds": 21},
+  {"type": "cooldown", "ability": "Progressive Scan", "seconds": 15},
+  {"type": "cooldown", "ability": "Vent Heat",      "seconds": 120},
+  {"type": "cooldown", "ability": "Kolto Overload", "seconds": 180},
+  {"type": "cooldown", "ability": "Onboard AED",    "seconds": 300}
+ ]
+}

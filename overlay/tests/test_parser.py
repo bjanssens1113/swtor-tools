@@ -2,7 +2,7 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-from parser import parse_file, parse_line  # noqa: E402
+from parser import LOG_ENCODING, parse_file, parse_line  # noqa: E402
 
 SAMPLES = pathlib.Path(__file__).resolve().parents[1] / "samples"
 
@@ -76,7 +76,7 @@ def test_whole_samples_parse_every_line():
     files = sorted(SAMPLES.glob("*.txt"))
     assert files, "no sample logs"
     for f in files:
-        with open(f, encoding="utf-8", errors="replace") as fh:
+        with open(f, encoding=LOG_ENCODING, errors="replace") as fh:
             n_lines = sum(1 for line in fh if line.strip())
         n_events = sum(1 for _ in parse_file(f))
         assert n_events == n_lines, f"{f.name}: parsed {n_events} of {n_lines} lines"

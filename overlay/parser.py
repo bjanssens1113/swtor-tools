@@ -10,6 +10,9 @@ import re
 from dataclasses import dataclass, field
 from typing import Optional
 
+# SWTOR writes the log in the Windows ANSI code page, not UTF-8 (accented character names break utf-8).
+LOG_ENCODING = "cp1252"
+
 _LINE_RE = re.compile(
     r"^\[(?P<time>[^\]]*)\] \[(?P<src>[^\]]*)\] \[(?P<tgt>[^\]]*)\] "
     r"\[(?P<ability>[^\]]*)\] \[(?P<event>[^\]]*)\]"
@@ -186,7 +189,7 @@ def parse_line(line: str) -> Optional[Event]:
     )
 
 
-def parse_file(path, encoding="utf-8"):
+def parse_file(path, encoding=LOG_ENCODING):
     """Yield Events from a whole log file (tests/catalog). The live tailer uses parse_line."""
     with open(path, encoding=encoding, errors="replace") as fh:
         for line in fh:

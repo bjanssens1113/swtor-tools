@@ -2,6 +2,10 @@
 
 Reverse-engineered from real logs in `overlay/samples/`. Update this as new event shapes show up.
 
+## Encoding
+The file is **Windows ANSI (cp1252)**, not UTF-8. Names like `Critic\xe1l M\xe1ss` (Criticál Máss) are single
+bytes. 53 of the 557 logs on this PC fail UTF-8 decoding. `parser.LOG_ENCODING` is the one place this is set.
+
 ## Line shape
 ```
 [HH:MM:SS.mmm] [SOURCE] [TARGET] [ABILITY {id}] [EVENT {id}: SUBTYPE {id}] (VALUE) <THREAT>
@@ -35,7 +39,8 @@ Every field is bracketed. `(VALUE)` and `<THREAT>` are optional. Time is local w
 | `ApplyEffect` | `Heal` | `(4845 ~0)` — number after `~` is *effective* heal (0 = full overheal) |
 | `ApplyEffect` | `<buff/debuff name>` | Buff/debuff/proc **gained**. This is the WeakAuras trigger source |
 | `RemoveEffect` | `<buff/debuff name>` | Buff/debuff/proc **lost** |
-| `ModifyCharges` | `<effect name>` | Stack count changed (e.g. `Supercharge`, `Kolto Shell`) |
+| `ModifyCharges` | `<effect name>` | Stack count changed; value is `(2 charges {id})` = new total (e.g. `Tactical Advantage`, `Supercharge`, `Kolto Shell`) |
+| `ApplyEffect` | `Damage` (shielded) | `(100 energy {id} -shield {id} (54 absorbed {id}))` — nested parens when a shield absorbed part of the hit |
 | `Spend` / `Restore` | `energy` (etc.) | Resource events — only for the logging player |
 
 ## Event counts, one Ossus session (Mercenary IO, 9 136 lines)

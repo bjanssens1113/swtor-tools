@@ -1,0 +1,28 @@
+{
+ "name": "Innovative Ordnance Mercenary",
+ "match": {"class": "Mercenary", "discipline": "Innovative Ordnance"},
+ "_source": "durations from Parsely top parse (docs/PARSELY_IO.md)",
+ "rules": [
+  {"type": "stacks",   "effect": "Surging Shots", "max_stacks": 4},
+  {"type": "stacks",   "effect": "Supercharge",   "max_stacks": 10},
+
+  {"type": "target",   "effect": "Burning (Incendiary Missile)", "label": "Incendiary", "duration": 14, "warn_at": 2},
+  {"type": "target",   "effect": "Bleeding",                     "label": "Serrated",   "duration": 14, "warn_at": 2},
+  {"type": "target",   "effect": "Burning (Thermal Detonator)",  "label": "TD burn",    "duration": 11},
+  {"type": "target",   "effect": "Supercharged Burn",            "duration": 8},
+  {"type": "target",   "effect": "Electro Net",                  "duration": 9.5},
+
+  {"type": "proc",     "effect": "Innovative Particle Accelerator", "text": "MAG SHOT", "duration": 6},
+  {"type": "proc",     "effect": "Volatile Warhead", "text": "FREE MISSILE", "duration": 15},
+  {"type": "self",     "effect": "Supercharged Gas", "duration": 16},
+  {"type": "self",     "effect": "Relentless Ordnance", "duration": 20},
+  {"type": "self",     "effect": "Prototype Kyrprax Attack Adrenal", "label": "Adrenal", "duration": 15},
+  {"type": "self",     "effect": "Advanced Kyrprax Attack Adrenal",  "label": "Adrenal", "duration": 15},
+
+  {"type": "cooldown", "ability": "Thermal Detonator",  "seconds": 15},
+  {"type": "cooldown", "ability": "Serrated Shot",      "seconds": 15},
+  {"type": "cooldown", "ability": "Incendiary Missile", "seconds": 15},
+  {"type": "cooldown", "ability": "Electro Net",        "seconds": 90},
+  {"type": "cooldown", "ability": "Vent Heat",          "seconds": 120}
+ ]
+}

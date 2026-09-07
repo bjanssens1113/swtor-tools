@@ -1,0 +1,218 @@
+"""Trigger engine: combat-log Events -> displayable Items, driven by per-discipline JSON profiles.
+
+Rule types (see overlay/profiles/*.json):
+  self      buff on you:            ApplyEffect X on me            -> countdown bar (duration), RemoveEffect ends it
+  target    effect you put on others: ApplyEffect X by me on other -> one bar per target instance
+  stacks    stack counter:          ModifyCharges / Apply / Remove -> number, warn when below `warn_below`
+  proc      short proc on you:      ApplyEffect X on me            -> big flash text
+  cooldown  ability cooldown:       AbilityActivate X by me        -> bar for `seconds`, then a READY flash
+Built in: fight timer from EnterCombat / ExitCombat.
+The engine only ever consumes parsed log lines. It never touches the game.
+"""
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional
+
+from parser import Event
+
+PROFILE_DIR = Path(__file__).resolve().parent / "profiles"
+READY_FLASH_SECONDS = 2.0
+
+
+@dataclass
+class Rule:
+    type: str
+    effect: str = ""
+    ability: str = ""
+    duration: float = 0.0
+    seconds: float = 0.0        # cooldown length
+    warn_at: float = 0.0        # bar turns red with this many seconds left
+    warn_below: int = -1        # stacks: warn when count <= this
+    max_stacks: int = 0
+    text: str = ""              # proc flash text (defaults to effect name)
+    label: str = ""
+    color: str = ""
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Rule":
+        return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})
+
+
+@dataclass
+class Profile:
+    name: str
+    cls: str
+    discipline: str
+    rules: list[Rule]
+
+    @classmethod
+    def load(cls, path) -> "Profile":
+        d = json.loads(Path(path).read_text(encoding="utf-8"))
+        return cls(d["name"], d["match"]["class"], d["match"]["discipline"], [Rule.from_dict(r) for r in d["rules"]])
+
+    @staticmethod
+    def load_all(directory=PROFILE_DIR) -> list["Profile"]:
+        return [Profile.load(p) for p in sorted(Path(directory).glob("*.json"))]
+
+
+@dataclass
+class Item:
+    key: str
+    kind: str                  # 'fight' | 'stacks' | 'flash' | 'bar' | 'cooldown'
+    label: str
+    start: float
+    end: Optional[float] = None
+    stacks: int = 0
+    warn_at: float = 0.0
+    warn_below: int = -1
+    max_stacks: int = 0
+    color: str = ""
+    target: Optional[str] = None
+    order: int = 0
+    meta: dict = field(default_factory=dict)
+
+    def remaining(self, now: float) -> Optional[float]:
+        return None if self.end is None else max(0.0, self.end - now)
+
+    def total(self) -> Optional[float]:
+        return None if self.end is None else self.end - self.start
+
+    def warn(self, now: float) -> bool:
+        if self.kind == "stacks":
+            return self.warn_below >= 0 and self.stacks <= self.warn_below
+        r = self.remaining(now)
+        return r is not None and self.warn_at > 0 and r <= self.warn_at
+
+
+class Engine:
+    def __init__(self, profiles: list[Profile], forced_profile: Optional[str] = None):
+        self.profiles = profiles
+        self.forced = forced_profile
+        self.profile: Optional[Profile] = None
+        self.me: Optional[str] = None
+        self.discipline: Optional[str] = None
+        self.items: dict[str, Item] = {}
+        self.fight_start: Optional[float] = None
+        self.last_seconds: float = 0.0
+        if forced_profile:
+            self.profile = next((p for p in profiles if p.name.lower() == forced_profile.lower()), None)
+            if self.profile is None:
+                raise SystemExit(f"no profile named {forced_profile!r}; have: {[p.name for p in profiles]}")
+
+    # ---- helpers -------------------------------------------------------------------------------
+    def _is_me(self, ent) -> bool:
+        return ent is not None and ent.kind == "player" and ent.name == self.me
+
+    def _select_profile(self, cls: str, disc: str):
+        self.discipline = f"{cls}/{disc}"
+        if self.forced:
+            return
+        self.profile = next((p for p in self.profiles if p.cls == cls and p.discipline == disc), None)
+        self.items.clear()
+
+    def _rules(self, type_: str, name: str, attr: str = "effect"):
+        if not self.profile:
+            return []
+        return [r for r in self.profile.rules if r.type == type_ and getattr(r, attr) == name]
+
+    # ---- event intake --------------------------------------------------------------------------
+    def feed(self, ev: Event):
+        self.last_seconds = ev.seconds
+        src, tgt = ev.source, ev.target
+        if self.me is None and ev.type in ("AreaEntered", "DisciplineChanged") and src and src.kind == "player":
+            self.me = src.name
+        if ev.type == "DisciplineChanged" and self._is_me(src):
+            self._select_profile(ev.extra["class"].name, ev.extra["discipline"].name)
+            return
+        if ev.type == "Event" and ev.effect:
+            sub = ev.effect.name
+            if sub == "EnterCombat" and self._is_me(src):
+                self.fight_start = ev.seconds
+            elif sub == "ExitCombat" and self._is_me(src):
+                self.fight_start = None
+                self.items = {k: v for k, v in self.items.items() if v.kind != "bar" or v.target is None}
+            elif sub == "Death" and tgt is not None:
+                inst = tgt.instance or tgt.name
+                self.items = {k: v for k, v in self.items.items() if v.target != inst}
+            elif sub == "AbilityActivate" and self._is_me(src) and ev.ability:
+                for r in self._rules("cooldown", ev.ability.name, "ability"):
+                    self.items[f"cd:{r.ability}"] = Item(
+                        f"cd:{r.ability}", "cooldown", r.label or r.ability, ev.seconds, ev.seconds + r.seconds,
+                        color=r.color, order=50)
+            return
+        if not ev.effect or not self.profile:
+            return
+        name = ev.effect.name
+        src_me, tgt_me = self._is_me(src), self._is_me(tgt)
+
+        if ev.type == "ApplyEffect":
+            if tgt_me:
+                for r in self._rules("self", name):
+                    end = ev.seconds + r.duration if r.duration else None
+                    self.items[f"self:{name}"] = Item(f"self:{name}", "bar", r.label or name, ev.seconds, end,
+                                                      warn_at=r.warn_at, color=r.color, order=30)
+                for r in self._rules("proc", name):
+                    end = ev.seconds + (r.duration or 3.0)
+                    self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash", r.text or r.label or name,
+                                                      ev.seconds, end, color=r.color, order=20)
+                for r in self._rules("stacks", name):
+                    it = self.items.get(f"stk:{name}")
+                    stacks = max(1, it.stacks) if it else 1
+                    self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds,
+                                                     stacks=stacks, warn_below=r.warn_below,
+                                                     max_stacks=r.max_stacks, color=r.color, order=10)
+            if src_me and tgt is not None and not tgt_me:
+                for r in self._rules("target", name):
+                    inst = tgt.instance or tgt.name
+                    key = f"tgt:{name}:{inst}"
+                    end = ev.seconds + r.duration if r.duration else None
+                    self.items[key] = Item(key, "bar", f"{r.label or name} · {tgt.name}", ev.seconds, end,
+                                           warn_at=r.warn_at, color=r.color, target=inst, order=40,
+                                           stacks=self.items[key].stacks if key in self.items else 0)
+        elif ev.type == "RemoveEffect":
+            if tgt_me:
+                self.items.pop(f"self:{name}", None)
+                self.items.pop(f"proc:{name}", None)
+                it = self.items.get(f"stk:{name}")
+                if it:
+                    it.stacks = 0
+            if tgt is not None and not tgt_me:
+                self.items.pop(f"tgt:{name}:{tgt.instance or tgt.name}", None)
+        elif ev.type == "ModifyCharges" and ev.value is not None:
+            if tgt_me:
+                for r in self._rules("stacks", name):
+                    it = self.items.get(f"stk:{name}")
+                    if it is None:
+                        it = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds, warn_below=r.warn_below,
+                                  max_stacks=r.max_stacks, color=r.color, order=10)
+                        self.items[it.key] = it
+                    it.stacks = ev.value.amount
+            elif tgt is not None:
+                it = self.items.get(f"tgt:{name}:{tgt.instance or tgt.name}")
+                if it:
+                    it.stacks = ev.value.amount
+
+    # ---- output ------------------------------------------------------------------------------
+    def snapshot(self, now: float) -> list[Item]:
+        out: list[Item] = []
+        if self.fight_start is not None:
+            out.append(Item("fight", "fight", "Fight", self.fight_start, None, order=0))
+        expired = []
+        for it in self.items.values():
+            if it.kind == "cooldown" and it.end is not None and now >= it.end:
+                if now < it.end + READY_FLASH_SECONDS:
+                    out.append(Item(it.key + ":ready", "flash", f"{it.label} READY", it.end,
+                                    it.end + READY_FLASH_SECONDS, color=it.color, order=20))
+                expired.append(it.key)
+                continue
+            if it.end is not None and now >= it.end and it.kind != "stacks":
+                expired.append(it.key)
+                continue
+            out.append(it)
+        for k in expired:
+            self.items.pop(k, None)
+        out.sort(key=lambda i: (i.order, i.label))
+        return out
