@@ -28,9 +28,18 @@ Python 3.13 + PyQt6 live in `.venv` (created with `uv`). From the repo root:
 .venv\Scripts\python.exe overlay\main.py
 ```
 
-- Auto-detects your discipline from the log and loads the matching profile in `overlay\profiles\`.
-- Tray icon (blue square) → **Unlock** to drag the window, **Lock** to make it click-through, **Quit**.
-- Position and lock state are saved in `overlay\settings.json` (git-ignored).
+- Runs as a **tray app** (blue square). The overlay appears while `swtor.exe` is running and hides when the game
+  exits. Tray menu: enable, lock (click-through), **Settings…**, reload profiles, open profiles folder, quit.
+  Double-click the tray icon for Settings.
+- **Settings → General**: start with Windows (Startup-folder shortcut), show only in game, lock, follow
+  discipline changes or pin a profile, overlay scale.
+- **Settings → Rules**: pick any profile, enable/disable rules, edit durations / cooldowns / warn thresholds /
+  labels / colors, add rules from a picker fed by your own logs, save. Saving a generated profile writes a
+  hand-written copy into `overlay\profiles\` which then takes priority.
+- Profiles **hot-reload**: edit any JSON in `overlay\profiles\` and the overlay picks it up within a second.
+- Auto-detects your discipline from the log and loads the matching profile.
+- Position, lock state and options live in `overlay\settings.json` (git-ignored).
+- The game must be in **Fullscreen (Windowed)** mode. Exclusive fullscreen hides every overlay.
 
 Test without the game by replaying a saved log:
 
