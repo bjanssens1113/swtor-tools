@@ -64,6 +64,7 @@ class TrayApp(QObject):
         self._profiles_stamp = self._profiles_mtime()
         self.config = None
         self._ensure_windows()
+        self._settings_stamp = self._settings_mtime()
 
         self.tray = QSystemTrayIcon(_icon(), self)
         menu = QMenu()
@@ -125,7 +126,7 @@ class TrayApp(QObject):
             if name not in self.windows:
                 cfg = settings_mod.group_cfg(self.settings, name)
                 self.windows[name] = GroupWindow(name, cfg, self.settings, self.save_settings)
-        settings_mod.save(self.settings)
+        self.save_settings()
 
     def add_group(self, name: str) -> bool:
         name = name.strip()
@@ -141,11 +142,31 @@ class TrayApp(QObject):
             return False
         self.windows.pop(name).close()
         self.settings.get("groups", {}).pop(name, None)
-        settings_mod.save(self.settings)
+        self.save_settings()
         return True
 
     def save_settings(self):
         settings_mod.save(self.settings)
+        self._settings_stamp = self._settings_mtime()
+
+    @staticmethod
+    def _settings_mtime() -> float:
+        try:
+            return settings_mod.SETTINGS_PATH.stat().st_mtime
+        except OSError:
+            return 0.0
+
+    def _reload_settings_from_disk(self):
+        """settings.json was edited by hand while running: adopt it instead of clobbering it on next save."""
+        fresh = settings_mod.load()
+        self.settings.clear()
+        self.settings.update(fresh)
+        for name, w in self.windows.items():
+            w.cfg = settings_mod.group_cfg(self.settings, name)
+            w.apply_settings()
+        self.a_locked.setChecked(bool(self.settings.get("locked")))
+        self.engine.reload(self.profiles, self._forced())
+        self._settings_stamp = self._settings_mtime()
 
     # ---- main loop ----------------------------------------------------------------------------
     def tick(self):
@@ -181,7 +202,7 @@ class TrayApp(QObject):
 
     def _toggle_locked(self, checked):
         self.settings["locked"] = bool(checked)
-        settings_mod.save(self.settings)
+        self.save_settings()
         for w in self.windows.values():
             w.apply_settings()
         self._status()
@@ -195,6 +216,8 @@ class TrayApp(QObject):
         if stamp != self._profiles_stamp:
             self._profiles_stamp = stamp
             self.reload_profiles()
+        if self._settings_mtime() != self._settings_stamp:
+            self._reload_settings_from_disk()
 
     def reload_profiles(self):
         try:
@@ -209,7 +232,7 @@ class TrayApp(QObject):
 
     def apply_settings(self):
         """Settings dict was edited by the config window."""
-        settings_mod.save(self.settings)
+        self.save_settings()
         self.a_locked.setChecked(bool(self.settings.get("locked")))
         for w in self.windows.values():
             w.apply_settings()
