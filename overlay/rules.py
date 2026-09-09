@@ -38,6 +38,7 @@ class Rule:
     enabled: bool = True
     group: str = ""             # layout group; empty = default for the rule type (see DEFAULT_GROUP)
     sound: str = ""             # "" | "beep" | path to a .wav; plays when the item appears (cooldown: when READY)
+    icon: str = ""              # ability/passive name whose icon to show (default: the effect/ability itself)
 
     @classmethod
     def from_dict(cls, d: dict) -> "Rule":
@@ -197,7 +198,7 @@ class Engine:
                 for r in self._rules("cooldown", ev.ability.name, "ability"):
                     self.items[f"cd:{r.ability}"] = Item(
                         f"cd:{r.ability}", "cooldown", r.label or r.ability, ev.seconds, ev.seconds + r.seconds,
-                        color=r.color, order=50, group=r.group_name, sound=r.sound, icon=r.ability)
+                        color=r.color, order=50, group=r.group_name, sound=r.sound, icon=r.icon or r.ability)
             return
         if not ev.effect or not self.profile:
             return
@@ -210,19 +211,19 @@ class Engine:
                     end = ev.seconds + r.duration if r.duration else None
                     self.items[f"self:{name}"] = Item(f"self:{name}", "bar", r.label or name, ev.seconds, end,
                                                       warn_at=r.warn_at, color=r.color, order=30,
-                                                      group=r.group_name, sound=r.sound, icon=name)
+                                                      group=r.group_name, sound=r.sound, icon=r.icon or name)
                 for r in self._rules("proc", name):
                     end = ev.seconds + (r.duration or 3.0)
                     self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash", r.text or r.label or name,
                                                       ev.seconds, end, color=r.color, order=20,
-                                                      group=r.group_name, sound=r.sound, icon=name)
+                                                      group=r.group_name, sound=r.sound, icon=r.icon or name)
                 for r in self._rules("stacks", name):
                     it = self.items.get(f"stk:{name}")
                     stacks = max(1, it.stacks) if it else 1
                     self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds,
                                                      stacks=stacks, warn_below=r.warn_below,
                                                      max_stacks=r.max_stacks, color=r.color, order=10,
-                                                     group=r.group_name, sound=r.sound, icon=name)
+                                                     group=r.group_name, sound=r.sound, icon=r.icon or name)
             if src_me and tgt is not None and not tgt_me:
                 for r in self._rules("target", name):
                     inst = tgt.instance or tgt.name
@@ -231,7 +232,7 @@ class Engine:
                     self.items[key] = Item(key, "bar", f"{r.label or name} · {tgt.name}", ev.seconds, end,
                                            warn_at=r.warn_at, color=r.color, target=inst, order=40,
                                            stacks=self.items[key].stacks if key in self.items else 0,
-                                           group=r.group_name, sound=r.sound, icon=name)
+                                           group=r.group_name, sound=r.sound, icon=r.icon or name)
         elif ev.type == "RemoveEffect":
             if tgt_me:
                 self.items.pop(f"self:{name}", None)
@@ -248,7 +249,7 @@ class Engine:
                     if it is None:
                         it = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds, warn_below=r.warn_below,
                                   max_stacks=r.max_stacks, color=r.color, order=10, group=r.group_name,
-                                  sound=r.sound, icon=name)
+                                  sound=r.sound, icon=r.icon or name)
                         self.items[it.key] = it
                     it.stacks = ev.value.amount
             elif tgt is not None:

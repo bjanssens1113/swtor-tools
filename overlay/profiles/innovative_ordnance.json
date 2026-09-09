@@ -7,9 +7,9 @@
   {"type": "stacks",   "effect": "Supercharge",   "max_stacks": 10},
 
   {"type": "target",   "effect": "Burning (Incendiary Missile)", "label": "Incendiary", "duration": 14, "warn_at": 2},
-  {"type": "target",   "effect": "Bleeding",                     "label": "Serrated",   "duration": 14, "warn_at": 2},
+  {"type": "target",   "effect": "Bleeding",                     "label": "Serrated",   "duration": 14, "warn_at": 2, "icon": "Serrated Shot"},
   {"type": "target",   "effect": "Burning (Thermal Detonator)",  "label": "TD burn",    "duration": 11},
-  {"type": "target",   "effect": "Supercharged Burn",            "duration": 8},
+  {"type": "target",   "effect": "Supercharged Burn",            "duration": 8, "icon": "Supercharged Gas"},
   {"type": "target",   "effect": "Electro Net",                  "duration": 9.5},
 
   {"type": "proc",     "effect": "Innovative Particle Accelerator", "text": "MAG SHOT", "duration": 6},
