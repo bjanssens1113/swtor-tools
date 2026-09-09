@@ -10,3 +10,4 @@ build/
 .idea/
 *.log
 overlay/settings.json
+overlay/data/icons/

@@ -9,9 +9,10 @@ Draws only; never sends input. app.py feeds it items every tick.
 from __future__ import annotations
 
 from PyQt6.QtCore import QRectF, Qt
-from PyQt6.QtGui import QColor, QFont, QPainter, QPen
+from PyQt6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QWidget
 
+import icons
 from rules import Item
 
 COLORS = {
@@ -229,16 +230,43 @@ class GroupWindow(QWidget):
             txt = f"{it.label} {self._fmt_rem(it)}"
         p.drawText(r, Qt.AlignmentFlag.AlignCenter, txt)
 
+    def _outlined(self, p: QPainter, rect: QRectF, flags, text: str, color=Qt.GlobalColor.white):
+        """Text with a dark outline so it reads on top of any icon."""
+        p.setPen(QColor(0, 0, 0, 220))
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            p.drawText(rect.translated(dx, dy), flags, text)
+        p.setPen(color)
+        p.drawText(rect, flags, text)
+
     def _draw_tile(self, p: QPainter, it: Item, r: QRectF):
         warn = it.warn(self.now)
         col = _base_color(it)
+        pm = icons.pixmap(it.icon) if it.icon else None
+        rem, tot = it.remaining(self.now), it.total()
         p.setPen(Qt.PenStyle.NoPen)
-        if it.kind == "cooldown":
+        if pm is not None:
+            path = QPainterPath()
+            path.addRoundedRect(r, 6, 6)
+            p.save()
+            p.setClipPath(path)
+            p.drawPixmap(r.toRect(), pm)
+            if it.kind == "cooldown":
+                # dark cover shrinks from the top as the cooldown runs down
+                frac = 0.0 if rem is None or not tot else rem / tot
+                p.fillRect(QRectF(r.x(), r.y() + r.height() * (1 - frac), r.width(), r.height() * frac),
+                           QColor(0, 0, 0, 165))
+            elif it.kind == "bar" and it.end is not None:
+                frac = 0.0 if not tot else 1.0 - rem / tot
+                p.fillRect(QRectF(r.x(), r.y(), r.width(), r.height() * frac), QColor(0, 0, 0, 120))
+            p.restore()
+            if it.kind == "flash":
+                p.setPen(QPen(col, 3))
+                p.setBrush(Qt.BrushStyle.NoBrush)
+                p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
+        elif it.kind == "cooldown":
             p.setBrush(QColor(0, 0, 0, 170))
             p.drawRoundedRect(r, 6, 6)
-            rem, tot = it.remaining(self.now), it.total()
             frac = 0.0 if rem is None or not tot else rem / tot
-            # "sweep": dim cover shrinks from the top as the cooldown runs
             p.setBrush(QColor(col.red(), col.green(), col.blue(), 90))
             p.drawRoundedRect(QRectF(r.x(), r.y() + r.height() * (1 - frac), r.width(), r.height() * frac), 6, 6)
         elif it.kind == "fight":
@@ -248,7 +276,6 @@ class GroupWindow(QWidget):
             p.setBrush(QColor(col.red(), col.green(), col.blue(), 200 if not warn else 120))
             p.drawRoundedRect(r, 6, 6)
             if it.kind == "bar" and it.end is not None:
-                rem, tot = it.remaining(self.now), it.total()
                 frac = 0.0 if not tot else 1.0 - rem / tot
                 p.setBrush(QColor(0, 0, 0, 120))
                 p.drawRoundedRect(QRectF(r.x(), r.y(), r.width(), r.height() * frac), 6, 6)
@@ -258,12 +285,14 @@ class GroupWindow(QWidget):
             p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
         big = str(it.stacks) if it.kind == "stacks" else (
             f"{int(self.now - it.start)}" if it.kind == "fight" else self._fmt_rem(it))
-        p.setPen(Qt.GlobalColor.white)
         p.setFont(QFont("Segoe UI", int(r.height() * 0.36), QFont.Weight.Bold))
-        p.drawText(QRectF(r.x(), r.y(), r.width(), r.height() * 0.7), Qt.AlignmentFlag.AlignCenter, big)
-        p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.15))))
-        p.drawText(QRectF(r.x() + 2, r.y() + r.height() * 0.66, r.width() - 4, r.height() * 0.32),
-                   Qt.AlignmentFlag.AlignCenter, it.label.split(" · ")[0][:12])
+        self._outlined(p, QRectF(r.x(), r.y(), r.width(), r.height() * (0.7 if pm is None else 1.0)),
+                       Qt.AlignmentFlag.AlignCenter, big)
+        if pm is None:
+            p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.15))))
+            self._outlined(p, QRectF(r.x() + 2, r.y() + r.height() * 0.66, r.width() - 4, r.height() * 0.32),
+                           Qt.AlignmentFlag.AlignCenter, it.label.split(" · ")[0][:12])
         if it.kind == "bar" and it.stacks:
-            p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.2)), QFont.Weight.Bold))
-            p.drawText(r.adjusted(0, 2, -3, 0), Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, str(it.stacks))
+            p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.22)), QFont.Weight.Bold))
+            self._outlined(p, r.adjusted(0, 1, -3, 0), Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight,
+                           str(it.stacks))

@@ -93,6 +93,7 @@ class Item:
     order: int = 0
     group: str = ""
     sound: str = ""
+    icon: str = ""             # effect / ability name used to look up an icon image
     meta: dict = field(default_factory=dict)
 
     def remaining(self, now: float) -> Optional[float]:
@@ -131,9 +132,12 @@ class Engine:
     def in_combat(self) -> bool:
         return self.fight_start is not None
 
-    def group_names(self) -> list[str]:
-        """Default groups plus every group any loaded profile references."""
+    def group_names(self, extra: Optional[list[str]] = None) -> list[str]:
+        """Default groups, user-created groups (`extra`, from settings), and every group a profile references."""
         names = list(DEFAULT_GROUPS)
+        for g in extra or []:
+            if g not in names:
+                names.append(g)
         for p in self.profiles:
             for r in p.rules:
                 g = r.group_name
@@ -193,7 +197,7 @@ class Engine:
                 for r in self._rules("cooldown", ev.ability.name, "ability"):
                     self.items[f"cd:{r.ability}"] = Item(
                         f"cd:{r.ability}", "cooldown", r.label or r.ability, ev.seconds, ev.seconds + r.seconds,
-                        color=r.color, order=50, group=r.group_name, sound=r.sound)
+                        color=r.color, order=50, group=r.group_name, sound=r.sound, icon=r.ability)
             return
         if not ev.effect or not self.profile:
             return
@@ -206,19 +210,19 @@ class Engine:
                     end = ev.seconds + r.duration if r.duration else None
                     self.items[f"self:{name}"] = Item(f"self:{name}", "bar", r.label or name, ev.seconds, end,
                                                       warn_at=r.warn_at, color=r.color, order=30,
-                                                      group=r.group_name, sound=r.sound)
+                                                      group=r.group_name, sound=r.sound, icon=name)
                 for r in self._rules("proc", name):
                     end = ev.seconds + (r.duration or 3.0)
                     self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash", r.text or r.label or name,
                                                       ev.seconds, end, color=r.color, order=20,
-                                                      group=r.group_name, sound=r.sound)
+                                                      group=r.group_name, sound=r.sound, icon=name)
                 for r in self._rules("stacks", name):
                     it = self.items.get(f"stk:{name}")
                     stacks = max(1, it.stacks) if it else 1
                     self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds,
                                                      stacks=stacks, warn_below=r.warn_below,
                                                      max_stacks=r.max_stacks, color=r.color, order=10,
-                                                     group=r.group_name, sound=r.sound)
+                                                     group=r.group_name, sound=r.sound, icon=name)
             if src_me and tgt is not None and not tgt_me:
                 for r in self._rules("target", name):
                     inst = tgt.instance or tgt.name
@@ -227,7 +231,7 @@ class Engine:
                     self.items[key] = Item(key, "bar", f"{r.label or name} · {tgt.name}", ev.seconds, end,
                                            warn_at=r.warn_at, color=r.color, target=inst, order=40,
                                            stacks=self.items[key].stacks if key in self.items else 0,
-                                           group=r.group_name, sound=r.sound)
+                                           group=r.group_name, sound=r.sound, icon=name)
         elif ev.type == "RemoveEffect":
             if tgt_me:
                 self.items.pop(f"self:{name}", None)
@@ -244,7 +248,7 @@ class Engine:
                     if it is None:
                         it = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds, warn_below=r.warn_below,
                                   max_stacks=r.max_stacks, color=r.color, order=10, group=r.group_name,
-                                  sound=r.sound)
+                                  sound=r.sound, icon=name)
                         self.items[it.key] = it
                     it.stacks = ev.value.amount
             elif tgt is not None:
@@ -263,7 +267,7 @@ class Engine:
                 if now < it.end + READY_FLASH_SECONDS:
                     out.append(Item(it.key + ":ready", "flash", f"{it.label} READY", it.end,
                                     it.end + READY_FLASH_SECONDS, color=it.color, order=20, group="alerts",
-                                    sound=it.sound))
+                                    sound=it.sound, icon=it.icon))
                 expired.append(it.key)
                 continue
             if it.end is not None and now >= it.end and it.kind != "stacks":

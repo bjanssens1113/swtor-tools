@@ -12,8 +12,8 @@ from pathlib import Path
 
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox, QFormLayout,
-                             QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QTableWidget,
-                             QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget)
+                             QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMessageBox, QPushButton,
+                             QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget)
 
 import settings as settings_mod
 from rules import DEFAULT_GROUP, PROFILE_DIR
@@ -213,10 +213,25 @@ class ConfigWindow(QDialog):
                 r.get("group", ""), r.get("sound", ""), r.get("color", "")]
         for i, v in enumerate(vals, start=2):
             self.table.setItem(row, i, QTableWidgetItem(v))
+        combo = QComboBox()
+        combo.setEditable(True)
+        combo.addItems([""] + self.app.group_names())
+        combo.setCurrentText(r.get("group", ""))
+        self.table.setCellWidget(row, 7, combo)
+
+    def _refresh_group_combos(self):
+        names = [""] + self.app.group_names()
+        for row in range(self.table.rowCount()):
+            combo = self.table.cellWidget(row, 7)
+            if isinstance(combo, QComboBox):
+                cur = combo.currentText()
+                combo.clear()
+                combo.addItems(names)
+                combo.setCurrentText(cur)
 
     def _add_rule(self):
         m = self.doc.get("match", {})
-        dlg = AddRuleDialog(self, m.get("class", ""), m.get("discipline", ""), self.app.engine.group_names())
+        dlg = AddRuleDialog(self, m.get("class", ""), m.get("discipline", ""), self.app.group_names())
         if dlg.exec():
             self._append_row(dlg.rule())
 
@@ -226,6 +241,9 @@ class ConfigWindow(QDialog):
             self.table.removeRow(r)
 
     def _cell(self, row, col) -> str:
+        widget = self.table.cellWidget(row, col)
+        if isinstance(widget, QComboBox):
+            return widget.currentText().strip()
         it = self.table.item(row, col)
         return it.text().strip() if it else ""
 
@@ -303,24 +321,57 @@ class ConfigWindow(QDialog):
         w = QWidget()
         v = QVBoxLayout(w)
         v.addWidget(QLabel("Each group is its own movable window. Unlock (General tab or tray) to drag them. "
-                           "Style: bars = classic, icons = square tiles with countdown, text = big alert lines."))
+                           "Style: bars = classic, icons = square tiles with countdown, text = big alert lines. "
+                           "Make your own group (e.g. 'defensives'), then put rules in it via the Group column on the Rules tab."))
         self.gtable = QTableWidget(0, len(self.GCOLS))
         self.gtable.setHorizontalHeaderLabels(self.GCOLS)
         self.gtable.horizontalHeader().setStretchLastSection(True)
         v.addWidget(self.gtable, 1)
         row = QHBoxLayout()
+        b_new = QPushButton("New group…")
+        b_new.clicked.connect(self._new_group)
+        b_del = QPushButton("Delete selected group")
+        b_del.clicked.connect(self._delete_group)
         b_apply = QPushButton("Apply groups")
         b_apply.clicked.connect(self._apply_groups)
         b_reset = QPushButton("Reset positions")
         b_reset.clicked.connect(self.app.reset_positions)
-        row.addWidget(b_reset)
+        for b in (b_new, b_del, b_reset):
+            row.addWidget(b)
         row.addStretch(1)
         row.addWidget(b_apply)
         v.addLayout(row)
         return w
 
+    def _new_group(self):
+        name, ok = QInputDialog.getText(self, "New group", "Group name (letters, digits, - and _):")
+        name = re.sub(r"[^A-Za-z0-9_\- ]", "", name or "").strip()
+        if not ok or not name:
+            return
+        if not self.app.add_group(name):
+            QMessageBox.information(self, "New group", f"A group called '{name}' already exists.")
+            return
+        self._refresh_groups()
+        self._refresh_group_combos()
+        self.note.setText(f"Group '{name}' created. Unlock to position it; assign rules to it on the Rules tab.")
+
+    def _delete_group(self):
+        rows = {i.row() for i in self.gtable.selectedIndexes()}
+        if not rows:
+            return
+        name = self.gtable.item(min(rows), 0).text()
+        if name in settings_mod.DEFAULT_GROUP_LAYOUT:
+            QMessageBox.information(self, "Delete group", "Built-in groups can't be deleted. Tick Hidden instead.")
+            return
+        if QMessageBox.question(self, "Delete group", f"Delete group '{name}'? Rules in it fall back to their "
+                                "default group.") != QMessageBox.StandardButton.Yes:
+            return
+        self.app.remove_group(name)
+        self._refresh_groups()
+        self._refresh_group_combos()
+
     def _refresh_groups(self):
-        names = self.app.engine.group_names()
+        names = self.app.group_names()
         self.gtable.setRowCount(0)
         for name in names:
             cfg = settings_mod.group_cfg(self.app.settings, name)

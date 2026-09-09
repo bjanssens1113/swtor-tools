@@ -21,6 +21,9 @@ from overlay import GroupWindow
 from parser import parse_line
 from rules import PROFILE_DIR, Engine, Profile
 
+# item kind -> fallback group when a rule's group no longer exists
+DEFAULT_GROUP = {"bar": "buffs", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns", "fight": "timer"}
+
 
 def _icon(color=QColor(70, 160, 255)) -> QIcon:
     pm = QPixmap(32, 32)
@@ -114,12 +117,32 @@ class TrayApp(QObject):
         state = "locked" if self.settings.get("locked") else "UNLOCKED"
         self.tray.setToolTip(f"SWTOR overlay — {prof} — {state}")
 
+    def group_names(self) -> list[str]:
+        return self.engine.group_names(list(self.settings.get("groups", {}).keys()))
+
     def _ensure_windows(self):
-        for name in self.engine.group_names():
+        for name in self.group_names():
             if name not in self.windows:
                 cfg = settings_mod.group_cfg(self.settings, name)
                 self.windows[name] = GroupWindow(name, cfg, self.settings, self.save_settings)
         settings_mod.save(self.settings)
+
+    def add_group(self, name: str) -> bool:
+        name = name.strip()
+        if not name or name in self.windows:
+            return False
+        settings_mod.group_cfg(self.settings, name)
+        self._ensure_windows()
+        return True
+
+    def remove_group(self, name: str) -> bool:
+        """Delete a user group. Rules pointing at it fall back to their type's default group."""
+        if name in settings_mod.DEFAULT_GROUP_LAYOUT or name not in self.windows:
+            return False
+        self.windows.pop(name).close()
+        self.settings.get("groups", {}).pop(name, None)
+        settings_mod.save(self.settings)
+        return True
 
     def save_settings(self):
         settings_mod.save(self.settings)
@@ -139,7 +162,8 @@ class TrayApp(QObject):
         self._seen_keys = keys
         by_group: dict[str, list] = {name: [] for name in self.windows}
         for it in items:
-            by_group.setdefault(it.group or "buffs", []).append(it)
+            g = it.group if it.group in self.windows else DEFAULT_GROUP.get(it.kind, "buffs")
+            by_group.setdefault(g, []).append(it)
         base = self.enabled and (self.replay or not self.settings.get("show_only_in_game", True) or self.game_running)
         for name, win in self.windows.items():
             cfg = win.cfg
