@@ -35,12 +35,10 @@ def test_missing_stim_global_rule_in_combat_only():
     assert not [i for i in e.snapshot(T + 1) if i.kind == "missing"]          # out of combat: quiet
     enter_combat(e)
     labels = {i.label for i in e.snapshot(T + 6) if i.kind == "missing"}
-    assert "NO STIM" in labels and "NO AGENT/SMUGGLER BUFF" in labels
+    assert labels == {"NO STIM"}                                              # class buffs are permanent: not tracked
     e.feed(parse_line(line("10:00:07.000", ME, "[=]", "Advanced Kyrprax Versatile Stim {9}",
                            "ApplyEffect {1}: Advanced Kyrprax Versatile Stim {9}")))
-    e.feed(parse_line(line("10:00:07.000", ME, "[=]", "Lucky Shots {9}", "ApplyEffect {1}: Lucky Shots {9}")))
-    labels = {i.label for i in e.snapshot(T + 8) if i.kind == "missing"}
-    assert "NO STIM" not in labels and "NO AGENT/SMUGGLER BUFF" not in labels
+    assert not [i for i in e.snapshot(T + 8) if i.kind == "missing"]
     e.feed(parse_line(line("10:00:09.000", ME, "[=]", "Advanced Kyrprax Versatile Stim {9}",
                            "RemoveEffect {1}: Advanced Kyrprax Versatile Stim {9}")))
     assert "NO STIM" in {i.label for i in e.snapshot(T + 10) if i.kind == "missing"}
@@ -90,6 +88,15 @@ def test_regex_rule_matches_any_tier():
     e.feed(parse_line(line("10:00:01.000", ME, "[=]", "Advanced Kyrprax Critical Adrenal {9}",
                            "ApplyEffect {1}: Advanced Kyrprax Critical Adrenal {9}")))
     assert [i for i in e.snapshot(T + 2) if i.kind == "bar" and i.label == "Adrenal"]
+
+
+def test_missing_rule_regex_alternation_covers_both_factions():
+    rules = [Rule(type="missing", effect="^(Coordination|Lucky Shots)$", regex=True, label="X")]
+    e = engine(rules)
+    enter_combat(e)
+    assert [i for i in e.snapshot(T + 6) if i.kind == "missing"]
+    e.feed(parse_line(line("10:00:07.000", ME, "[=]", "Lucky Shots {9}", "ApplyEffect {1}: Lucky Shots {9}")))
+    assert not [i for i in e.snapshot(T + 8) if i.kind == "missing"]
 
 
 def test_missing_rule_always_variant():

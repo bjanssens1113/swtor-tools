@@ -81,9 +81,9 @@ timer from EnterCombat / ExitCombat. Effect names must match the log exactly; `d
 **Conditions** (per rule, editable in the Conditions column): `combat` / `nocombat`, `stacks<N`, `stacks>=N`,
 `boss` (target max HP ≥ 500 000), `regex` (effect is a regular expression, e.g. `Kyrprax .* Stim$`).
 
-**Global rules** (`overlay/profiles/_global.json`) are added to every discipline, both factions: missing stim and
-the four missing class buffs, matched by regex on the Empire *and* Republic names. Edit them in Settings → Rules
-(first entry in the profile list).
+**Global rules** (`overlay/profiles/_global.json`) are added to every discipline, both factions. Ships with one
+rule: missing stim (regex covers every tier). Class buffs are permanent once unlocked in Legacy, so they are not
+tracked. Edit global rules in Settings → Rules (first entry in the profile list).
 
 **Layout groups**: every rule has a Group; each group is its own movable window with a style (`bars`, `icons`
 with real ability art, `text`), grow direction, scale, combat-only and hidden flags. Make your own groups on the
