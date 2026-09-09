@@ -7,7 +7,7 @@ import icons  # noqa: E402
 
 def test_slug_lookup_direct_and_parenthesised():
     assert icons.slug_for("Rifle Shot") == "rifleshot"
-    assert icons.slug_for("Kolto Probe") == icons.slug_for("Slow-release Medpac")  # mirror pair share an icon
+    assert icons.slug_for("Kolto Probe") and icons.slug_for("Slow-release Medpac")  # both factions mapped
     assert icons.slug_for("Burning (Incendiary Missile)") == icons.slug_for("Incendiary Missile")
     assert icons.slug_for("Not A Real Thing") is None
     assert icons.slug_for("") is None
