@@ -25,7 +25,8 @@ def test_items_carry_default_groups():
     e.feed(parse_line(f"[10:00:01.000] {ME} {MOB} [Lethal Strike {{6}}] [Event {{1}}: AbilityActivate {{2}}]"))
     e.feed(parse_line(f"[10:00:01.000] {ME} [=] [] [Event {{1}}: EnterCombat {{2}}]"))
     groups = {i.kind: i.group for i in e.snapshot(10 * 3600 + 2)}
-    assert groups == {"bar": "target", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns", "fight": "timer"}
+    assert groups == {"bar": "target", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns",
+                      "fight": "timer", "party": "party"}
 
 
 def test_custom_group_and_sound_flow_through():

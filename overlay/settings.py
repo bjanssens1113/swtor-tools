@@ -26,6 +26,8 @@ GROUP_DEFAULTS = {
     "locked": False,
     "icon_size": 48,
     "columns": 6,             # icons: tiles per row before wrapping
+    "low_hp": 35,             # party: flash a member below this percent
+    "show_companions": True,  # party: include my companion when solo
 }
 # starting positions for the default groups, stacked down the left edge
 DEFAULT_GROUP_LAYOUT = {
@@ -35,6 +37,7 @@ DEFAULT_GROUP_LAYOUT = {
     "buffs":     [60, 240, 300, 140],
     "target":    [60, 390, 300, 140],
     "cooldowns": [60, 540, 300, 200],
+    "party":     [1560, 300, 300, 220],
 }
 
 

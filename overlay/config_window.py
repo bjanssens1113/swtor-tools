@@ -122,6 +122,10 @@ class AddRuleDialog(QDialog):
         if t == "missing":
             return [(x["name"], None, f"{x['count']} seen; alert shows in combat while this is NOT on you")
                     for x in self.data.get("self_buffs", [])]
+        if t == "cleanse":
+            return [("Physical Tech", None, "tech healers (Operative/Scoundrel, Mercenary/Commando): Toxin Scan / Cure"),
+                    ("Mental Force", None, "force healers (Sorcerer/Sage): Expunge / Restoration"),
+                    ("Physical Tech Mental Force", None, "everything with a category tag")]
         return [(x["name"], x.get("median_s"), f"{x['count']} seen, lasts ~{x.get('median_s')} s")
                 for x in self.data.get("self_buffs", [])]
 
@@ -148,6 +152,10 @@ class AddRuleDialog(QDialog):
         if t == "cooldown":
             r["ability"] = name
             r["seconds"] = self.seconds.value()
+        elif t == "cleanse":
+            r["types"] = name.split()
+            r["effect"] = "cleanse"
+            r["label"] = "CLEANSE"
         else:
             r["effect"] = name
             if t not in ("stacks", "missing") and self.seconds.value() > 0:
@@ -272,7 +280,8 @@ class ConfigWindow(QDialog):
         t = QTableWidgetItem(r.get("type", ""))
         t.setFlags(Qt.ItemFlag.ItemIsEnabled)
         self.table.setItem(row, 1, t)
-        vals = [r.get("effect") or r.get("ability") or "", str(r.get("duration", "") or ""),
+        shown_name = " ".join(r.get("types", [])) if r.get("type") == "cleanse" else (r.get("effect") or r.get("ability") or "")
+        vals = [shown_name, str(r.get("duration", "") or ""),
                 str(r.get("seconds", "") or ""), str(r.get("warn_at", "") or ""), format_cond(r),
                 r.get("label", ""), r.get("group", ""), r.get("sound", ""), r.get("icon", ""), r.get("color", "")]
         for i, v in enumerate(vals, start=C_NAME):
@@ -326,6 +335,9 @@ class ConfigWindow(QDialog):
             if r["type"] == "cooldown":
                 r["ability"] = name
                 r.pop("effect", None)
+            elif r["type"] == "cleanse":
+                r["types"] = name.split()
+                r["effect"] = "cleanse"
             else:
                 r["effect"] = name
                 r.pop("ability", None)
@@ -381,7 +393,7 @@ class ConfigWindow(QDialog):
         self.note.setText(f"Saved {target.relative_to(ROOT)} and reloaded.")
 
     # ---- groups tab -----------------------------------------------------------------------------
-    GCOLS = ["Group", "Style", "Grow", "Scale", "Icon px", "Columns", "Combat only", "Hidden"]
+    GCOLS = ["Group", "Style", "Grow", "Scale", "Icon px", "Columns", "Combat only", "Hidden", "Low HP %", "Companions"]
 
     def _groups_tab(self) -> QWidget:
         w = QWidget()
@@ -457,11 +469,12 @@ class ConfigWindow(QDialog):
             self.gtable.setItem(r, 3, QTableWidgetItem(str(cfg.get("scale", 1.0))))
             self.gtable.setItem(r, 4, QTableWidgetItem(str(cfg.get("icon_size", 48))))
             self.gtable.setItem(r, 5, QTableWidgetItem(str(cfg.get("columns", 6))))
-            for col, key in ((6, "combat_only"), (7, "hidden")):
+            for col, key in ((6, "combat_only"), (7, "hidden"), (9, "show_companions")):
                 c = QTableWidgetItem()
                 c.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
                 c.setCheckState(Qt.CheckState.Checked if cfg.get(key) else Qt.CheckState.Unchecked)
                 self.gtable.setItem(r, col, c)
+            self.gtable.setItem(r, 8, QTableWidgetItem(str(cfg.get("low_hp", 35))))
 
     def _apply_groups(self):
         for r in range(self.gtable.rowCount()):
@@ -476,6 +489,11 @@ class ConfigWindow(QDialog):
                     cfg[key] = default
             cfg["combat_only"] = self.gtable.item(r, 6).checkState() == Qt.CheckState.Checked
             cfg["hidden"] = self.gtable.item(r, 7).checkState() == Qt.CheckState.Checked
+            try:
+                cfg["low_hp"] = float(self.gtable.item(r, 8).text())
+            except (ValueError, AttributeError):
+                cfg["low_hp"] = 35
+            cfg["show_companions"] = self.gtable.item(r, 9).checkState() == Qt.CheckState.Checked
         self.app.apply_settings()
         self.note.setText("Groups applied.")
 

@@ -1,122 +1,119 @@
 {
- "name": "Seer Sage (mirrored)",
+ "name": "Corruption Sorcerer",
  "match": {
-  "class": "Sage",
-  "discipline": "Seer"
+  "class": "Sorcerer",
+  "discipline": "Corruption"
  },
- "_auto": true,
- "_mirrored_from": "Corruption Sorcerer",
- "_kind": "mirrored-hand",
- "_source": "mirrored-hand: translated from 'Corruption Sorcerer' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['cleanse']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "_source": "hand copy of the log-mined profile (tune cooldowns in game) + cleanse alerts (Expunge: Mental/Force).",
  "rules": [
   {
    "type": "stacks",
-   "effect": "Resurging Power",
+   "effect": "Corrupted Bastion",
    "max_stacks": 3
   },
   {
    "type": "stacks",
-   "effect": "Soothing Protection",
+   "effect": "Sustaining Darkness",
    "max_stacks": 9
   },
   {
    "type": "stacks",
-   "effect": "Resplendence",
+   "effect": "Force Surge",
    "max_stacks": 3
   },
   {
    "type": "stacks",
-   "effect": "Force Defense",
+   "effect": "Unhindered Resolve",
    "max_stacks": 3
   },
   {
    "type": "target",
-   "effect": "Salvation",
+   "effect": "Revivification",
    "duration": 9.3,
    "warn_at": 2
   },
   {
    "type": "target",
-   "effect": "Soothing Protection",
+   "effect": "Sustaining Darkness",
    "duration": 21.3,
    "warn_at": 2
   },
   {
    "type": "target",
-   "effect": "Force Armor",
+   "effect": "Static Barrier",
    "duration": 21.3,
    "warn_at": 2
   },
   {
    "type": "target",
-   "effect": "Wandering Mend",
+   "effect": "Roaming Mend",
    "duration": 17.5,
    "warn_at": 2
   },
   {
    "type": "target",
-   "effect": "Rejuvenate",
+   "effect": "Resurgence",
    "duration": 13.9,
    "warn_at": 2
   },
   {
    "type": "proc",
-   "effect": "Conveyance",
+   "effect": "Force Bending",
    "duration": 2.5
   },
   {
    "type": "self",
-   "effect": "Altruism",
+   "effect": "Dark Concentration",
    "duration": 4.2
   },
   {
    "type": "self",
-   "effect": "Sustained Aura",
+   "effect": "Fueled Corruption",
    "duration": 11.4
   },
   {
    "type": "self",
-   "effect": "Salvation",
+   "effect": "Revivification",
    "duration": 9.3
   },
   {
    "type": "self",
-   "effect": "Amnesty",
+   "effect": "Reverse Corruptions",
    "duration": 11.7
   },
   {
    "type": "self",
-   "effect": "Force Armor",
+   "effect": "Static Barrier",
    "duration": 30.0
   },
   {
    "type": "self",
-   "effect": "Rejuvenate",
+   "effect": "Resurgence",
    "duration": 14.1
   },
   {
    "type": "cooldown",
-   "ability": "Rejuvenate",
+   "ability": "Resurgence",
    "seconds": 6.8
   },
   {
    "type": "cooldown",
-   "ability": "Healing Trance",
+   "ability": "Innervate",
    "seconds": 8.7
   },
   {
    "type": "cooldown",
-   "ability": "Salvation",
+   "ability": "Revivification",
    "seconds": 14.2
   },
   {
    "type": "cooldown",
-   "ability": "Wandering Mend",
+   "ability": "Roaming Mend",
    "seconds": 16.9
   },
   {
    "type": "cooldown",
-   "ability": "Keeper of Peace",
+   "ability": "Rally",
    "seconds": 15.0
   },
   {

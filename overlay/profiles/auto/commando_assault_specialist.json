@@ -31,7 +31,8 @@
    "effect": "Bleeding",
    "label": "Serrated",
    "duration": 14,
-   "warn_at": 2
+   "warn_at": 2,
+   "icon": "Serrated Shot"
   },
   {
    "type": "target",
@@ -42,7 +43,8 @@
   {
    "type": "target",
    "effect": "Supercharged Burn",
-   "duration": 8
+   "duration": 8,
+   "icon": "Supercharged Gas"
   },
   {
    "type": "target",

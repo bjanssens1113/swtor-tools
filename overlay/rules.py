@@ -46,6 +46,9 @@ class Rule:
     stacks_below: int = -1      # stacks rule: show only while count < N
     stacks_at_least: int = -1   # stacks rule: show only while count >= N
     boss_only: bool = False     # target rule: only for targets with max HP >= Engine.boss_hp
+    # ---- cleanse rules ----
+    types: list = field(default_factory=list)   # debuff categories you can cleanse: Physical, Tech, Mental, Force
+    ignore: list = field(default_factory=list)  # debuff names never worth a cleanse alert (e.g. "Slowed (Tech)")
 
     @classmethod
     def from_dict(cls, d: dict) -> "Rule":
@@ -73,9 +76,12 @@ class Rule:
 
 
 DEFAULT_GROUP = {"self": "buffs", "target": "target", "stacks": "stacks", "proc": "alerts", "cooldown": "cooldowns",
-                 "missing": "alerts"}
-DEFAULT_GROUPS = ["timer", "stacks", "alerts", "buffs", "target", "cooldowns"]
-RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown", "missing"]
+                 "missing": "alerts", "cleanse": "alerts"}
+DEFAULT_GROUPS = ["timer", "stacks", "alerts", "buffs", "target", "cooldowns", "party"]
+RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown", "missing", "cleanse"]
+CLEANSE_TTL = 20.0          # a cleanse alert expires on its own after this many seconds
+ROSTER_TTL = 120.0          # a group member drops off the party panel after this long without a log line
+DEBUFF_TYPE_RE = re.compile(r"\((Physical|Tech|Mental|Force)\)$")
 
 
 @dataclass
@@ -159,6 +165,8 @@ class Engine:
         self.discipline: Optional[str] = None
         self.items: dict[str, Item] = {}
         self.active_self: set[str] = set()   # every effect currently on me (for 'missing' rules)
+        # party roster: name -> {hp, max_hp, seen, friendly, kind ('player'|'companion'), dead}
+        self.roster: dict[str, dict] = {}
         self.fight_start: Optional[float] = None
         self.last_seconds: float = 0.0
         if forced_profile:
@@ -220,10 +228,38 @@ class Engine:
             self.profile = None
         self.items.clear()
 
+    # ---- roster -------------------------------------------------------------------------------
+    def _track(self, ent, seconds: float, as_source: bool, healed_by_me: bool = False):
+        """Record HP for players and my companions. 'friendly' = appeared as a source (only group members'
+        actions are logged) or was healed by me; enemy players only ever appear as my targets."""
+        if ent is None:
+            return
+        if ent.kind == "companion":
+            if ent.owner != self.me:
+                return
+            kind = "companion"
+        elif ent.kind == "player":
+            kind = "player"
+        else:
+            return
+        r = self.roster.get(ent.name)
+        if r is None:
+            r = self.roster[ent.name] = {"hp": 0, "max_hp": 0, "seen": 0.0, "friendly": False, "kind": kind, "dead": False}
+        if ent.max_hp:
+            r["hp"], r["max_hp"] = ent.hp, ent.max_hp
+            if ent.hp > 0:
+                r["dead"] = False
+        r["seen"] = seconds
+        if as_source or healed_by_me or ent.name == self.me or kind == "companion":
+            r["friendly"] = True
+
     # ---- event intake --------------------------------------------------------------------------
     def feed(self, ev: Event):
         self.last_seconds = ev.seconds
         src, tgt = ev.source, ev.target
+        healed = ev.type == "ApplyEffect" and ev.effect is not None and ev.effect.name == "Heal" and self._is_me(src)
+        self._track(src, ev.seconds, as_source=True)
+        self._track(tgt, ev.seconds, as_source=False, healed_by_me=healed)
         if self.me is None and ev.type in ("AreaEntered", "DisciplineChanged") and src and src.kind == "player":
             self.me = src.name
         if ev.type == "AreaEntered" and self._is_me(src):
@@ -241,6 +277,11 @@ class Engine:
             elif sub == "Death" and tgt is not None:
                 inst = tgt.instance or tgt.name
                 self.items = {k: v for k, v in self.items.items() if v.target != inst}
+                if tgt.name in self.roster:
+                    self.roster[tgt.name]["dead"] = True
+                    self.roster[tgt.name]["hp"] = 0
+            elif sub == "Revived" and tgt is not None and tgt.name in self.roster:
+                self.roster[tgt.name]["dead"] = False
             elif sub == "AbilityActivate" and self._is_me(src) and ev.ability:
                 for r in self._rules("cooldown", ev.ability.name, "ability"):
                     self.items[f"cd:{r.ability}"] = Item(
@@ -282,6 +323,20 @@ class Engine:
                                                      max_stacks=r.max_stacks, color=r.color, order=10,
                                                      group=r.group_name, sound=r.sound, icon=r.icon or name,
                                                      cond=r.cond)
+            # cleanse: an NPC put a typed debuff on a friendly player / my companion
+            if tgt is not None and src is not None and src.kind == "npc" and tgt.name in self.roster \
+                    and self.roster[tgt.name]["friendly"]:
+                m = DEBUFF_TYPE_RE.search(name)
+                if m:
+                    for r in self._all_rules():
+                        if not (r.enabled and r.type == "cleanse") or m.group(1) not in r.types or name in r.ignore:
+                            continue
+                        key = f"cl:{name}:{tgt.name}"
+                        base = name[: m.start()].strip()
+                        self.items[key] = Item(key, "cleanse", f"CLEANSE {tgt.name}: {base}", ev.seconds,
+                                               ev.seconds + CLEANSE_TTL, color=r.color, target=tgt.name, order=6,
+                                               group=r.group_name, sound=r.sound, icon=r.icon, cond=r.cond,
+                                               meta={"type": m.group(1)})
             if src_me and tgt is not None and not tgt_me:
                 for r in self._rules("target", name):
                     if r.boss_only and tgt.max_hp < self.boss_hp:
@@ -302,6 +357,8 @@ class Engine:
                     it.stacks = 0
             if tgt is not None and not tgt_me:
                 self.items.pop(f"tgt:{name}:{tgt.instance or tgt.name}", None)
+            if tgt is not None:
+                self.items.pop(f"cl:{name}:{tgt.name}", None)
         elif ev.type == "ModifyCharges" and ev.value is not None:
             if tgt_me:
                 for r in self._rules("stacks", name):
@@ -351,7 +408,30 @@ class Engine:
                 out.append(Item(f"miss:{r.effect}", "missing", r.label or f"MISSING {r.effect}", now, None,
                                 color=r.color, order=5, group=r.group_name, sound=r.sound,
                                 icon=r.icon or ("" if r.regex else r.effect)))
+        out += self._party_items(now)
         out.sort(key=lambda i: (i.order, i.label))
+        return out
+
+    def _party_items(self, now: float) -> list[Item]:
+        """One 'party' item per friendly roster member, with my HoTs/shields on them attached in meta."""
+        out = []
+        mine = {}
+        for it in self.items.values():
+            if it.kind == "bar" and it.target:
+                mine.setdefault(it.target, []).append(it)
+        for name, r in list(self.roster.items()):
+            if not r["friendly"]:
+                continue
+            if name != self.me and now - r["seen"] > ROSTER_TTL:
+                del self.roster[name]
+                continue
+            pct = (r["hp"] / r["max_hp"]) if r["max_hp"] else 1.0
+            order = 100 + (0 if name == self.me else (1 if r["kind"] == "player" else 2))
+            out.append(Item(f"party:{name}", "party", name, r["seen"], None, order=order, group="party",
+                            meta={"hp": r["hp"], "max_hp": r["max_hp"], "pct": pct, "dead": r["dead"],
+                                  "kind": r["kind"], "me": name == self.me,
+                                  "effects": [(x.label.split(" · ")[0], x.stacks, x.remaining(now), x.icon)
+                                              for x in mine.get(name, [])]}))
         return out
 
     def _cond_ok(self, it: Item) -> bool:

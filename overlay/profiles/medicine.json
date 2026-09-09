@@ -4,7 +4,7 @@
   "class": "Operative",
   "discipline": "Medicine"
  },
- "_source": "effect names from Brad's own Medicine logs (docs/CATALOG.md); durations: Recuperative Nanotech measured 8.4 s, Kolto Probe 18 s (game tooltip), cooldowns approximate — tune in game",
+ "_source": "effect names from Brad's own Medicine logs (docs/CATALOG.md); durations: Recuperative Nanotech measured 8.4 s, Kolto Probe 18 s (game tooltip), cooldowns approximate — tune in game Cleanse alerts (Toxin Scan: Physical/Tech).",
  "rules": [
   {
    "effect": "Tactical Advantage",
@@ -70,6 +70,25 @@
    "ability": "Resuscitation Probe",
    "seconds": 300.0,
    "type": "cooldown"
+  },
+  {
+   "type": "cleanse",
+   "effect": "cleanse",
+   "types": [
+    "Physical",
+    "Tech"
+   ],
+   "ignore": [
+    "Slowed (Tech)",
+    "Slowed (Physical)",
+    "Stunned (Tech)",
+    "Stunned (Physical)",
+    "Knockdown (Physical)",
+    "Immobilized (Physical)",
+    "Immobilized (Tech)"
+   ],
+   "label": "CLEANSE",
+   "sound": "beep"
   }
  ]
 }

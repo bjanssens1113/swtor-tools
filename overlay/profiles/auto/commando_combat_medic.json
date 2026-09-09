@@ -7,7 +7,7 @@
  "_auto": true,
  "_mirrored_from": "Bodyguard Mercenary",
  "_kind": "mirrored-hand",
- "_source": "mirrored-hand: translated from 'Bodyguard Mercenary' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Protected']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "_source": "mirrored-hand: translated from 'Bodyguard Mercenary' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['Protected', 'cleanse']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
  "rules": [
   {
    "type": "stacks",
@@ -82,6 +82,25 @@
    "type": "cooldown",
    "ability": "Emergency Medical Probe",
    "seconds": 300
+  },
+  {
+   "type": "cleanse",
+   "effect": "cleanse",
+   "types": [
+    "Physical",
+    "Tech"
+   ],
+   "ignore": [
+    "Slowed (Tech)",
+    "Slowed (Physical)",
+    "Stunned (Tech)",
+    "Stunned (Physical)",
+    "Knockdown (Physical)",
+    "Immobilized (Physical)",
+    "Immobilized (Tech)"
+   ],
+   "label": "CLEANSE",
+   "sound": "beep"
   }
  ]
 }

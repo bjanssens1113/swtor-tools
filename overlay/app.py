@@ -23,7 +23,7 @@ from rules import PROFILE_DIR, Engine, Profile
 
 # item kind -> fallback group when a rule's group no longer exists
 DEFAULT_GROUP = {"bar": "buffs", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns", "fight": "timer",
-                 "missing": "alerts"}
+                 "missing": "alerts", "cleanse": "alerts", "party": "party"}
 
 
 def _icon(color=QColor(70, 160, 255)) -> QIcon:
@@ -191,7 +191,10 @@ class TrayApp(QObject):
             cfg = win.cfg
             want = base and not cfg.get("hidden") and (not cfg.get("combat_only") or self.engine.in_combat)
             win.set_wanted(want)
-            win.set_items(by_group.get(name, []), now)
+            items_for = by_group.get(name, [])
+            if not cfg.get("show_companions", True):
+                items_for = [i for i in items_for if not (i.kind == "party" and i.meta.get("kind") == "companion")]
+            win.set_items(items_for, now)
 
     # ---- actions ------------------------------------------------------------------------------
     def _tray_activated(self, reason):

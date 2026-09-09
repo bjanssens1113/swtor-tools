@@ -2,9 +2,9 @@ import pathlib
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
-from rules import Profile  # noqa: E402
+from rules import RULE_TYPES, Profile  # noqa: E402
 
-VALID_TYPES = {"self", "target", "stacks", "proc", "cooldown"}
+VALID_TYPES = set(RULE_TYPES)
 
 
 def test_every_profile_loads_and_is_well_formed():

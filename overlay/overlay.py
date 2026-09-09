@@ -25,7 +25,7 @@ COLORS = {
 def _base_color(it: Item) -> QColor:
     if it.color:
         return QColor(it.color)
-    if it.kind == "missing":
+    if it.kind in ("missing", "cleanse"):
         return COLORS["warn"]
     if it.kind == "cooldown":
         return COLORS["cooldown"]
@@ -112,11 +112,13 @@ class GroupWindow(QWidget):
             return s, s
         if style == "text":
             return W, 30.0
+        if it.kind == "party":
+            return W, 20.0
         if it.kind == "fight":
             return W, 24.0
         if it.kind == "stacks":
             return 64.0, 44.0
-        if it.kind in ("flash", "missing"):
+        if it.kind in ("flash", "missing", "cleanse"):
             return W, 30.0
         return W, 18.0
 
@@ -165,13 +167,55 @@ class GroupWindow(QWidget):
         style = self.cfg.get("style", "bars")
         p.translate(pad, pad)
         for it, r in self._layout(W - 2 * pad, H - 2 * pad - (16 if not self.locked else 0)):
-            if style == "icons":
+            if it.kind == "party":
+                self._draw_party_row(p, it, r)
+            elif style == "icons":
                 self._draw_tile(p, it, r)
             elif style == "text":
                 self._draw_text(p, it, r)
             else:
                 self._draw_bar_cell(p, it, r)
         p.end()
+
+    def _draw_party_row(self, p: QPainter, it: Item, r: QRectF):
+        m = it.meta
+        pct = max(0.0, min(1.0, m.get("pct", 1.0)))
+        low = pct * 100 < float(self.cfg.get("low_hp", 35))
+        dead = m.get("dead")
+        p.setPen(Qt.PenStyle.NoPen)
+        p.setBrush(QColor(0, 0, 0, 140))
+        p.drawRoundedRect(r, 4, 4)
+        if dead:
+            col = QColor(90, 90, 90)
+        elif low:
+            col = COLORS["warn"] if int(self.now * 3) % 2 == 0 else QColor(200, 40, 40)   # blink
+        elif pct < 0.7:
+            col = QColor(230, 180, 40)
+        else:
+            col = QColor(60, 190, 80)
+        p.setBrush(QColor(col.red(), col.green(), col.blue(), 200))
+        p.drawRoundedRect(QRectF(r.x(), r.y(), r.width() * pct, r.height()), 4, 4)
+        p.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold if m.get("me") else QFont.Weight.Normal))
+        name = it.label if m.get("kind") != "companion" else f"{it.label} (comp)"
+        self._outlined(p, r.adjusted(5, 0, -5, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft,
+                       name[:18])
+        right = "DEAD" if dead else f"{int(pct * 100)}%"
+        self._outlined(p, r.adjusted(5, 0, -5, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight, right)
+        # my HoTs / shields on this member: small icons (or dots) left of the percent
+        x = r.right() - 44
+        for label, stacks, rem, icon in m.get("effects", [])[:4]:
+            pm = icons.pixmap(icon) if icon else None
+            box = QRectF(x - 16, r.y() + 2, 16, 16)
+            if pm is not None:
+                p.drawPixmap(box.toRect(), pm)
+            else:
+                p.setBrush(COLORS["target"])
+                p.setPen(Qt.PenStyle.NoPen)
+                p.drawEllipse(box.adjusted(3, 3, -3, -3))
+            if stacks:
+                p.setFont(QFont("Segoe UI", 7, QFont.Weight.Bold))
+                self._outlined(p, box, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, str(stacks))
+            x -= 18
 
     def _fmt_rem(self, it: Item) -> str:
         rem = it.remaining(self.now)
@@ -198,7 +242,7 @@ class GroupWindow(QWidget):
             p.setFont(QFont("Segoe UI", 7))
             p.drawText(QRectF(r.x(), r.y() + 27, r.width(), 14), Qt.AlignmentFlag.AlignCenter, it.label[:14])
             return
-        if it.kind in ("flash", "missing"):
+        if it.kind in ("flash", "missing", "cleanse"):
             self._draw_text(p, it, r)
             return
         rem, tot = it.remaining(self.now), it.total()
@@ -223,12 +267,12 @@ class GroupWindow(QWidget):
         if it.kind == "fight":
             return self._draw_bar_cell(p, it, r)
         col = COLORS["warn"] if it.warn(self.now) else _base_color(it)
-        if it.kind == "missing":
+        if it.kind in ("missing", "cleanse"):
             p.setPen(Qt.PenStyle.NoPen)
             p.setBrush(QColor(120, 0, 0, 150))
             p.drawRoundedRect(r, 6, 6)
         p.setPen(col)
-        p.setFont(QFont("Segoe UI", 18, QFont.Weight.Black))
+        p.setFont(QFont("Segoe UI", 18 if it.kind != "cleanse" else 13, QFont.Weight.Black))
         txt = it.label
         if it.kind == "stacks":
             txt = f"{it.label} x{it.stacks}"
@@ -265,9 +309,9 @@ class GroupWindow(QWidget):
                 frac = 0.0 if not tot else 1.0 - rem / tot
                 p.fillRect(QRectF(r.x(), r.y(), r.width(), r.height() * frac), QColor(0, 0, 0, 120))
             p.restore()
-            if it.kind == "missing":
+            if it.kind in ("missing", "cleanse"):
                 p.fillRect(r, QColor(160, 0, 0, 130))
-            if it.kind in ("flash", "missing"):
+            if it.kind in ("flash", "missing", "cleanse"):
                 p.setPen(QPen(col, 3))
                 p.setBrush(Qt.BrushStyle.NoBrush)
                 p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
@@ -292,11 +336,12 @@ class GroupWindow(QWidget):
             p.setBrush(Qt.BrushStyle.NoBrush)
             p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
         big = str(it.stacks) if it.kind == "stacks" else (
-            f"{int(self.now - it.start)}" if it.kind == "fight" else ("✕" if it.kind == "missing" else self._fmt_rem(it)))
+            f"{int(self.now - it.start)}" if it.kind == "fight" else (
+                "✕" if it.kind == "missing" else ("!" if it.kind == "cleanse" else self._fmt_rem(it))))
         p.setFont(QFont("Segoe UI", int(r.height() * 0.36), QFont.Weight.Bold))
         self._outlined(p, QRectF(r.x(), r.y(), r.width(), r.height() * (0.7 if pm is None else 1.0)),
                        Qt.AlignmentFlag.AlignCenter, big)
-        if pm is None or it.kind == "missing":
+        if pm is None or it.kind in ("missing", "cleanse"):
             p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.15))))
             self._outlined(p, QRectF(r.x() + 2, r.y() + r.height() * 0.66, r.width() - 4, r.height() * 0.32),
                            Qt.AlignmentFlag.AlignCenter, it.label.split(" · ")[0][:12])

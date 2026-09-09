@@ -85,6 +85,13 @@ timer from EnterCombat / ExitCombat. Effect names must match the log exactly; `d
 rule: missing stim (regex covers every tier). Class buffs are permanent once unlocked in Legacy, so they are not
 tracked. Edit global rules in Settings → Rules (first entry in the profile list).
 
+**Healer tools**: the `party` group lists everyone in your group with live HP bars (every log line carries the
+actor's HP), blinking red below the group's Low HP %, DEAD greyed, and your own HoTs/shields on each member drawn
+as small icons with stack counts. Companions show when solo (toggle per group). `cleanse` rules alert when an NPC
+puts a debuff of a category you can cleanse on an ally — the log tags debuffs `(Physical)`, `(Tech)`,
+`(Mental)`, `(Force)` — with an ignore list for slows/stuns. Medicine/Sawbones and Bodyguard/Combat Medic ship
+with Physical+Tech, Corruption/Seer with Mental+Force.
+
 **Layout groups**: every rule has a Group; each group is its own movable window with a style (`bars`, `icons`
 with real ability art, `text`), grow direction, scale, combat-only and hidden flags. Make your own groups on the
 Groups tab. Icons come from Parsely: run `overlay/tools/parsely_icons_zip.js` in a logged-in browser tab, then

@@ -7,72 +7,91 @@
  "_auto": true,
  "_mirrored_from": "Medicine Operative",
  "_kind": "mirrored-hand",
- "_source": "mirrored-hand: translated from 'Medicine Operative' via Parsely Empire/Republic name pairs. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
+ "_source": "mirrored-hand: translated from 'Medicine Operative' via Parsely Empire/Republic name pairs. Unmapped names kept as-is: ['cleanse']. Verify effect names against docs/DISCIPLINES.md or a fresh log.",
  "rules": [
   {
-   "type": "stacks",
    "effect": "Upper Hand",
    "label": "TA",
    "max_stacks": 3,
+   "type": "stacks",
    "warn_below": 0
   },
   {
-   "type": "target",
+   "duration": 18.0,
    "effect": "Slow-release Medpac",
-   "duration": 18,
-   "warn_at": 3
+   "type": "target",
+   "warn_at": 3.0
   },
   {
-   "type": "target",
+   "duration": 8.5,
    "effect": "Kolto Cloud",
    "label": "Nanotech",
-   "duration": 8.5
+   "type": "target"
   },
   {
-   "type": "self",
+   "duration": 15.0,
    "effect": "Pugnacity",
-   "duration": 15
+   "type": "self"
   },
   {
-   "type": "self",
+   "duration": 8.0,
    "effect": "Bedside Manner",
-   "duration": 8
+   "type": "self"
   },
   {
-   "type": "self",
+   "duration": 10.0,
    "effect": "Defense Screen",
-   "duration": 10
+   "type": "self"
   },
   {
-   "type": "cooldown",
    "ability": "Kolto Cloud",
    "label": "Nanotech",
-   "seconds": 15
+   "seconds": 15.0,
+   "type": "cooldown"
   },
   {
-   "type": "cooldown",
    "ability": "Kolto Waves",
-   "seconds": 15
+   "seconds": 15.0,
+   "type": "cooldown"
   },
   {
-   "type": "cooldown",
    "ability": "Bushwhack",
-   "seconds": 15
+   "seconds": 15.0,
+   "type": "cooldown"
   },
   {
-   "type": "cooldown",
    "ability": "Pugnacity",
-   "seconds": 90
+   "seconds": 90.0,
+   "type": "cooldown"
   },
   {
-   "type": "cooldown",
    "ability": "Cool Head",
-   "seconds": 90
+   "seconds": 90.0,
+   "type": "cooldown"
   },
   {
-   "type": "cooldown",
    "ability": "Heartrigger Patch",
-   "seconds": 300
+   "seconds": 300.0,
+   "type": "cooldown"
+  },
+  {
+   "type": "cleanse",
+   "effect": "cleanse",
+   "types": [
+    "Physical",
+    "Tech"
+   ],
+   "ignore": [
+    "Slowed (Tech)",
+    "Slowed (Physical)",
+    "Stunned (Tech)",
+    "Stunned (Physical)",
+    "Knockdown (Physical)",
+    "Immobilized (Physical)",
+    "Immobilized (Tech)"
+   ],
+   "label": "CLEANSE",
+   "sound": "beep"
   }
  ]
 }
