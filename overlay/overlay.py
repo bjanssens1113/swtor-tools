@@ -1,22 +1,18 @@
-"""Transparent always-on-top PyQt6 overlay that draws Engine items.
+"""Transparent always-on-top PyQt6 window that draws Engine items. Draws only; never sends input.
 
-Tray icon menu: Lock (click-through) / Unlock (drag to move) / Reset position / Quit.
-Window geometry and lock state persist in overlay/settings.json. Draws only; never sends input.
+The tray icon, game detection and settings live in app.py. This window just needs an Engine, a line source
+(LogTailer / ReplaySource) and the settings dict.
 """
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 from PyQt6.QtCore import QRectF, Qt, QTimer
-from PyQt6.QtGui import QAction, QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap
-from PyQt6.QtWidgets import QApplication, QMenu, QSystemTrayIcon, QWidget
+from PyQt6.QtGui import QColor, QFont, QPainter, QPen
+from PyQt6.QtWidgets import QWidget
 
+import settings as settings_mod
 from parser import parse_line
 from rules import Engine, Item
 
-SETTINGS = Path(__file__).resolve().parent / "settings.json"
-DEFAULT_GEOMETRY = (60, 200, 340, 420)  # x, y, w, h
 COLORS = {
     "bar": QColor(70, 160, 255), "target": QColor(120, 220, 90), "cooldown": QColor(160, 160, 160),
     "warn": QColor(255, 70, 60), "flash": QColor(255, 210, 40), "stacks": QColor(255, 255, 255),
@@ -24,86 +20,53 @@ COLORS = {
 }
 
 
-def _load_settings() -> dict:
-    try:
-        return json.loads(SETTINGS.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}
-
-
-def _save_settings(d: dict):
-    SETTINGS.write_text(json.dumps(d, indent=1), encoding="utf-8")
-
-
 class OverlayWindow(QWidget):
-    def __init__(self, engine: Engine, source, tick_ms: int = 50):
+    def __init__(self, engine: Engine, source, settings: dict, tick_ms: int = 50):
         super().__init__()
-        self.engine, self.source = engine, source
+        self.engine, self.source, self.settings = engine, source, settings
         self.items: list[Item] = []
-        self.settings = _load_settings()
-        self.locked = bool(self.settings.get("locked", False))
         self._drag = None
         self.setWindowTitle("SWTOR overlay")
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        x, y, w, h = self.settings.get("geometry", DEFAULT_GEOMETRY)
-        self.setGeometry(x, y, w, h)
+        self.setGeometry(*self.settings["geometry"])
         self._apply_flags()
-        self._build_tray()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.tick)
         self.timer.start(tick_ms)
 
     # ---- window plumbing ----------------------------------------------------------------------
+    @property
+    def locked(self) -> bool:
+        return bool(self.settings.get("locked"))
+
     def _apply_flags(self):
-        flags = (Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool)
+        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
         if self.locked:
             flags |= Qt.WindowType.WindowTransparentForInput
+        visible = self.isVisible()
         self.setWindowFlags(flags)
-        self.show()
+        if visible:
+            self.show()
 
-    def _build_tray(self):
-        pm = QPixmap(32, 32)
-        pm.fill(Qt.GlobalColor.transparent)
-        p = QPainter(pm)
-        p.setBrush(QBrush(COLORS["bar"]))
-        p.setPen(Qt.PenStyle.NoPen)
-        p.drawRoundedRect(2, 2, 28, 28, 6, 6)
-        p.end()
-        self.tray = QSystemTrayIcon(QIcon(pm), self)
-        menu = QMenu()
-        self.lock_action = QAction("", menu)
-        self.lock_action.triggered.connect(self.toggle_lock)
-        menu.addAction(self.lock_action)
-        reset = QAction("Reset position", menu)
-        reset.triggered.connect(self.reset_position)
-        menu.addAction(reset)
-        quit_ = QAction("Quit", menu)
-        quit_.triggered.connect(QApplication.instance().quit)
-        menu.addAction(quit_)
-        self.tray.setContextMenu(menu)
-        self._refresh_tray_text()
-        self.tray.show()
+    def set_locked(self, locked: bool):
+        self.settings["locked"] = bool(locked)
+        settings_mod.save(self.settings)
+        self._apply_flags()
+        self.update()
 
-    def _refresh_tray_text(self):
-        self.lock_action.setText("Unlock (move overlay)" if self.locked else "Lock (click-through)")
-        self.tray.setToolTip(f"SWTOR overlay — {'locked' if self.locked else 'UNLOCKED: drag to move'}")
-
-    def toggle_lock(self):
-        self.locked = not self.locked
-        self.settings["locked"] = self.locked
-        _save_settings(self.settings)
-        self._refresh_tray_text()
+    def apply_settings(self):
+        """Call after settings changed externally (config window)."""
         self._apply_flags()
         self.update()
 
     def reset_position(self):
-        self.setGeometry(*DEFAULT_GEOMETRY)
+        self.setGeometry(*settings_mod.DEFAULTS["geometry"])
         self._save_geometry()
 
     def _save_geometry(self):
         g = self.geometry()
         self.settings["geometry"] = [g.x(), g.y(), g.width(), g.height()]
-        _save_settings(self.settings)
+        settings_mod.save(self.settings)
 
     def mousePressEvent(self, e):
         if not self.locked and e.button() == Qt.MouseButton.LeftButton:
@@ -125,21 +88,25 @@ class OverlayWindow(QWidget):
             if ev:
                 self.engine.feed(ev)
         self.items = self.engine.snapshot(self.source.now())
-        self.update()
+        if self.isVisible():
+            self.update()
 
     # ---- drawing ------------------------------------------------------------------------------
     def paintEvent(self, _):
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
-        w = self.width()
+        s = float(self.settings.get("scale") or 1.0)
+        p.scale(s, s)
+        w = self.width() / s
+        h = self.height() / s
         now = self.source.now()
         if not self.locked:
             p.setPen(QPen(COLORS["flash"], 2, Qt.PenStyle.DashLine))
             p.setBrush(QColor(0, 0, 0, 90))
-            p.drawRoundedRect(1, 1, w - 2, self.height() - 2, 8, 8)
+            p.drawRoundedRect(QRectF(1, 1, w - 2, h - 2), 8, 8)
             p.setPen(COLORS["flash"])
             p.setFont(QFont("Segoe UI", 9))
-            p.drawText(QRectF(0, self.height() - 22, w, 20), Qt.AlignmentFlag.AlignCenter,
+            p.drawText(QRectF(0, h - 22, w, 20), Qt.AlignmentFlag.AlignCenter,
                        "UNLOCKED — drag to move, tray icon to lock")
         y = 6
         header = self.engine.profile.name if self.engine.profile else (self.engine.discipline or "waiting for log…")
@@ -171,6 +138,9 @@ class OverlayWindow(QWidget):
                 p.setFont(QFont("Segoe UI", 7))
                 p.drawText(QRectF(x, y + 27, 64, 14), Qt.AlignmentFlag.AlignCenter, it.label[:14])
                 x += 70
+                if x + 64 > w - 6:
+                    x = 6
+                    y += 50
             y += 50
         for it in flashes:
             p.setPen(QColor(it.color) if it.color else COLORS["flash"])

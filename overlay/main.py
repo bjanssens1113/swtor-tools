@@ -1,9 +1,9 @@
-"""SWTOR alert overlay — Tool B. Reads the combat log file; nothing else.
+"""SWTOR alert overlay — Tool B. Reads the combat log file and the Windows process list; nothing else.
 
-  python overlay/main.py                              # tail the newest live log
+  python overlay/main.py                              # tray app: overlay shows while swtor.exe runs
+  python overlay/main.py --settings                   # same, and open the settings window
   python overlay/main.py --replay overlay/samples/X.txt --speed 4 --skip-to 09:23:40
   python overlay/main.py --headless --replay ...      # text mode, no window (for testing)
-  python overlay/main.py --profile "Lethality Operative"   # force a profile
 """
 from __future__ import annotations
 
@@ -44,8 +44,7 @@ def run_headless(engine: Engine, source, seconds: float):
             now = source.now()
             items = engine.snapshot(now)
             hh, mm, ss = int(now // 3600), int(now % 3600 // 60), now % 60
-            head = f"[{hh:02d}:{mm:02d}:{ss:04.1f}] {engine.profile.name if engine.profile else engine.discipline}"
-            print(head)
+            print(f"[{hh:02d}:{mm:02d}:{ss:04.1f}] {engine.profile.name if engine.profile else engine.discipline}")
             for it in items:
                 rem = it.remaining(now)
                 extra = f" {rem:5.1f}s" if rem is not None else ""
@@ -61,28 +60,28 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--log-dir", default=str(DEFAULT_LOG_DIR))
     ap.add_argument("--from-start", action="store_true", help="read the current log from its beginning")
-    ap.add_argument("--profile", help="force a profile by name instead of auto-detecting from DisciplineChanged")
+    ap.add_argument("--profile", help="headless: force a profile by name")
     ap.add_argument("--replay", help="replay a saved log file instead of tailing the live one")
     ap.add_argument("--speed", type=float, default=1.0, help="replay speed multiplier")
     ap.add_argument("--skip-to", help="replay: start the clock at HH:MM:SS (earlier lines are applied instantly)")
     ap.add_argument("--headless", action="store_true", help="print snapshots to stdout instead of drawing a window")
     ap.add_argument("--duration", type=float, default=30.0, help="headless: seconds to run")
+    ap.add_argument("--settings", action="store_true", help="open the settings window on start")
     a = ap.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # names can carry odd bytes; never crash on print
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-    engine = Engine(Profile.load_all(), forced_profile=a.profile)
     source = build_source(a)
     if a.headless:
+        engine = Engine(Profile.load_all(), forced_profile=a.profile)
         run_headless(engine, source, a.duration)
         return
     from PyQt6.QtWidgets import QApplication  # imported late so headless mode needs no Qt
-    from overlay import OverlayWindow
-    app = QApplication(sys.argv)
-    app.setQuitOnLastWindowClosed(False)
-    win = OverlayWindow(engine, source)
-    win.show()
-    sys.exit(app.exec())
+    from app import TrayApp
+    qapp = QApplication(sys.argv)
+    qapp.setQuitOnLastWindowClosed(False)
+    tray = TrayApp(qapp, source, replay=bool(a.replay), open_settings=a.settings)  # noqa: F841 (kept alive)
+    sys.exit(qapp.exec())
 
 
 if __name__ == "__main__":

@@ -35,6 +35,8 @@ class Rule:
     text: str = ""              # proc flash text (defaults to effect name)
     label: str = ""
     color: str = ""
+    enabled: bool = True
+    group: str = ""             # reserved for layout groups
 
     @classmethod
     def from_dict(cls, d: dict) -> "Rule":
@@ -47,11 +49,15 @@ class Profile:
     cls: str
     discipline: str
     rules: list[Rule]
+    path: Optional[Path] = None
+    auto: bool = False
 
     @classmethod
     def load(cls, path) -> "Profile":
-        d = json.loads(Path(path).read_text(encoding="utf-8"))
-        return cls(d["name"], d["match"]["class"], d["match"]["discipline"], [Rule.from_dict(r) for r in d["rules"]])
+        path = Path(path)
+        d = json.loads(path.read_text(encoding="utf-8"))
+        return cls(d["name"], d["match"]["class"], d["match"]["discipline"],
+                   [Rule.from_dict(r) for r in d["rules"]], path, bool(d.get("_auto")))
 
     @staticmethod
     def load_all(directory=PROFILE_DIR) -> list["Profile"]:
@@ -106,6 +112,10 @@ class Engine:
             if self.profile is None:
                 raise SystemExit(f"no profile named {forced_profile!r}; have: {[p.name for p in profiles]}")
 
+    @property
+    def profile_names(self) -> list[str]:
+        return [p.name for p in self.profiles]
+
     # ---- helpers -------------------------------------------------------------------------------
     def _is_me(self, ent) -> bool:
         return ent is not None and ent.kind == "player" and ent.name == self.me
@@ -120,7 +130,20 @@ class Engine:
     def _rules(self, type_: str, name: str, attr: str = "effect"):
         if not self.profile:
             return []
-        return [r for r in self.profile.rules if r.type == type_ and getattr(r, attr) == name]
+        return [r for r in self.profile.rules if r.enabled and r.type == type_ and getattr(r, attr) == name]
+
+    def reload(self, profiles: list[Profile], forced_profile: Optional[str] = None):
+        """Swap in freshly loaded profiles (hot reload) without losing who/where we are."""
+        self.profiles = profiles
+        self.forced = forced_profile or None
+        if self.forced:
+            self.profile = next((p for p in profiles if p.name.lower() == self.forced.lower()), None)
+        elif self.discipline:
+            cls, disc = self.discipline.split("/", 1)
+            self.profile = next((p for p in profiles if p.cls == cls and p.discipline == disc), None)
+        else:
+            self.profile = None
+        self.items.clear()
 
     # ---- event intake --------------------------------------------------------------------------
     def feed(self, ev: Event):
