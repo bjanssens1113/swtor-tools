@@ -36,11 +36,20 @@ class Rule:
     label: str = ""
     color: str = ""
     enabled: bool = True
-    group: str = ""             # reserved for layout groups
+    group: str = ""             # layout group; empty = default for the rule type (see DEFAULT_GROUP)
+    sound: str = ""             # "" | "beep" | path to a .wav; plays when the item appears (cooldown: when READY)
 
     @classmethod
     def from_dict(cls, d: dict) -> "Rule":
         return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})
+
+    @property
+    def group_name(self) -> str:
+        return self.group or DEFAULT_GROUP[self.type]
+
+
+DEFAULT_GROUP = {"self": "buffs", "target": "target", "stacks": "stacks", "proc": "alerts", "cooldown": "cooldowns"}
+DEFAULT_GROUPS = ["timer", "stacks", "alerts", "buffs", "target", "cooldowns"]
 
 
 @dataclass
@@ -82,6 +91,8 @@ class Item:
     color: str = ""
     target: Optional[str] = None
     order: int = 0
+    group: str = ""
+    sound: str = ""
     meta: dict = field(default_factory=dict)
 
     def remaining(self, now: float) -> Optional[float]:
@@ -115,6 +126,20 @@ class Engine:
     @property
     def profile_names(self) -> list[str]:
         return [p.name for p in self.profiles]
+
+    @property
+    def in_combat(self) -> bool:
+        return self.fight_start is not None
+
+    def group_names(self) -> list[str]:
+        """Default groups plus every group any loaded profile references."""
+        names = list(DEFAULT_GROUPS)
+        for p in self.profiles:
+            for r in p.rules:
+                g = r.group_name
+                if g not in names:
+                    names.append(g)
+        return names
 
     # ---- helpers -------------------------------------------------------------------------------
     def _is_me(self, ent) -> bool:
@@ -168,7 +193,7 @@ class Engine:
                 for r in self._rules("cooldown", ev.ability.name, "ability"):
                     self.items[f"cd:{r.ability}"] = Item(
                         f"cd:{r.ability}", "cooldown", r.label or r.ability, ev.seconds, ev.seconds + r.seconds,
-                        color=r.color, order=50)
+                        color=r.color, order=50, group=r.group_name, sound=r.sound)
             return
         if not ev.effect or not self.profile:
             return
@@ -180,17 +205,20 @@ class Engine:
                 for r in self._rules("self", name):
                     end = ev.seconds + r.duration if r.duration else None
                     self.items[f"self:{name}"] = Item(f"self:{name}", "bar", r.label or name, ev.seconds, end,
-                                                      warn_at=r.warn_at, color=r.color, order=30)
+                                                      warn_at=r.warn_at, color=r.color, order=30,
+                                                      group=r.group_name, sound=r.sound)
                 for r in self._rules("proc", name):
                     end = ev.seconds + (r.duration or 3.0)
                     self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash", r.text or r.label or name,
-                                                      ev.seconds, end, color=r.color, order=20)
+                                                      ev.seconds, end, color=r.color, order=20,
+                                                      group=r.group_name, sound=r.sound)
                 for r in self._rules("stacks", name):
                     it = self.items.get(f"stk:{name}")
                     stacks = max(1, it.stacks) if it else 1
                     self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds,
                                                      stacks=stacks, warn_below=r.warn_below,
-                                                     max_stacks=r.max_stacks, color=r.color, order=10)
+                                                     max_stacks=r.max_stacks, color=r.color, order=10,
+                                                     group=r.group_name, sound=r.sound)
             if src_me and tgt is not None and not tgt_me:
                 for r in self._rules("target", name):
                     inst = tgt.instance or tgt.name
@@ -198,7 +226,8 @@ class Engine:
                     end = ev.seconds + r.duration if r.duration else None
                     self.items[key] = Item(key, "bar", f"{r.label or name} · {tgt.name}", ev.seconds, end,
                                            warn_at=r.warn_at, color=r.color, target=inst, order=40,
-                                           stacks=self.items[key].stacks if key in self.items else 0)
+                                           stacks=self.items[key].stacks if key in self.items else 0,
+                                           group=r.group_name, sound=r.sound)
         elif ev.type == "RemoveEffect":
             if tgt_me:
                 self.items.pop(f"self:{name}", None)
@@ -214,7 +243,8 @@ class Engine:
                     it = self.items.get(f"stk:{name}")
                     if it is None:
                         it = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds, warn_below=r.warn_below,
-                                  max_stacks=r.max_stacks, color=r.color, order=10)
+                                  max_stacks=r.max_stacks, color=r.color, order=10, group=r.group_name,
+                                  sound=r.sound)
                         self.items[it.key] = it
                     it.stacks = ev.value.amount
             elif tgt is not None:
@@ -226,13 +256,14 @@ class Engine:
     def snapshot(self, now: float) -> list[Item]:
         out: list[Item] = []
         if self.fight_start is not None:
-            out.append(Item("fight", "fight", "Fight", self.fight_start, None, order=0))
+            out.append(Item("fight", "fight", "Fight", self.fight_start, None, order=0, group="timer"))
         expired = []
         for it in self.items.values():
             if it.kind == "cooldown" and it.end is not None and now >= it.end:
                 if now < it.end + READY_FLASH_SECONDS:
                     out.append(Item(it.key + ":ready", "flash", f"{it.label} READY", it.end,
-                                    it.end + READY_FLASH_SECONDS, color=it.color, order=20))
+                                    it.end + READY_FLASH_SECONDS, color=it.color, order=20, group="alerts",
+                                    sound=it.sound))
                 expired.append(it.key)
                 continue
             if it.end is not None and now >= it.end and it.kind != "stacks":

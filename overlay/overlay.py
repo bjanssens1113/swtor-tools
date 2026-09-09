@@ -1,38 +1,50 @@
-"""Transparent always-on-top PyQt6 window that draws Engine items. Draws only; never sends input.
+"""GroupWindow: one transparent always-on-top window per layout group (WeakAuras-style group).
 
-The tray icon, game detection and settings live in app.py. This window just needs an Engine, a line source
-(LogTailer / ReplaySource) and the settings dict.
+Each group has its own position, grow direction (down / up), scale and display style:
+  bars  - stack boxes, flash text and progress bars (the classic look)
+  icons - square tiles with a big countdown / stack number and a small label, wrapping at `columns`
+  text  - one big text line per item (for alert groups)
+Draws only; never sends input. app.py feeds it items every tick.
 """
 from __future__ import annotations
 
-from PyQt6.QtCore import QRectF, Qt, QTimer
+from PyQt6.QtCore import QRectF, Qt
 from PyQt6.QtGui import QColor, QFont, QPainter, QPen
 from PyQt6.QtWidgets import QWidget
 
-import settings as settings_mod
-from parser import parse_line
-from rules import Engine, Item
+from rules import Item
 
 COLORS = {
-    "bar": QColor(70, 160, 255), "target": QColor(120, 220, 90), "cooldown": QColor(160, 160, 160),
+    "bar": QColor(70, 160, 255), "target": QColor(120, 220, 90), "cooldown": QColor(110, 110, 110),
     "warn": QColor(255, 70, 60), "flash": QColor(255, 210, 40), "stacks": QColor(255, 255, 255),
-    "fight": QColor(220, 220, 220),
+    "fight": QColor(220, 220, 220), "ready": QColor(120, 255, 120),
 }
 
 
-class OverlayWindow(QWidget):
-    def __init__(self, engine: Engine, source, settings: dict, tick_ms: int = 50):
+def _base_color(it: Item) -> QColor:
+    if it.color:
+        return QColor(it.color)
+    if it.kind == "cooldown":
+        return COLORS["cooldown"]
+    if it.kind == "flash":
+        return COLORS["ready"] if it.label.endswith("READY") else COLORS["flash"]
+    if it.target:
+        return COLORS["target"]
+    return COLORS["bar"]
+
+
+class GroupWindow(QWidget):
+    def __init__(self, name: str, cfg: dict, settings: dict, save_cb):
         super().__init__()
-        self.engine, self.source, self.settings = engine, source, settings
+        self.name, self.cfg, self.settings, self.save = name, cfg, settings, save_cb
         self.items: list[Item] = []
+        self.now = 0.0
+        self.wanted = False          # app-level: game running, enabled, combat rule...
         self._drag = None
-        self.setWindowTitle("SWTOR overlay")
+        self.setWindowTitle(f"SWTOR overlay — {name}")
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setGeometry(*self.settings["geometry"])
+        self.setGeometry(*self.cfg["geometry"])
         self._apply_flags()
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.tick)
-        self.timer.start(tick_ms)
 
     # ---- window plumbing ----------------------------------------------------------------------
     @property
@@ -43,30 +55,33 @@ class OverlayWindow(QWidget):
         flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
         if self.locked:
             flags |= Qt.WindowType.WindowTransparentForInput
-        visible = self.isVisible()
+        was = self.isVisible()
         self.setWindowFlags(flags)
-        if visible:
+        if was:
             self.show()
 
-    def set_locked(self, locked: bool):
-        self.settings["locked"] = bool(locked)
-        settings_mod.save(self.settings)
-        self._apply_flags()
-        self.update()
-
     def apply_settings(self):
-        """Call after settings changed externally (config window)."""
+        """Re-read cfg (style/scale/geometry) and lock state."""
+        g = self.cfg["geometry"]
+        if [self.x(), self.y(), self.width(), self.height()] != g:
+            self.setGeometry(*g)
         self._apply_flags()
         self.update()
 
-    def reset_position(self):
-        self.setGeometry(*settings_mod.DEFAULTS["geometry"])
-        self._save_geometry()
+    def set_wanted(self, wanted: bool):
+        self.wanted = wanted
+        if wanted != self.isVisible():
+            self.setVisible(wanted)
+
+    def reset_position(self, geometry: list):
+        self.cfg["geometry"] = list(geometry)
+        self.setGeometry(*geometry)
+        self.save()
 
     def _save_geometry(self):
         g = self.geometry()
-        self.settings["geometry"] = [g.x(), g.y(), g.width(), g.height()]
-        settings_mod.save(self.settings)
+        self.cfg["geometry"] = [g.x(), g.y(), g.width(), g.height()]
+        self.save()
 
     def mousePressEvent(self, e):
         if not self.locked and e.button() == Qt.MouseButton.LeftButton:
@@ -81,94 +96,174 @@ class OverlayWindow(QWidget):
             self._drag = None
             self._save_geometry()
 
-    # ---- data ---------------------------------------------------------------------------------
-    def tick(self):
-        for line in self.source.poll():
-            ev = parse_line(line)
-            if ev:
-                self.engine.feed(ev)
-        self.items = self.engine.snapshot(self.source.now())
+    def set_items(self, items: list[Item], now: float):
+        self.items, self.now = items, now
         if self.isVisible():
             self.update()
+
+    # ---- layout ---------------------------------------------------------------------------------
+    def _cell_size(self, it: Item, W: float) -> tuple[float, float]:
+        style = self.cfg.get("style", "bars")
+        if style == "icons":
+            s = float(self.cfg.get("icon_size", 48))
+            return s, s
+        if style == "text":
+            return W, 30.0
+        if it.kind == "fight":
+            return W, 24.0
+        if it.kind == "stacks":
+            return 64.0, 44.0
+        if it.kind == "flash":
+            return W, 30.0
+        return W, 18.0
+
+    def _layout(self, W: float, H: float, gap: float = 3.0):
+        """Flow cells left-to-right, wrapping; rows grow down or up."""
+        cells = [(it, self._cell_size(it, W)) for it in self.items]
+        rows, row, x, rowh = [], [], 0.0, 0.0
+        for it, (cw, ch) in cells:
+            if row and x + cw > W + 0.01:
+                rows.append((row, rowh))
+                row, x, rowh = [], 0.0, 0.0
+            row.append((it, x, cw, ch))
+            x += cw + gap
+            rowh = max(rowh, ch)
+        if row:
+            rows.append((row, rowh))
+        out = []
+        if self.cfg.get("orientation") == "up":
+            y = H
+            for row, rowh in rows:
+                y -= rowh
+                out += [(it, QRectF(x, y, cw, ch)) for it, x, cw, ch in row]
+                y -= gap
+        else:
+            y = 0.0
+            for row, rowh in rows:
+                out += [(it, QRectF(x, y, cw, ch)) for it, x, cw, ch in row]
+                y += rowh + gap
+        return out
 
     # ---- drawing ------------------------------------------------------------------------------
     def paintEvent(self, _):
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
-        s = float(self.settings.get("scale") or 1.0)
+        s = float(self.cfg.get("scale") or 1.0)
         p.scale(s, s)
-        w = self.width() / s
-        h = self.height() / s
-        now = self.source.now()
+        W, H = self.width() / s, self.height() / s
+        pad = 4.0
         if not self.locked:
-            p.setPen(QPen(COLORS["flash"], 2, Qt.PenStyle.DashLine))
-            p.setBrush(QColor(0, 0, 0, 90))
-            p.drawRoundedRect(QRectF(1, 1, w - 2, h - 2), 8, 8)
+            p.setPen(QPen(COLORS["flash"], 1.5, Qt.PenStyle.DashLine))
+            p.setBrush(QColor(0, 0, 0, 80))
+            p.drawRoundedRect(QRectF(1, 1, W - 2, H - 2), 6, 6)
             p.setPen(COLORS["flash"])
-            p.setFont(QFont("Segoe UI", 9))
-            p.drawText(QRectF(0, h - 22, w, 20), Qt.AlignmentFlag.AlignCenter,
-                       "UNLOCKED — drag to move, tray icon to lock")
-        y = 6
-        header = self.engine.profile.name if self.engine.profile else (self.engine.discipline or "waiting for log…")
-        p.setPen(QColor(200, 200, 200, 200))
-        p.setFont(QFont("Segoe UI", 8))
-        p.drawText(QRectF(6, y, w - 12, 14), Qt.AlignmentFlag.AlignLeft, header)
-        y += 16
-        flashes = [i for i in self.items if i.kind == "flash"]
-        stacks = [i for i in self.items if i.kind == "stacks"]
-        bars = [i for i in self.items if i.kind in ("bar", "cooldown")]
-        fight = next((i for i in self.items if i.kind == "fight"), None)
-        if fight:
-            t = now - fight.start
+            p.setFont(QFont("Segoe UI", 8))
+            p.drawText(QRectF(pad, H - 16, W - 2 * pad, 14), Qt.AlignmentFlag.AlignRight, self.name)
+        style = self.cfg.get("style", "bars")
+        p.translate(pad, pad)
+        for it, r in self._layout(W - 2 * pad, H - 2 * pad - (16 if not self.locked else 0)):
+            if style == "icons":
+                self._draw_tile(p, it, r)
+            elif style == "text":
+                self._draw_text(p, it, r)
+            else:
+                self._draw_bar_cell(p, it, r)
+        p.end()
+
+    def _fmt_rem(self, it: Item) -> str:
+        rem = it.remaining(self.now)
+        if rem is None:
+            return ""
+        return f"{rem:.1f}" if rem < 10 else f"{int(rem)}"
+
+    def _draw_bar_cell(self, p: QPainter, it: Item, r: QRectF):
+        warn = it.warn(self.now)
+        if it.kind == "fight":
+            t = self.now - it.start
             p.setPen(COLORS["fight"])
             p.setFont(QFont("Consolas", 14, QFont.Weight.Bold))
-            p.drawText(QRectF(6, y, w - 12, 22), Qt.AlignmentFlag.AlignLeft, f"{int(t // 60):02d}:{t % 60:04.1f}")
-            y += 26
-        if stacks:
-            x = 6
-            for it in stacks:
-                warn = it.warn(now)
-                box = QRectF(x, y, 64, 44)
-                p.setPen(Qt.PenStyle.NoPen)
-                p.setBrush(QColor(255, 60, 50, 160) if warn else QColor(0, 0, 0, 130))
-                p.drawRoundedRect(box, 6, 6)
-                p.setPen(COLORS["stacks"])
-                p.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
-                p.drawText(QRectF(x, y, 64, 28), Qt.AlignmentFlag.AlignCenter, str(it.stacks))
-                p.setFont(QFont("Segoe UI", 7))
-                p.drawText(QRectF(x, y + 27, 64, 14), Qt.AlignmentFlag.AlignCenter, it.label[:14])
-                x += 70
-                if x + 64 > w - 6:
-                    x = 6
-                    y += 50
-            y += 50
-        for it in flashes:
-            p.setPen(QColor(it.color) if it.color else COLORS["flash"])
-            p.setFont(QFont("Segoe UI", 18, QFont.Weight.Black))
-            p.drawText(QRectF(6, y, w - 12, 30), Qt.AlignmentFlag.AlignCenter, it.label)
-            y += 32
-        for it in bars:
-            rem, tot = it.remaining(now), it.total()
-            warn = it.warn(now)
-            base = COLORS["cooldown"] if it.kind == "cooldown" else (COLORS["target"] if it.target else COLORS["bar"])
-            if it.color:
-                base = QColor(it.color)
-            col = COLORS["warn"] if warn else base
-            rect = QRectF(6, y, w - 12, 18)
+            p.drawText(r, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                       f"{int(t // 60):02d}:{t % 60:04.1f}")
+            return
+        if it.kind == "stacks":
             p.setPen(Qt.PenStyle.NoPen)
-            p.setBrush(QColor(0, 0, 0, 130))
-            p.drawRoundedRect(rect, 4, 4)
-            frac = 1.0 if rem is None or not tot else rem / tot
-            if it.kind == "cooldown":
-                frac = 1.0 - frac
-            p.setBrush(QColor(col.red(), col.green(), col.blue(), 190))
-            p.drawRoundedRect(QRectF(6, y, (w - 12) * max(0.0, min(1.0, frac)), 18), 4, 4)
-            p.setPen(Qt.GlobalColor.white)
-            p.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
-            label = it.label + (f"  x{it.stacks}" if it.stacks else "")
-            p.drawText(rect.adjusted(6, 0, -6, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, label)
-            if rem is not None:
-                p.drawText(rect.adjusted(6, 0, -6, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight,
-                           f"{rem:.1f}")
-            y += 21
-        p.end()
+            p.setBrush(QColor(255, 60, 50, 160) if warn else QColor(0, 0, 0, 130))
+            p.drawRoundedRect(r, 6, 6)
+            p.setPen(COLORS["stacks"])
+            p.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+            p.drawText(QRectF(r.x(), r.y(), r.width(), 28), Qt.AlignmentFlag.AlignCenter, str(it.stacks))
+            p.setFont(QFont("Segoe UI", 7))
+            p.drawText(QRectF(r.x(), r.y() + 27, r.width(), 14), Qt.AlignmentFlag.AlignCenter, it.label[:14])
+            return
+        if it.kind == "flash":
+            self._draw_text(p, it, r)
+            return
+        rem, tot = it.remaining(self.now), it.total()
+        col = COLORS["warn"] if warn else _base_color(it)
+        p.setPen(Qt.PenStyle.NoPen)
+        p.setBrush(QColor(0, 0, 0, 130))
+        p.drawRoundedRect(r, 4, 4)
+        frac = 1.0 if rem is None or not tot else rem / tot
+        if it.kind == "cooldown":
+            frac = 1.0 - frac
+        p.setBrush(QColor(col.red(), col.green(), col.blue(), 190))
+        p.drawRoundedRect(QRectF(r.x(), r.y(), r.width() * max(0.0, min(1.0, frac)), r.height()), 4, 4)
+        p.setPen(Qt.GlobalColor.white)
+        p.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
+        label = it.label + (f"  x{it.stacks}" if it.stacks else "")
+        p.drawText(r.adjusted(6, 0, -6, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, label)
+        if rem is not None:
+            p.drawText(r.adjusted(6, 0, -6, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight,
+                       f"{rem:.1f}")
+
+    def _draw_text(self, p: QPainter, it: Item, r: QRectF):
+        if it.kind == "fight":
+            return self._draw_bar_cell(p, it, r)
+        col = COLORS["warn"] if it.warn(self.now) else _base_color(it)
+        p.setPen(col)
+        p.setFont(QFont("Segoe UI", 18, QFont.Weight.Black))
+        txt = it.label
+        if it.kind == "stacks":
+            txt = f"{it.label} x{it.stacks}"
+        elif it.kind in ("bar", "cooldown"):
+            txt = f"{it.label} {self._fmt_rem(it)}"
+        p.drawText(r, Qt.AlignmentFlag.AlignCenter, txt)
+
+    def _draw_tile(self, p: QPainter, it: Item, r: QRectF):
+        warn = it.warn(self.now)
+        col = _base_color(it)
+        p.setPen(Qt.PenStyle.NoPen)
+        if it.kind == "cooldown":
+            p.setBrush(QColor(0, 0, 0, 170))
+            p.drawRoundedRect(r, 6, 6)
+            rem, tot = it.remaining(self.now), it.total()
+            frac = 0.0 if rem is None or not tot else rem / tot
+            # "sweep": dim cover shrinks from the top as the cooldown runs
+            p.setBrush(QColor(col.red(), col.green(), col.blue(), 90))
+            p.drawRoundedRect(QRectF(r.x(), r.y() + r.height() * (1 - frac), r.width(), r.height() * frac), 6, 6)
+        elif it.kind == "fight":
+            p.setBrush(QColor(0, 0, 0, 150))
+            p.drawRoundedRect(r, 6, 6)
+        else:
+            p.setBrush(QColor(col.red(), col.green(), col.blue(), 200 if not warn else 120))
+            p.drawRoundedRect(r, 6, 6)
+            if it.kind == "bar" and it.end is not None:
+                rem, tot = it.remaining(self.now), it.total()
+                frac = 0.0 if not tot else 1.0 - rem / tot
+                p.setBrush(QColor(0, 0, 0, 120))
+                p.drawRoundedRect(QRectF(r.x(), r.y(), r.width(), r.height() * frac), 6, 6)
+        if warn:
+            p.setPen(QPen(COLORS["warn"], 3))
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
+        big = str(it.stacks) if it.kind == "stacks" else (
+            f"{int(self.now - it.start)}" if it.kind == "fight" else self._fmt_rem(it))
+        p.setPen(Qt.GlobalColor.white)
+        p.setFont(QFont("Segoe UI", int(r.height() * 0.36), QFont.Weight.Bold))
+        p.drawText(QRectF(r.x(), r.y(), r.width(), r.height() * 0.7), Qt.AlignmentFlag.AlignCenter, big)
+        p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.15))))
+        p.drawText(QRectF(r.x() + 2, r.y() + r.height() * 0.66, r.width() - 4, r.height() * 0.32),
+                   Qt.AlignmentFlag.AlignCenter, it.label.split(" · ")[0][:12])
+        if it.kind == "bar" and it.stacks:
+            p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.2)), QFont.Weight.Bold))
+            p.drawText(r.adjusted(0, 2, -3, 0), Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, str(it.stacks))

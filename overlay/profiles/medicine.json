@@ -1,22 +1,75 @@
 {
  "name": "Medicine Operative",
- "match": {"class": "Operative", "discipline": "Medicine"},
+ "match": {
+  "class": "Operative",
+  "discipline": "Medicine"
+ },
  "_source": "effect names from Brad's own Medicine logs (docs/CATALOG.md); durations: Recuperative Nanotech measured 8.4 s, Kolto Probe 18 s (game tooltip), cooldowns approximate — tune in game",
  "rules": [
-  {"type": "stacks",   "effect": "Tactical Advantage", "label": "TA", "max_stacks": 3, "warn_below": 0},
-
-  {"type": "target",   "effect": "Kolto Probe",           "duration": 18, "warn_at": 3},
-  {"type": "target",   "effect": "Recuperative Nanotech", "label": "Nanotech", "duration": 8.5},
-
-  {"type": "self",     "effect": "Stim Boost",       "duration": 15},
-  {"type": "self",     "effect": "Tactical Medicine", "duration": 8},
-  {"type": "self",     "effect": "Shield Probe",     "duration": 10},
-
-  {"type": "cooldown", "ability": "Recuperative Nanotech", "label": "Nanotech", "seconds": 15},
-  {"type": "cooldown", "ability": "Kolto Waves",          "seconds": 15},
-  {"type": "cooldown", "ability": "Toxic Haze",           "seconds": 15},
-  {"type": "cooldown", "ability": "Stim Boost",           "seconds": 90},
-  {"type": "cooldown", "ability": "Adrenaline Probe",     "seconds": 90},
-  {"type": "cooldown", "ability": "Resuscitation Probe",  "seconds": 300}
+  {
+   "effect": "Tactical Advantage",
+   "label": "TA",
+   "max_stacks": 3,
+   "type": "stacks",
+   "warn_below": 0
+  },
+  {
+   "duration": 18.0,
+   "effect": "Kolto Probe",
+   "type": "target",
+   "warn_at": 3.0
+  },
+  {
+   "duration": 8.5,
+   "effect": "Recuperative Nanotech",
+   "label": "Nanotech",
+   "type": "target"
+  },
+  {
+   "duration": 15.0,
+   "effect": "Stim Boost",
+   "type": "self"
+  },
+  {
+   "duration": 8.0,
+   "effect": "Tactical Medicine",
+   "type": "self"
+  },
+  {
+   "duration": 10.0,
+   "effect": "Shield Probe",
+   "type": "self"
+  },
+  {
+   "ability": "Recuperative Nanotech",
+   "label": "Nanotech",
+   "seconds": 15.0,
+   "type": "cooldown"
+  },
+  {
+   "ability": "Kolto Waves",
+   "seconds": 15.0,
+   "type": "cooldown"
+  },
+  {
+   "ability": "Toxic Haze",
+   "seconds": 15.0,
+   "type": "cooldown"
+  },
+  {
+   "ability": "Stim Boost",
+   "seconds": 90.0,
+   "type": "cooldown"
+  },
+  {
+   "ability": "Adrenaline Probe",
+   "seconds": 90.0,
+   "type": "cooldown"
+  },
+  {
+   "ability": "Resuscitation Probe",
+   "seconds": 300.0,
+   "type": "cooldown"
+  }
  ]
 }

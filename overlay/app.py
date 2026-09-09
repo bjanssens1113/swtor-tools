@@ -1,7 +1,8 @@
-"""Tray application: owns the engine, the log source and the overlay window.
+"""Tray application: owns the engine, the log source and one GroupWindow per layout group.
 
 - Shows the overlay only while swtor.exe is running (configurable).
 - Hot-reloads profiles when any profiles/*.json changes.
+- Plays a rule's sound when its item first appears.
 - Tray menu: enable, lock, settings, reload, open profiles folder, quit.
 Reads the log file and the Windows process list. Never touches the game.
 """
@@ -16,7 +17,8 @@ from PyQt6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
 import gamewatch
 import settings as settings_mod
-from overlay import OverlayWindow
+from overlay import GroupWindow
+from parser import parse_line
 from rules import PROFILE_DIR, Engine, Profile
 
 
@@ -31,6 +33,18 @@ def _icon(color=QColor(70, 160, 255)) -> QIcon:
     return QIcon(pm)
 
 
+def play_sound(spec: str):
+    """'beep' or a .wav path. Silent on any failure."""
+    try:
+        import winsound
+        if spec == "beep":
+            winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS | winsound.SND_ASYNC)
+        elif spec and Path(spec).exists():
+            winsound.PlaySound(spec, winsound.SND_FILENAME | winsound.SND_ASYNC)
+    except Exception:
+        pass
+
+
 class TrayApp(QObject):
     def __init__(self, qapp: QApplication, source, replay: bool = False, open_settings: bool = False):
         super().__init__()
@@ -41,16 +55,19 @@ class TrayApp(QObject):
         self.engine = Engine(self.profiles)
         self.engine.reload(self.profiles, self._forced())
         self.source = source
-        self.win = OverlayWindow(self.engine, self.source, self.settings)
         self.enabled = True
+        self.windows: dict[str, GroupWindow] = {}
+        self._seen_keys: set[str] = set()
         self._profiles_stamp = self._profiles_mtime()
         self.config = None
+        self._ensure_windows()
 
         self.tray = QSystemTrayIcon(_icon(), self)
         menu = QMenu()
         self.a_enabled = QAction("Overlay enabled", menu, checkable=True, checked=True)
         self.a_enabled.triggered.connect(self._toggle_enabled)
-        self.a_locked = QAction("Lock overlay (click-through)", menu, checkable=True, checked=self.win.locked)
+        self.a_locked = QAction("Lock overlay (click-through)", menu, checkable=True,
+                                checked=bool(self.settings.get("locked")))
         self.a_locked.triggered.connect(self._toggle_locked)
         a_settings = QAction("Settings…", menu)
         a_settings.triggered.connect(self.open_settings)
@@ -58,8 +75,8 @@ class TrayApp(QObject):
         a_reload.triggered.connect(self.reload_profiles)
         a_folder = QAction("Open profiles folder", menu)
         a_folder.triggered.connect(lambda: os.startfile(PROFILE_DIR))
-        a_reset = QAction("Reset overlay position", menu)
-        a_reset.triggered.connect(self.win.reset_position)
+        a_reset = QAction("Reset group positions", menu)
+        a_reset.triggered.connect(self.reset_positions)
         a_quit = QAction("Quit", menu)
         a_quit.triggered.connect(qapp.quit)
         for a in (self.a_enabled, self.a_locked, a_settings, a_reload, a_folder, a_reset):
@@ -70,12 +87,16 @@ class TrayApp(QObject):
         self.tray.activated.connect(self._tray_activated)
         self.tray.show()
 
+        self.t_tick = QTimer(self)
+        self.t_tick.timeout.connect(self.tick)
+        self.t_tick.start(50)
         self.t_game = QTimer(self)
         self.t_game.timeout.connect(self.check_game)
         self.t_game.start(3000)
         self.t_reload = QTimer(self)
         self.t_reload.timeout.connect(self.check_reload)
         self.t_reload.start(1000)
+        self.game_running = False
         self.check_game()
         if open_settings:
             QTimer.singleShot(300, self.open_settings)
@@ -90,8 +111,41 @@ class TrayApp(QObject):
 
     def _status(self):
         prof = self.engine.profile.name if self.engine.profile else "no profile"
-        state = "locked" if self.win.locked else "UNLOCKED"
+        state = "locked" if self.settings.get("locked") else "UNLOCKED"
         self.tray.setToolTip(f"SWTOR overlay — {prof} — {state}")
+
+    def _ensure_windows(self):
+        for name in self.engine.group_names():
+            if name not in self.windows:
+                cfg = settings_mod.group_cfg(self.settings, name)
+                self.windows[name] = GroupWindow(name, cfg, self.settings, self.save_settings)
+        settings_mod.save(self.settings)
+
+    def save_settings(self):
+        settings_mod.save(self.settings)
+
+    # ---- main loop ----------------------------------------------------------------------------
+    def tick(self):
+        for line in self.source.poll():
+            ev = parse_line(line)
+            if ev:
+                self.engine.feed(ev)
+        now = self.source.now()
+        items = self.engine.snapshot(now)
+        keys = {it.key for it in items}
+        for it in items:
+            if it.sound and it.key not in self._seen_keys:
+                play_sound(it.sound)
+        self._seen_keys = keys
+        by_group: dict[str, list] = {name: [] for name in self.windows}
+        for it in items:
+            by_group.setdefault(it.group or "buffs", []).append(it)
+        base = self.enabled and (self.replay or not self.settings.get("show_only_in_game", True) or self.game_running)
+        for name, win in self.windows.items():
+            cfg = win.cfg
+            want = base and not cfg.get("hidden") and (not cfg.get("combat_only") or self.engine.in_combat)
+            win.set_wanted(want)
+            win.set_items(by_group.get(name, []), now)
 
     # ---- actions ------------------------------------------------------------------------------
     def _tray_activated(self, reason):
@@ -100,17 +154,16 @@ class TrayApp(QObject):
 
     def _toggle_enabled(self, checked):
         self.enabled = bool(checked)
-        self.check_game()
 
     def _toggle_locked(self, checked):
-        self.win.set_locked(bool(checked))
+        self.settings["locked"] = bool(checked)
+        settings_mod.save(self.settings)
+        for w in self.windows.values():
+            w.apply_settings()
         self._status()
 
     def check_game(self):
-        want = self.enabled and (self.replay or not self.settings.get("show_only_in_game", True)
-                                 or gamewatch.is_running(self.settings.get("game_exe", "swtor.exe")))
-        if want != self.win.isVisible():
-            self.win.setVisible(want)
+        self.game_running = gamewatch.is_running(self.settings.get("game_exe", "swtor.exe"))
         self._status()
 
     def check_reload(self):
@@ -127,14 +180,15 @@ class TrayApp(QObject):
             return
         self.engine.reload(self.profiles, self._forced())
         self._profiles_stamp = self._profiles_mtime()
+        self._ensure_windows()
         self._status()
-        self.win.update()
 
     def apply_settings(self):
-        """Settings dict was edited by the config window and saved."""
+        """Settings dict was edited by the config window."""
         settings_mod.save(self.settings)
-        self.win.apply_settings()
-        self.a_locked.setChecked(self.win.locked)
+        self.a_locked.setChecked(bool(self.settings.get("locked")))
+        for w in self.windows.values():
+            w.apply_settings()
         try:
             gamewatch.set_startup(bool(self.settings.get("start_with_windows")))
         except Exception as e:
@@ -142,6 +196,10 @@ class TrayApp(QObject):
                                   QSystemTrayIcon.MessageIcon.Warning)
         self.engine.reload(self.profiles, self._forced())
         self.check_game()
+
+    def reset_positions(self):
+        for name, w in self.windows.items():
+            w.reset_position(settings_mod.DEFAULT_GROUP_LAYOUT.get(name, [400, 200, 300, 140]))
 
     def open_settings(self):
         from config_window import ConfigWindow
