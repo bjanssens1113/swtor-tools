@@ -16,12 +16,52 @@ from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QD
                              QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget)
 
 import settings as settings_mod
-from rules import DEFAULT_GROUP, PROFILE_DIR
+from rules import PROFILE_DIR, RULE_TYPES
 
 ROOT = Path(__file__).resolve().parents[1]
 DISC_DATA = ROOT / "overlay" / "data" / "disciplines.json"
-RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown"]
-COLS = ["On", "Type", "Effect / ability", "Duration s", "Cooldown s", "Warn at", "Label", "Group", "Sound", "Color"]
+COLS = ["On", "Type", "Effect / ability", "Duration s", "Cooldown s", "Warn at", "Conditions", "Label", "Group",
+        "Sound", "Icon", "Color"]
+C_ON, C_TYPE, C_NAME, C_DUR, C_CD, C_WARN, C_COND, C_LABEL, C_GROUP, C_SOUND, C_ICON, C_COLOR = range(12)
+COND_HELP = ("Conditions: combat | nocombat | stacks<N | stacks>=N | boss | regex  (space separated). "
+             "Type 'missing' = alert when the buff is NOT on you (in combat by default; 'nocombat' flips it).")
+
+
+def format_cond(r: dict) -> str:
+    parts = []
+    if r.get("in_combat") is True:
+        parts.append("combat")
+    elif r.get("in_combat") is False:
+        parts.append("nocombat")
+    if r.get("stacks_below", -1) >= 0:
+        parts.append(f"stacks<{r['stacks_below']}")
+    if r.get("stacks_at_least", -1) >= 0:
+        parts.append(f"stacks>={r['stacks_at_least']}")
+    if r.get("boss_only"):
+        parts.append("boss")
+    if r.get("regex"):
+        parts.append("regex")
+    return " ".join(parts)
+
+
+def parse_cond(text: str, r: dict) -> None:
+    """Apply a conditions string to a rule dict (clears any it doesn't mention)."""
+    for k in ("in_combat", "stacks_below", "stacks_at_least", "boss_only", "regex"):
+        r.pop(k, None)
+    for tok in text.replace(",", " ").split():
+        t = tok.lower()
+        if t == "combat":
+            r["in_combat"] = True
+        elif t in ("nocombat", "ooc"):
+            r["in_combat"] = False
+        elif t == "boss":
+            r["boss_only"] = True
+        elif t == "regex":
+            r["regex"] = True
+        elif t.startswith("stacks<"):
+            r["stacks_below"] = int(t[7:])
+        elif t.startswith("stacks>="):
+            r["stacks_at_least"] = int(t[8:])
 STYLES = ["bars", "icons", "text"]
 ORIENTATIONS = ["down", "up"]
 SOUNDS = ["", "beep"]
@@ -79,6 +119,9 @@ class AddRuleDialog(QDialog):
         if t == "stacks":
             return [(x["name"], None, f"{x['count']} seen, max {x.get('max_seen')} stacks")
                     for x in self.data.get("stacks", [])]
+        if t == "missing":
+            return [(x["name"], None, f"{x['count']} seen; alert shows in combat while this is NOT on you")
+                    for x in self.data.get("self_buffs", [])]
         return [(x["name"], x.get("median_s"), f"{x['count']} seen, lasts ~{x.get('median_s')} s")
                 for x in self.data.get("self_buffs", [])]
 
@@ -107,10 +150,13 @@ class AddRuleDialog(QDialog):
             r["seconds"] = self.seconds.value()
         else:
             r["effect"] = name
-            if t != "stacks" and self.seconds.value() > 0:
+            if t not in ("stacks", "missing") and self.seconds.value() > 0:
                 r["duration"] = self.seconds.value()
             if t == "target":
                 r["warn_at"] = 2
+            if t == "missing":
+                r["label"] = f"MISSING {name}"
+                r["in_combat"] = True
         if self.group.currentText():
             r["group"] = self.group.currentText()
         if self.sound.currentText().strip():
@@ -147,9 +193,10 @@ class ConfigWindow(QDialog):
         self.table = QTableWidget(0, len(COLS))
         self.table.setHorizontalHeaderLabels(COLS)
         self.table.horizontalHeader().setStretchLastSection(True)
-        self.table.setColumnWidth(2, 200)
-        for c in (3, 4, 5):
-            self.table.setColumnWidth(c, 70)
+        self.table.setColumnWidth(C_NAME, 190)
+        self.table.setColumnWidth(C_COND, 130)
+        for c in (C_DUR, C_CD, C_WARN):
+            self.table.setColumnWidth(c, 64)
         v.addWidget(self.table, 1)
         btns = QHBoxLayout()
         b_add, b_del, b_save = QPushButton("Add rule…"), QPushButton("Remove selected"), QPushButton("Save profile")
@@ -161,8 +208,7 @@ class ConfigWindow(QDialog):
         btns.addStretch(1)
         btns.addWidget(b_save)
         v.addLayout(btns)
-        self.note = QLabel("Group blank = default for the type (self→buffs, target→target, stacks→stacks, "
-                           "proc→alerts, cooldown→cooldowns). Sound: blank, 'beep', or a .wav path.")
+        self.note = QLabel(COND_HELP + "  Group blank = default for the type. Sound: blank, 'beep', or a .wav path.")
         self.note.setWordWrap(True)
         v.addWidget(self.note)
         return w
@@ -173,6 +219,8 @@ class ConfigWindow(QDialog):
         cur = self.profile_box.currentData()
         self.profile_box.blockSignals(True)
         self.profile_box.clear()
+        for g in sorted(PROFILE_DIR.glob("_*.json")):
+            self.profile_box.addItem(f"GLOBAL rules — every discipline   [{g.relative_to(ROOT)}]", str(g))
         for p in self.app.profiles:
             tag = "auto" if p.auto else "hand"
             self.profile_box.addItem(f"{p.name}   [{tag}: {p.path.relative_to(ROOT)}]", str(p.path))
@@ -209,20 +257,20 @@ class ConfigWindow(QDialog):
         t.setFlags(Qt.ItemFlag.ItemIsEnabled)
         self.table.setItem(row, 1, t)
         vals = [r.get("effect") or r.get("ability") or "", str(r.get("duration", "") or ""),
-                str(r.get("seconds", "") or ""), str(r.get("warn_at", "") or ""), r.get("label", ""),
-                r.get("group", ""), r.get("sound", ""), r.get("color", "")]
-        for i, v in enumerate(vals, start=2):
+                str(r.get("seconds", "") or ""), str(r.get("warn_at", "") or ""), format_cond(r),
+                r.get("label", ""), r.get("group", ""), r.get("sound", ""), r.get("icon", ""), r.get("color", "")]
+        for i, v in enumerate(vals, start=C_NAME):
             self.table.setItem(row, i, QTableWidgetItem(v))
         combo = QComboBox()
         combo.setEditable(True)
         combo.addItems([""] + self.app.group_names())
         combo.setCurrentText(r.get("group", ""))
-        self.table.setCellWidget(row, 7, combo)
+        self.table.setCellWidget(row, C_GROUP, combo)
 
     def _refresh_group_combos(self):
         names = [""] + self.app.group_names()
         for row in range(self.table.rowCount()):
-            combo = self.table.cellWidget(row, 7)
+            combo = self.table.cellWidget(row, C_GROUP)
             if isinstance(combo, QComboBox):
                 cur = combo.currentText()
                 combo.clear()
@@ -256,28 +304,30 @@ class ConfigWindow(QDialog):
                 return None
         out = []
         for row in range(self.table.rowCount()):
-            r = dict(self.table.item(row, 0).data(Qt.ItemDataRole.UserRole) or {})
-            r["type"] = self.table.item(row, 1).text()
-            name = self._cell(row, 2)
+            r = dict(self.table.item(row, C_ON).data(Qt.ItemDataRole.UserRole) or {})
+            r["type"] = self.table.item(row, C_TYPE).text()
+            name = self._cell(row, C_NAME)
             if r["type"] == "cooldown":
                 r["ability"] = name
                 r.pop("effect", None)
             else:
                 r["effect"] = name
                 r.pop("ability", None)
-            for key, col in (("duration", 3), ("seconds", 4), ("warn_at", 5)):
+            for key, col in (("duration", C_DUR), ("seconds", C_CD), ("warn_at", C_WARN)):
                 v = num(row, col)
                 if v:
                     r[key] = v
                 else:
                     r.pop(key, None)
-            for key, col in (("label", 6), ("group", 7), ("sound", 8), ("color", 9)):
+            parse_cond(self._cell(row, C_COND), r)
+            for key, col in (("label", C_LABEL), ("group", C_GROUP), ("sound", C_SOUND), ("icon", C_ICON),
+                             ("color", C_COLOR)):
                 v = self._cell(row, col)
                 if v:
                     r[key] = v
                 else:
                     r.pop(key, None)
-            if self.table.item(row, 0).checkState() == Qt.CheckState.Checked:
+            if self.table.item(row, C_ON).checkState() == Qt.CheckState.Checked:
                 r.pop("enabled", None)
             else:
                 r["enabled"] = False

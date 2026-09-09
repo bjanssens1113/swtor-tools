@@ -22,7 +22,8 @@ from parser import parse_line
 from rules import PROFILE_DIR, Engine, Profile
 
 # item kind -> fallback group when a rule's group no longer exists
-DEFAULT_GROUP = {"bar": "buffs", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns", "fight": "timer"}
+DEFAULT_GROUP = {"bar": "buffs", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns", "fight": "timer",
+                 "missing": "alerts"}
 
 
 def _icon(color=QColor(70, 160, 255)) -> QIcon:
@@ -55,7 +56,7 @@ class TrayApp(QObject):
         self.replay = replay
         self.settings = settings_mod.load()
         self.profiles = Profile.load_all()
-        self.engine = Engine(self.profiles)
+        self.engine = Engine(self.profiles, global_rules=Profile.load_global())
         self.engine.reload(self.profiles, self._forced())
         self.source = source
         self.enabled = True
@@ -222,10 +223,11 @@ class TrayApp(QObject):
     def reload_profiles(self):
         try:
             self.profiles = Profile.load_all()
+            global_rules = Profile.load_global()
         except Exception as e:  # a half-saved JSON must not kill the overlay
             self.tray.showMessage("SWTOR overlay", f"Profile reload failed: {e}", QSystemTrayIcon.MessageIcon.Warning)
             return
-        self.engine.reload(self.profiles, self._forced())
+        self.engine.reload(self.profiles, self._forced(), global_rules)
         self._profiles_stamp = self._profiles_mtime()
         self._ensure_windows()
         self._status()

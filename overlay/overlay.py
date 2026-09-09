@@ -25,6 +25,8 @@ COLORS = {
 def _base_color(it: Item) -> QColor:
     if it.color:
         return QColor(it.color)
+    if it.kind == "missing":
+        return COLORS["warn"]
     if it.kind == "cooldown":
         return COLORS["cooldown"]
     if it.kind == "flash":
@@ -114,7 +116,7 @@ class GroupWindow(QWidget):
             return W, 24.0
         if it.kind == "stacks":
             return 64.0, 44.0
-        if it.kind == "flash":
+        if it.kind in ("flash", "missing"):
             return W, 30.0
         return W, 18.0
 
@@ -196,7 +198,7 @@ class GroupWindow(QWidget):
             p.setFont(QFont("Segoe UI", 7))
             p.drawText(QRectF(r.x(), r.y() + 27, r.width(), 14), Qt.AlignmentFlag.AlignCenter, it.label[:14])
             return
-        if it.kind == "flash":
+        if it.kind in ("flash", "missing"):
             self._draw_text(p, it, r)
             return
         rem, tot = it.remaining(self.now), it.total()
@@ -221,6 +223,10 @@ class GroupWindow(QWidget):
         if it.kind == "fight":
             return self._draw_bar_cell(p, it, r)
         col = COLORS["warn"] if it.warn(self.now) else _base_color(it)
+        if it.kind == "missing":
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(QColor(120, 0, 0, 150))
+            p.drawRoundedRect(r, 6, 6)
         p.setPen(col)
         p.setFont(QFont("Segoe UI", 18, QFont.Weight.Black))
         txt = it.label
@@ -259,7 +265,9 @@ class GroupWindow(QWidget):
                 frac = 0.0 if not tot else 1.0 - rem / tot
                 p.fillRect(QRectF(r.x(), r.y(), r.width(), r.height() * frac), QColor(0, 0, 0, 120))
             p.restore()
-            if it.kind == "flash":
+            if it.kind == "missing":
+                p.fillRect(r, QColor(160, 0, 0, 130))
+            if it.kind in ("flash", "missing"):
                 p.setPen(QPen(col, 3))
                 p.setBrush(Qt.BrushStyle.NoBrush)
                 p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
@@ -284,11 +292,11 @@ class GroupWindow(QWidget):
             p.setBrush(Qt.BrushStyle.NoBrush)
             p.drawRoundedRect(r.adjusted(1.5, 1.5, -1.5, -1.5), 6, 6)
         big = str(it.stacks) if it.kind == "stacks" else (
-            f"{int(self.now - it.start)}" if it.kind == "fight" else self._fmt_rem(it))
+            f"{int(self.now - it.start)}" if it.kind == "fight" else ("✕" if it.kind == "missing" else self._fmt_rem(it)))
         p.setFont(QFont("Segoe UI", int(r.height() * 0.36), QFont.Weight.Bold))
         self._outlined(p, QRectF(r.x(), r.y(), r.width(), r.height() * (0.7 if pm is None else 1.0)),
                        Qt.AlignmentFlag.AlignCenter, big)
-        if pm is None:
+        if pm is None or it.kind == "missing":
             p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.15))))
             self._outlined(p, QRectF(r.x() + 2, r.y() + r.height() * 0.66, r.width() - 4, r.height() * 0.32),
                            Qt.AlignmentFlag.AlignCenter, it.label.split(" · ")[0][:12])

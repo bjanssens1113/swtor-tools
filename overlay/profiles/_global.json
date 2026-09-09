@@ -1,0 +1,12 @@
+{
+ "name": "Global rules (every discipline, both factions)",
+ "match": {"class": "*", "discipline": "*"},
+ "_source": "Rules in profiles/_*.json are added to whatever discipline profile is active. 'missing' rules alert when the buff is not on you; by default only while in combat. Effect names are regexes (regex: true) so one rule covers all stim tiers and both faction names.",
+ "rules": [
+  {"type": "missing", "effect": "Kyrprax .* Stim$", "regex": true, "label": "NO STIM", "in_combat": true},
+  {"type": "missing", "effect": "^(Hunter's Boon|Fortification)$", "regex": true, "label": "NO BH/TROOPER BUFF", "in_combat": true, "icon": "Hunter's Boon"},
+  {"type": "missing", "effect": "^(Coordination|Lucky Shots)$", "regex": true, "label": "NO AGENT/SMUGGLER BUFF", "in_combat": true, "icon": "Coordination"},
+  {"type": "missing", "effect": "^(Mark of Power|Force Valor)$", "regex": true, "label": "NO INQUISITOR/CONSULAR BUFF", "in_combat": true, "icon": "Mark of Power"},
+  {"type": "missing", "effect": "^(Unnatural Might|Force Might)$", "regex": true, "label": "NO WARRIOR/KNIGHT BUFF", "in_combat": true, "icon": "Unnatural Might"}
+ ]
+}

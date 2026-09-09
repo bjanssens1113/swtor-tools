@@ -74,8 +74,21 @@ Regenerate after new logs: `python overlay/discover.py` then `python overlay/mir
 
 Rule types: `self` (buff on you → countdown bar), `target` (your effect on an enemy/ally → bar per target),
 `stacks` (ModifyCharges → number, red when low), `proc` (big flash text), `cooldown` (bar after AbilityActivate,
-then a READY flash). Built-in fight timer from EnterCombat / ExitCombat. Effect names must match the log exactly;
-`docs/CATALOG.md` lists every name that has appeared in your logs.
+then a READY flash), `missing` (alert while a buff is **not** on you — in combat by default). Built-in fight
+timer from EnterCombat / ExitCombat. Effect names must match the log exactly; `docs/CATALOG.md` and
+`docs/DISCIPLINES.md` list every name that has appeared in the logs.
+
+**Conditions** (per rule, editable in the Conditions column): `combat` / `nocombat`, `stacks<N`, `stacks>=N`,
+`boss` (target max HP ≥ 500 000), `regex` (effect is a regular expression, e.g. `Kyrprax .* Stim$`).
+
+**Global rules** (`overlay/profiles/_global.json`) are added to every discipline, both factions: missing stim and
+the four missing class buffs, matched by regex on the Empire *and* Republic names. Edit them in Settings → Rules
+(first entry in the profile list).
+
+**Layout groups**: every rule has a Group; each group is its own movable window with a style (`bars`, `icons`
+with real ability art, `text`), grow direction, scale, combat-only and hidden flags. Make your own groups on the
+Groups tab. Icons come from Parsely: run `overlay/tools/parsely_icons_zip.js` in a logged-in browser tab, then
+`python overlay/tools/unpack_icons.py`. Per-rule `sound` (`beep` or a .wav) plays when the alert appears.
 
 ## Layout
 ```

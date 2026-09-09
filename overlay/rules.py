@@ -12,6 +12,7 @@ The engine only ever consumes parsed log lines. It never touches the game.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -39,6 +40,12 @@ class Rule:
     group: str = ""             # layout group; empty = default for the rule type (see DEFAULT_GROUP)
     sound: str = ""             # "" | "beep" | path to a .wav; plays when the item appears (cooldown: when READY)
     icon: str = ""              # ability/passive name whose icon to show (default: the effect/ability itself)
+    # ---- conditions ----
+    regex: bool = False         # treat `effect` as a regular expression (e.g. "Kyrprax .* Stim$")
+    in_combat: Optional[bool] = None   # True: only in combat; False: only out of combat; None: always
+    stacks_below: int = -1      # stacks rule: show only while count < N
+    stacks_at_least: int = -1   # stacks rule: show only while count >= N
+    boss_only: bool = False     # target rule: only for targets with max HP >= Engine.boss_hp
 
     @classmethod
     def from_dict(cls, d: dict) -> "Rule":
@@ -48,9 +55,27 @@ class Rule:
     def group_name(self) -> str:
         return self.group or DEFAULT_GROUP[self.type]
 
+    def matches(self, name: str, attr: str = "effect") -> bool:
+        pat = getattr(self, attr)
+        if not pat:
+            return False
+        if self.regex:
+            try:
+                return re.search(pat, name) is not None
+            except re.error:
+                return False
+        return pat == name
 
-DEFAULT_GROUP = {"self": "buffs", "target": "target", "stacks": "stacks", "proc": "alerts", "cooldown": "cooldowns"}
+    @property
+    def cond(self) -> dict:
+        return {"in_combat": self.in_combat, "stacks_below": self.stacks_below,
+                "stacks_at_least": self.stacks_at_least}
+
+
+DEFAULT_GROUP = {"self": "buffs", "target": "target", "stacks": "stacks", "proc": "alerts", "cooldown": "cooldowns",
+                 "missing": "alerts"}
 DEFAULT_GROUPS = ["timer", "stacks", "alerts", "buffs", "target", "cooldowns"]
+RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown", "missing"]
 
 
 @dataclass
@@ -72,10 +97,20 @@ class Profile:
     @staticmethod
     def load_all(directory=PROFILE_DIR) -> list["Profile"]:
         """Hand-written profiles first, then generated ones in profiles/auto/. First match wins,
-        so a hand-written profile always beats an auto/mirrored one for the same discipline."""
+        so a hand-written profile always beats an auto/mirrored one for the same discipline.
+        Files starting with '_' are global rule sets (see load_global) and are skipped here."""
         d = Path(directory)
-        paths = sorted(d.glob("*.json")) + sorted((d / "auto").glob("*.json"))
+        paths = [p for p in sorted(d.glob("*.json")) if not p.name.startswith("_")] + sorted((d / "auto").glob("*.json"))
         return [Profile.load(p) for p in paths]
+
+    @staticmethod
+    def load_global(directory=PROFILE_DIR) -> list[Rule]:
+        """Rules from profiles/_*.json apply to every discipline (stim / class-buff reminders etc.)."""
+        rules: list[Rule] = []
+        for p in sorted(Path(directory).glob("_*.json")):
+            d = json.loads(p.read_text(encoding="utf-8"))
+            rules += [Rule.from_dict(r) for r in d.get("rules", [])]
+        return rules
 
 
 @dataclass
@@ -95,6 +130,7 @@ class Item:
     group: str = ""
     sound: str = ""
     icon: str = ""             # effect / ability name used to look up an icon image
+    cond: dict = field(default_factory=dict)   # display conditions from the rule (see Rule.cond)
     meta: dict = field(default_factory=dict)
 
     def remaining(self, now: float) -> Optional[float]:
@@ -111,13 +147,18 @@ class Item:
 
 
 class Engine:
-    def __init__(self, profiles: list[Profile], forced_profile: Optional[str] = None):
+    boss_hp = 500_000  # NPC max HP at/above which a target counts as a boss for boss_only rules
+
+    def __init__(self, profiles: list[Profile], forced_profile: Optional[str] = None,
+                 global_rules: Optional[list[Rule]] = None):
         self.profiles = profiles
         self.forced = forced_profile
+        self.global_rules: list[Rule] = list(global_rules or [])
         self.profile: Optional[Profile] = None
         self.me: Optional[str] = None
         self.discipline: Optional[str] = None
         self.items: dict[str, Item] = {}
+        self.active_self: set[str] = set()   # every effect currently on me (for 'missing' rules)
         self.fight_start: Optional[float] = None
         self.last_seconds: float = 0.0
         if forced_profile:
@@ -157,14 +198,18 @@ class Engine:
         self.profile = next((p for p in self.profiles if p.cls == cls and p.discipline == disc), None)
         self.items.clear()
 
-    def _rules(self, type_: str, name: str, attr: str = "effect"):
-        if not self.profile:
-            return []
-        return [r for r in self.profile.rules if r.enabled and r.type == type_ and getattr(r, attr) == name]
+    def _all_rules(self):
+        return (self.profile.rules if self.profile else []) + self.global_rules
 
-    def reload(self, profiles: list[Profile], forced_profile: Optional[str] = None):
+    def _rules(self, type_: str, name: str, attr: str = "effect"):
+        return [r for r in self._all_rules() if r.enabled and r.type == type_ and r.matches(name, attr)]
+
+    def reload(self, profiles: list[Profile], forced_profile: Optional[str] = None,
+               global_rules: Optional[list[Rule]] = None):
         """Swap in freshly loaded profiles (hot reload) without losing who/where we are."""
         self.profiles = profiles
+        if global_rules is not None:
+            self.global_rules = list(global_rules)
         self.forced = forced_profile or None
         if self.forced:
             self.profile = next((p for p in profiles if p.name.lower() == self.forced.lower()), None)
@@ -181,6 +226,8 @@ class Engine:
         src, tgt = ev.source, ev.target
         if self.me is None and ev.type in ("AreaEntered", "DisciplineChanged") and src and src.kind == "player":
             self.me = src.name
+        if ev.type == "AreaEntered" and self._is_me(src):
+            self.active_self.clear()   # the game re-logs every active buff right after AreaEntered
         if ev.type == "DisciplineChanged" and self._is_me(src):
             self._select_profile(ev.extra["class"].name, ev.extra["discipline"].name)
             return
@@ -198,12 +245,20 @@ class Engine:
                 for r in self._rules("cooldown", ev.ability.name, "ability"):
                     self.items[f"cd:{r.ability}"] = Item(
                         f"cd:{r.ability}", "cooldown", r.label or r.ability, ev.seconds, ev.seconds + r.seconds,
-                        color=r.color, order=50, group=r.group_name, sound=r.sound, icon=r.icon or r.ability)
+                        color=r.color, order=50, group=r.group_name, sound=r.sound, icon=r.icon or r.ability,
+                        cond=r.cond)
             return
-        if not ev.effect or not self.profile:
+        if not ev.effect:
             return
         name = ev.effect.name
         src_me, tgt_me = self._is_me(src), self._is_me(tgt)
+        if tgt_me and name not in ("Damage", "Heal"):
+            if ev.type == "ApplyEffect":
+                self.active_self.add(name)
+            elif ev.type == "RemoveEffect":
+                self.active_self.discard(name)
+        if not self.profile and not self.global_rules:
+            return
 
         if ev.type == "ApplyEffect":
             if tgt_me:
@@ -211,28 +266,33 @@ class Engine:
                     end = ev.seconds + r.duration if r.duration else None
                     self.items[f"self:{name}"] = Item(f"self:{name}", "bar", r.label or name, ev.seconds, end,
                                                       warn_at=r.warn_at, color=r.color, order=30,
-                                                      group=r.group_name, sound=r.sound, icon=r.icon or name)
+                                                      group=r.group_name, sound=r.sound, icon=r.icon or name,
+                                                      cond=r.cond)
                 for r in self._rules("proc", name):
                     end = ev.seconds + (r.duration or 3.0)
                     self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash", r.text or r.label or name,
                                                       ev.seconds, end, color=r.color, order=20,
-                                                      group=r.group_name, sound=r.sound, icon=r.icon or name)
+                                                      group=r.group_name, sound=r.sound, icon=r.icon or name,
+                                                      cond=r.cond)
                 for r in self._rules("stacks", name):
                     it = self.items.get(f"stk:{name}")
                     stacks = max(1, it.stacks) if it else 1
                     self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds,
                                                      stacks=stacks, warn_below=r.warn_below,
                                                      max_stacks=r.max_stacks, color=r.color, order=10,
-                                                     group=r.group_name, sound=r.sound, icon=r.icon or name)
+                                                     group=r.group_name, sound=r.sound, icon=r.icon or name,
+                                                     cond=r.cond)
             if src_me and tgt is not None and not tgt_me:
                 for r in self._rules("target", name):
+                    if r.boss_only and tgt.max_hp < self.boss_hp:
+                        continue
                     inst = tgt.instance or tgt.name
                     key = f"tgt:{name}:{inst}"
                     end = ev.seconds + r.duration if r.duration else None
                     self.items[key] = Item(key, "bar", f"{r.label or name} · {tgt.name}", ev.seconds, end,
                                            warn_at=r.warn_at, color=r.color, target=inst, order=40,
                                            stacks=self.items[key].stacks if key in self.items else 0,
-                                           group=r.group_name, sound=r.sound, icon=r.icon or name)
+                                           group=r.group_name, sound=r.sound, icon=r.icon or name, cond=r.cond)
         elif ev.type == "RemoveEffect":
             if tgt_me:
                 self.items.pop(f"self:{name}", None)
@@ -249,7 +309,7 @@ class Engine:
                     if it is None:
                         it = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds, warn_below=r.warn_below,
                                   max_stacks=r.max_stacks, color=r.color, order=10, group=r.group_name,
-                                  sound=r.sound, icon=r.icon or name)
+                                  sound=r.sound, icon=r.icon or name, cond=r.cond)
                         self.items[it.key] = it
                     it.stacks = ev.value.amount
             elif tgt is not None:
@@ -277,5 +337,33 @@ class Engine:
             out.append(it)
         for k in expired:
             self.items.pop(k, None)
+        out = [it for it in out if self._cond_ok(it)]
+        # 'missing' rules: alert when a buff is not on me
+        if self.me is not None:
+            for r in self._all_rules():
+                if not (r.enabled and r.type == "missing"):
+                    continue
+                in_combat = True if r.in_combat is None else r.in_combat   # default: only nag in combat
+                if in_combat and not self.in_combat or (r.in_combat is False and self.in_combat):
+                    continue
+                if any(r.matches(n) for n in self.active_self):
+                    continue
+                out.append(Item(f"miss:{r.effect}", "missing", r.label or f"MISSING {r.effect}", now, None,
+                                color=r.color, order=5, group=r.group_name, sound=r.sound,
+                                icon=r.icon or ("" if r.regex else r.effect)))
         out.sort(key=lambda i: (i.order, i.label))
         return out
+
+    def _cond_ok(self, it: Item) -> bool:
+        c = it.cond
+        if not c:
+            return True
+        ic = c.get("in_combat")
+        if ic is True and not self.in_combat or ic is False and self.in_combat:
+            return False
+        if it.kind == "stacks":
+            if c.get("stacks_below", -1) >= 0 and it.stacks >= c["stacks_below"]:
+                return False
+            if c.get("stacks_at_least", -1) >= 0 and it.stacks < c["stacks_at_least"]:
+                return False
+        return True
