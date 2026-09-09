@@ -179,6 +179,22 @@ class ConfigWindow(QDialog):
         tabs.addTab(self._general_tab(), "General")
         lay = QVBoxLayout(self)
         lay.addWidget(tabs)
+        g = self.app.settings.get("config_geometry")
+        if g and len(g) == 4:
+            self.setGeometry(*g)
+
+    def _remember_geometry(self):
+        r = self.geometry()
+        self.app.settings["config_geometry"] = [r.x(), r.y(), r.width(), r.height()]
+        self.app.save_settings()
+
+    def closeEvent(self, e):
+        self._remember_geometry()
+        super().closeEvent(e)
+
+    def hideEvent(self, e):
+        self._remember_geometry()
+        super().hideEvent(e)
 
     # ---- rules tab ------------------------------------------------------------------------------
     def _rules_tab(self) -> QWidget:
