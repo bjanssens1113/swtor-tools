@@ -9,6 +9,7 @@ Reads the log file and the Windows process list. Never touches the game.
 from __future__ import annotations
 
 import os
+import threading
 from pathlib import Path
 
 from PyQt6.QtCore import QObject, QTimer
@@ -19,7 +20,7 @@ import gamewatch
 import settings as settings_mod
 from overlay import GroupWindow
 from parser import parse_line
-from rules import PROFILE_DIR, Engine, Profile
+from rules import PROFILE_DIR, Engine, Profile, Rule
 
 # item kind -> fallback group when a rule's group no longer exists
 DEFAULT_GROUP = {"bar": "buffs", "flash": "alerts", "stacks": "stacks", "cooldown": "cooldowns", "fight": "timer",
@@ -37,12 +38,27 @@ def _icon(color=QColor(70, 160, 255)) -> QIcon:
     return QIcon(pm)
 
 
+def _speak(text: str):
+    """Windows SAPI text-to-speech on a worker thread (pywin32)."""
+    try:
+        import pythoncom
+        import win32com.client
+        pythoncom.CoInitialize()
+        voice = win32com.client.Dispatch("SAPI.SpVoice")
+        voice.Rate = 2
+        voice.Speak(text)
+    except Exception:
+        pass
+
+
 def play_sound(spec: str):
-    """'beep' or a .wav path. Silent on any failure."""
+    """'beep', 'say:<text>' (spoken), or a .wav path. Silent on any failure."""
     try:
         import winsound
         if spec == "beep":
             winsound.PlaySound("SystemAsterisk", winsound.SND_ALIAS | winsound.SND_ASYNC)
+        elif spec.lower().startswith("say:"):
+            threading.Thread(target=_speak, args=(spec[4:].strip(),), daemon=True).start()
         elif spec and Path(spec).exists():
             winsound.PlaySound(spec, winsound.SND_FILENAME | winsound.SND_ASYNC)
     except Exception:
@@ -248,6 +264,19 @@ class TrayApp(QObject):
                                   QSystemTrayIcon.MessageIcon.Warning)
         self.engine.reload(self.profiles, self._forced())
         self.check_game()
+
+    def preview_rule(self, rule: dict):
+        """Show a fake item for this rule for a few seconds (config window 'Test' button)."""
+        try:
+            r = Rule.from_dict(rule)
+        except TypeError as e:
+            self.tray.showMessage("SWTOR overlay", f"Can't preview: {e}", QSystemTrayIcon.MessageIcon.Warning)
+            return
+        if r.group_name not in self.windows:
+            self.add_group(r.group_name)
+        self.engine.preview(r, self.source.now())
+        if r.sound:
+            play_sound(r.sound)
 
     def reset_positions(self):
         for name, w in self.windows.items():

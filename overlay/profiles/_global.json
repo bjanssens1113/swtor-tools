@@ -1,8 +1,9 @@
 {
  "name": "Global rules (every discipline, both factions)",
  "match": {"class": "*", "discipline": "*"},
- "_source": "Rules in profiles/_*.json are added to whatever discipline profile is active. 'missing' rules alert when the buff is not on you; by default only while in combat. Effect names are regexes (regex: true) so one rule covers all stim tiers. Class buffs are permanent once unlocked in Legacy, so they are deliberately NOT tracked here.",
+ "_source": "Rules in profiles/_*.json are added to whatever discipline profile is active. 'missing' rules alert when the buff is not on you; by default only while in combat. Effect names are regexes (regex: true) so one rule covers all stim tiers. Class buffs are permanent once unlocked in Legacy, so they are deliberately NOT tracked here. The 'cast' rule (disabled by default) announces every ability a boss starts casting.",
  "rules": [
-  {"type": "missing", "effect": "Kyrprax .* Stim$", "regex": true, "label": "NO STIM", "in_combat": true}
+  {"type": "missing", "effect": "Kyrprax .* Stim$", "regex": true, "label": "NO STIM", "in_combat": true},
+  {"type": "cast", "ability": ".*", "regex": true, "boss_only": true, "label": "%n: %e", "duration": 3, "enabled": false}
  ]
 }

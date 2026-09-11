@@ -123,11 +123,14 @@ class GroupWindow(QWidget):
         return W, 18.0
 
     def _layout(self, W: float, H: float, gap: float = 3.0):
-        """Flow cells left-to-right, wrapping; rows grow down or up."""
+        """Flow cells left-to-right, wrapping; rows grow down or up. 'right'/'left' = one row, no wrap,
+        growing from the left or the right edge (icon-style groups)."""
+        orient = self.cfg.get("orientation", "down")
         cells = [(it, self._cell_size(it, W)) for it in self.items]
         rows, row, x, rowh = [], [], 0.0, 0.0
+        wrap = orient in ("down", "up")
         for it, (cw, ch) in cells:
-            if row and x + cw > W + 0.01:
+            if wrap and row and x + cw > W + 0.01:
                 rows.append((row, rowh))
                 row, x, rowh = [], 0.0, 0.0
             row.append((it, x, cw, ch))
@@ -136,18 +139,28 @@ class GroupWindow(QWidget):
         if row:
             rows.append((row, rowh))
         out = []
-        if self.cfg.get("orientation") == "up":
+        if orient == "up":
             y = H
             for row, rowh in rows:
                 y -= rowh
                 out += [(it, QRectF(x, y, cw, ch)) for it, x, cw, ch in row]
                 y -= gap
+        elif orient == "left":
+            for row, rowh in rows:
+                out += [(it, QRectF(W - x - cw, 0.0, cw, ch)) for it, x, cw, ch in row]
         else:
             y = 0.0
             for row, rowh in rows:
                 out += [(it, QRectF(x, y, cw, ch)) for it, x, cw, ch in row]
                 y += rowh + gap
         return out
+
+    def _label(self, it: Item) -> str:
+        """Substitute the dynamic tokens: %r remaining seconds, %s stacks."""
+        lbl = it.label
+        if "%" in lbl:
+            lbl = lbl.replace("%r", self._fmt_rem(it)).replace("%s", str(it.stacks))
+        return lbl
 
     # ---- drawing ------------------------------------------------------------------------------
     def paintEvent(self, _):
@@ -257,7 +270,9 @@ class GroupWindow(QWidget):
         p.drawRoundedRect(QRectF(r.x(), r.y(), r.width() * max(0.0, min(1.0, frac)), r.height()), 4, 4)
         p.setPen(Qt.GlobalColor.white)
         p.setFont(QFont("Segoe UI", 9, QFont.Weight.Bold))
-        label = it.label + (f"  x{it.stacks}" if it.stacks else "")
+        label = self._label(it)
+        if it.stacks and "%s" not in it.label:
+            label += f"  {it.stacks}/{it.meta['max']}" if it.meta.get("max", 1) > 1 else f"  x{it.stacks}"
         p.drawText(r.adjusted(6, 0, -6, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, label)
         if rem is not None:
             p.drawText(r.adjusted(6, 0, -6, 0), Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignRight,
@@ -273,11 +288,12 @@ class GroupWindow(QWidget):
             p.drawRoundedRect(r, 6, 6)
         p.setPen(col)
         p.setFont(QFont("Segoe UI", 18 if it.kind != "cleanse" else 13, QFont.Weight.Black))
-        txt = it.label
-        if it.kind == "stacks":
-            txt = f"{it.label} x{it.stacks}"
-        elif it.kind in ("bar", "cooldown"):
-            txt = f"{it.label} {self._fmt_rem(it)}"
+        txt = self._label(it)
+        if "%" not in it.label:
+            if it.kind == "stacks":
+                txt = f"{txt} x{it.stacks}"
+            elif it.kind in ("bar", "cooldown"):
+                txt = f"{txt} {self._fmt_rem(it)}"
         p.drawText(r, Qt.AlignmentFlag.AlignCenter, txt)
 
     def _outlined(self, p: QPainter, rect: QRectF, flags, text: str, color=Qt.GlobalColor.white):
@@ -344,8 +360,8 @@ class GroupWindow(QWidget):
         if pm is None or it.kind in ("missing", "cleanse"):
             p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.15))))
             self._outlined(p, QRectF(r.x() + 2, r.y() + r.height() * 0.66, r.width() - 4, r.height() * 0.32),
-                           Qt.AlignmentFlag.AlignCenter, it.label.split(" · ")[0][:12])
-        if it.kind == "bar" and it.stacks:
+                           Qt.AlignmentFlag.AlignCenter, self._label(it).split(" · ")[0][:12])
+        if it.kind in ("bar", "cooldown") and (it.stacks or it.meta.get("max", 1) > 1):
             p.setFont(QFont("Segoe UI", max(6, int(r.height() * 0.22)), QFont.Weight.Bold))
-            self._outlined(p, r.adjusted(0, 1, -3, 0), Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight,
-                           str(it.stacks))
+            txt = f"{it.stacks}/{it.meta['max']}" if it.meta.get("max", 1) > 1 else str(it.stacks)
+            self._outlined(p, r.adjusted(0, 1, -3, 0), Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight, txt)

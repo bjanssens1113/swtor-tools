@@ -10,11 +10,14 @@ import json
 import re
 from pathlib import Path
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (QCheckBox, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox, QFormLayout,
-                             QHBoxLayout, QInputDialog, QLabel, QLineEdit, QMessageBox, QPushButton,
-                             QTableWidget, QTableWidgetItem, QTabWidget, QVBoxLayout, QWidget)
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtWidgets import (QCheckBox, QColorDialog, QComboBox, QDialog, QDialogButtonBox, QDoubleSpinBox,
+                             QFormLayout, QHBoxLayout, QInputDialog, QLabel, QLineEdit, QListWidget,
+                             QListWidgetItem, QMessageBox, QPushButton, QTableWidget, QTableWidgetItem, QTabWidget,
+                             QVBoxLayout, QWidget)
 
+import icons
 import settings as settings_mod
 from rules import PROFILE_DIR, RULE_TYPES
 
@@ -23,8 +26,8 @@ DISC_DATA = ROOT / "overlay" / "data" / "disciplines.json"
 COLS = ["On", "Type", "Effect / ability", "Duration s", "Cooldown s", "Warn at", "Conditions", "Label", "Group",
         "Sound", "Icon", "Color"]
 C_ON, C_TYPE, C_NAME, C_DUR, C_CD, C_WARN, C_COND, C_LABEL, C_GROUP, C_SOUND, C_ICON, C_COLOR = range(12)
-COND_HELP = ("Conditions: combat | nocombat | stacks<N | stacks>=N | boss | regex  (space separated). "
-             "Type 'missing' = alert when the buff is NOT on you (in combat by default; 'nocombat' flips it).")
+COND_HELP = ("Conditions: combat | nocombat | stacks<N | stacks>=N | boss | anymob | charges=N | regex. "
+             "Label tokens: %e effect, %n target, %r remaining, %s stacks. Sound: beep, say:text, or a .wav path.")
 
 
 def format_cond(r: dict) -> str:
@@ -37,8 +40,12 @@ def format_cond(r: dict) -> str:
         parts.append(f"stacks<{r['stacks_below']}")
     if r.get("stacks_at_least", -1) >= 0:
         parts.append(f"stacks>={r['stacks_at_least']}")
-    if r.get("boss_only"):
+    if r.get("boss_only") is True:
         parts.append("boss")
+    elif r.get("boss_only") is False:
+        parts.append("anymob")
+    if r.get("charges", 1) > 1:
+        parts.append(f"charges={r['charges']}")
     if r.get("regex"):
         parts.append("regex")
     return " ".join(parts)
@@ -46,7 +53,7 @@ def format_cond(r: dict) -> str:
 
 def parse_cond(text: str, r: dict) -> None:
     """Apply a conditions string to a rule dict (clears any it doesn't mention)."""
-    for k in ("in_combat", "stacks_below", "stacks_at_least", "boss_only", "regex"):
+    for k in ("in_combat", "stacks_below", "stacks_at_least", "boss_only", "regex", "charges"):
         r.pop(k, None)
     for tok in text.replace(",", " ").split():
         t = tok.lower()
@@ -56,6 +63,10 @@ def parse_cond(text: str, r: dict) -> None:
             r["in_combat"] = False
         elif t == "boss":
             r["boss_only"] = True
+        elif t == "anymob":
+            r["boss_only"] = False
+        elif t.startswith("charges="):
+            r["charges"] = int(t[8:])
         elif t == "regex":
             r["regex"] = True
         elif t.startswith("stacks<"):
@@ -63,8 +74,8 @@ def parse_cond(text: str, r: dict) -> None:
         elif t.startswith("stacks>="):
             r["stacks_at_least"] = int(t[8:])
 STYLES = ["bars", "icons", "text"]
-ORIENTATIONS = ["down", "up"]
-SOUNDS = ["", "beep"]
+ORIENTATIONS = ["down", "up", "right", "left"]
+SOUNDS = ["", "beep", "say:ready", "say:proc"]
 
 
 def _load_disc_data() -> dict:
@@ -126,6 +137,9 @@ class AddRuleDialog(QDialog):
             return [("Physical Tech", None, "tech healers (Operative/Scoundrel, Mercenary/Commando): Toxin Scan / Cure"),
                     ("Mental Force", None, "force healers (Sorcerer/Sage): Expunge / Restoration"),
                     ("Physical Tech Mental Force", None, "everything with a category tag")]
+        if t == "cast":
+            return [(".*", 3, "every ability a boss starts casting (regex)"),
+                    ("Terminate", 3, "example: a specific boss ability name (exact log string)")]
         return [(x["name"], x.get("median_s"), f"{x['count']} seen, lasts ~{x.get('median_s')} s")
                 for x in self.data.get("self_buffs", [])]
 
@@ -156,6 +170,12 @@ class AddRuleDialog(QDialog):
             r["types"] = name.split()
             r["effect"] = "cleanse"
             r["label"] = "CLEANSE"
+        elif t == "cast":
+            r["ability"] = name
+            r["duration"] = self.seconds.value() or 3
+            r["label"] = "%n: %e"
+            if name == ".*":
+                r["regex"] = True
         else:
             r["effect"] = name
             if t not in ("stacks", "missing") and self.seconds.value() > 0:
@@ -170,6 +190,48 @@ class AddRuleDialog(QDialog):
         if self.sound.currentText().strip():
             r["sound"] = self.sound.currentText().strip()
         return r
+
+
+class IconPicker(QDialog):
+    """Searchable list of every ability/passive name that has an icon image."""
+
+    def __init__(self, parent, initial: str = ""):
+        super().__init__(parent)
+        self.setWindowTitle("Pick icon")
+        self.resize(420, 520)
+        self.chosen = ""
+        self.search = QLineEdit()
+        self.search.setPlaceholderText("type to filter…")
+        self.list = QListWidget()
+        self.list.setIconSize(QSize(32, 32))
+        v = QVBoxLayout(self)
+        v.addWidget(self.search)
+        v.addWidget(self.list, 1)
+        bb = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        bb.accepted.connect(self._accept)
+        bb.rejected.connect(self.reject)
+        v.addWidget(bb)
+        self.names = sorted(n for n in icons._map() if icons.icon_path(n))
+        self.search.textChanged.connect(self._fill)
+        self.list.itemDoubleClicked.connect(lambda _: self._accept())
+        self.search.setText(initial.split(" (")[0] if initial else "")
+        self._fill()
+
+    def _fill(self):
+        q = self.search.text().lower()
+        self.list.clear()
+        for n in self.names:
+            if q in n.lower():
+                it = QListWidgetItem(QIcon(str(icons.icon_path(n))), n)
+                self.list.addItem(it)
+            if self.list.count() >= 300:
+                break
+
+    def _accept(self):
+        cur = self.list.currentItem()
+        if cur:
+            self.chosen = cur.text()
+        self.accept()
 
 
 class ConfigWindow(QDialog):
@@ -224,10 +286,14 @@ class ConfigWindow(QDialog):
         v.addWidget(self.table, 1)
         btns = QHBoxLayout()
         b_add, b_del, b_save = QPushButton("Add rule…"), QPushButton("Remove selected"), QPushButton("Save profile")
+        b_icon, b_color, b_test = QPushButton("Pick icon…"), QPushButton("Pick color…"), QPushButton("Test selected")
         b_add.clicked.connect(self._add_rule)
         b_del.clicked.connect(self._remove_rule)
         b_save.clicked.connect(self._save_profile)
-        for b in (b_add, b_del):
+        b_icon.clicked.connect(self._pick_icon)
+        b_color.clicked.connect(self._pick_color)
+        b_test.clicked.connect(self._test_rule)
+        for b in (b_add, b_del, b_icon, b_color, b_test):
             btns.addWidget(b)
         btns.addStretch(1)
         btns.addWidget(b_save)
@@ -313,6 +379,37 @@ class ConfigWindow(QDialog):
         for r in rows:
             self.table.removeRow(r)
 
+    def _selected_row(self) -> int:
+        rows = {i.row() for i in self.table.selectedIndexes()}
+        return min(rows) if rows else -1
+
+    def _pick_icon(self):
+        row = self._selected_row()
+        if row < 0:
+            return
+        dlg = IconPicker(self, self._cell(row, C_ICON) or self._cell(row, C_NAME))
+        if dlg.exec() and dlg.chosen:
+            self.table.setItem(row, C_ICON, QTableWidgetItem(dlg.chosen))
+
+    def _pick_color(self):
+        row = self._selected_row()
+        if row < 0:
+            return
+        cur = QColor(self._cell(row, C_COLOR) or "#4aa0ff")
+        c = QColorDialog.getColor(cur, self, "Rule color")
+        if c.isValid():
+            self.table.setItem(row, C_COLOR, QTableWidgetItem(c.name()))
+
+    def _test_rule(self):
+        row = self._selected_row()
+        if row < 0:
+            self.note.setText("Select a rule row first.")
+            return
+        rules = self._rows_to_rules()
+        self.app.preview_rule(rules[row])
+        self.note.setText(f"Previewing '{rules[row].get('label') or rules[row].get('effect') or rules[row].get('ability')}' "
+                          f"in group '{rules[row].get('group') or 'default'}' for 5 s.")
+
     def _cell(self, row, col) -> str:
         widget = self.table.cellWidget(row, col)
         if isinstance(widget, QComboBox):
@@ -332,7 +429,7 @@ class ConfigWindow(QDialog):
             r = dict(self.table.item(row, C_ON).data(Qt.ItemDataRole.UserRole) or {})
             r["type"] = self.table.item(row, C_TYPE).text()
             name = self._cell(row, C_NAME)
-            if r["type"] == "cooldown":
+            if r["type"] in ("cooldown", "cast"):
                 r["ability"] = name
                 r.pop("effect", None)
             elif r["type"] == "cleanse":

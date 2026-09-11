@@ -45,7 +45,8 @@ class Rule:
     in_combat: Optional[bool] = None   # True: only in combat; False: only out of combat; None: always
     stacks_below: int = -1      # stacks rule: show only while count < N
     stacks_at_least: int = -1   # stacks rule: show only while count >= N
-    boss_only: bool = False     # target rule: only for targets with max HP >= Engine.boss_hp
+    boss_only: Optional[bool] = None  # target: only bosses (default no); cast: only bosses (default yes)
+    charges: int = 1            # cooldown rule: abilities with multiple charges (shows n/max, recharges one at a time)
     # ---- cleanse rules ----
     types: list = field(default_factory=list)   # debuff categories you can cleanse: Physical, Tech, Mental, Force
     ignore: list = field(default_factory=list)  # debuff names never worth a cleanse alert (e.g. "Slowed (Tech)")
@@ -76,9 +77,16 @@ class Rule:
 
 
 DEFAULT_GROUP = {"self": "buffs", "target": "target", "stacks": "stacks", "proc": "alerts", "cooldown": "cooldowns",
-                 "missing": "alerts", "cleanse": "alerts"}
+                 "missing": "alerts", "cleanse": "alerts", "cast": "alerts"}
 DEFAULT_GROUPS = ["timer", "stacks", "alerts", "buffs", "target", "cooldowns", "party"]
-RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown", "missing", "cleanse"]
+RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown", "missing", "cleanse", "cast"]
+PREVIEW_SECONDS = 5.0
+
+
+def fmt_label(template: str, effect: str = "", target: str = "") -> str:
+    """Static label tokens: %e = effect/ability name, %n = target name. (%r remaining and %s stacks are
+    substituted at draw time by the window.)"""
+    return template.replace("%e", effect).replace("%n", target)
 CLEANSE_TTL = 20.0          # a cleanse alert expires on its own after this many seconds
 ROSTER_TTL = 120.0          # a group member drops off the party panel after this long without a log line
 DEBUFF_TYPE_RE = re.compile(r"\((Physical|Tech|Mental|Force)\)$")
@@ -204,7 +212,7 @@ class Engine:
         if self.forced:
             return
         self.profile = next((p for p in self.profiles if p.cls == cls and p.discipline == disc), None)
-        self.items.clear()
+        self.items = {k: v for k, v in self.items.items() if k.startswith("preview:")}
 
     def _all_rules(self):
         return (self.profile.rules if self.profile else []) + self.global_rules
@@ -226,7 +234,7 @@ class Engine:
             self.profile = next((p for p in profiles if p.cls == cls and p.discipline == disc), None)
         else:
             self.profile = None
-        self.items.clear()
+        self.items = {k: v for k, v in self.items.items() if k.startswith("preview:")}
 
     # ---- roster -------------------------------------------------------------------------------
     def _track(self, ent, seconds: float, as_source: bool, healed_by_me: bool = False):
@@ -284,10 +292,35 @@ class Engine:
                 self.roster[tgt.name]["dead"] = False
             elif sub == "AbilityActivate" and self._is_me(src) and ev.ability:
                 for r in self._rules("cooldown", ev.ability.name, "ability"):
-                    self.items[f"cd:{r.ability}"] = Item(
-                        f"cd:{r.ability}", "cooldown", r.label or r.ability, ev.seconds, ev.seconds + r.seconds,
-                        color=r.color, order=50, group=r.group_name, sound=r.sound, icon=r.icon or r.ability,
-                        cond=r.cond)
+                    key = f"cd:{r.ability}"
+                    label = fmt_label(r.label, ev.ability.name) if r.label else r.ability
+                    if r.charges > 1:
+                        it = self.items.get(key)
+                        if it is None:
+                            it = Item(key, "cooldown", label, ev.seconds, ev.seconds + r.seconds, color=r.color,
+                                      order=50, group=r.group_name, sound=r.sound, icon=r.icon or r.ability,
+                                      cond=r.cond, meta={"charges": r.charges, "max": r.charges, "seconds": r.seconds})
+                            self.items[key] = it
+                        if it.meta["charges"] > 0:
+                            if it.meta["charges"] == it.meta["max"]:
+                                it.start, it.end = ev.seconds, ev.seconds + r.seconds
+                            it.meta["charges"] -= 1
+                        it.stacks = it.meta["charges"]
+                        continue
+                    self.items[key] = Item(key, "cooldown", label, ev.seconds, ev.seconds + r.seconds,
+                                           color=r.color, order=50, group=r.group_name, sound=r.sound,
+                                           icon=r.icon or r.ability, cond=r.cond)
+            elif sub == "AbilityActivate" and src is not None and src.kind == "npc" and ev.ability:
+                for r in self._all_rules():
+                    if not (r.enabled and r.type == "cast" and r.matches(ev.ability.name, "ability")):
+                        continue
+                    if (r.boss_only is None or r.boss_only) and src.max_hp < self.boss_hp:
+                        continue
+                    key = f"cast:{src.instance or src.name}:{ev.ability.name}"
+                    label = fmt_label(r.label, ev.ability.name, src.name) if r.label else f"{src.name}: {ev.ability.name}"
+                    self.items[key] = Item(key, "flash", label, ev.seconds, ev.seconds + (r.duration or 3.0),
+                                           color=r.color, order=4, group=r.group_name, sound=r.sound,
+                                           icon=r.icon or ev.ability.name, cond=r.cond, target=src.instance or src.name)
             return
         if not ev.effect:
             return
@@ -305,21 +338,22 @@ class Engine:
             if tgt_me:
                 for r in self._rules("self", name):
                     end = ev.seconds + r.duration if r.duration else None
-                    self.items[f"self:{name}"] = Item(f"self:{name}", "bar", r.label or name, ev.seconds, end,
-                                                      warn_at=r.warn_at, color=r.color, order=30,
+                    self.items[f"self:{name}"] = Item(f"self:{name}", "bar", fmt_label(r.label or "%e", name),
+                                                      ev.seconds, end, warn_at=r.warn_at, color=r.color, order=30,
                                                       group=r.group_name, sound=r.sound, icon=r.icon or name,
                                                       cond=r.cond)
                 for r in self._rules("proc", name):
                     end = ev.seconds + (r.duration or 3.0)
-                    self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash", r.text or r.label or name,
+                    self.items[f"proc:{name}"] = Item(f"proc:{name}", "flash",
+                                                      fmt_label(r.text or r.label or "%e", name),
                                                       ev.seconds, end, color=r.color, order=20,
                                                       group=r.group_name, sound=r.sound, icon=r.icon or name,
                                                       cond=r.cond)
                 for r in self._rules("stacks", name):
                     it = self.items.get(f"stk:{name}")
                     stacks = max(1, it.stacks) if it else 1
-                    self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds,
-                                                     stacks=stacks, warn_below=r.warn_below,
+                    self.items[f"stk:{name}"] = Item(f"stk:{name}", "stacks", fmt_label(r.label or "%e", name),
+                                                     ev.seconds, stacks=stacks, warn_below=r.warn_below,
                                                      max_stacks=r.max_stacks, color=r.color, order=10,
                                                      group=r.group_name, sound=r.sound, icon=r.icon or name,
                                                      cond=r.cond)
@@ -344,7 +378,8 @@ class Engine:
                     inst = tgt.instance or tgt.name
                     key = f"tgt:{name}:{inst}"
                     end = ev.seconds + r.duration if r.duration else None
-                    self.items[key] = Item(key, "bar", f"{r.label or name} · {tgt.name}", ev.seconds, end,
+                    label = fmt_label(r.label, name, tgt.name) if "%" in r.label else f"{r.label or name} · {tgt.name}"
+                    self.items[key] = Item(key, "bar", label, ev.seconds, end,
                                            warn_at=r.warn_at, color=r.color, target=inst, order=40,
                                            stacks=self.items[key].stacks if key in self.items else 0,
                                            group=r.group_name, sound=r.sound, icon=r.icon or name, cond=r.cond)
@@ -364,9 +399,9 @@ class Engine:
                 for r in self._rules("stacks", name):
                     it = self.items.get(f"stk:{name}")
                     if it is None:
-                        it = Item(f"stk:{name}", "stacks", r.label or name, ev.seconds, warn_below=r.warn_below,
-                                  max_stacks=r.max_stacks, color=r.color, order=10, group=r.group_name,
-                                  sound=r.sound, icon=r.icon or name, cond=r.cond)
+                        it = Item(f"stk:{name}", "stacks", fmt_label(r.label or "%e", name), ev.seconds,
+                                  warn_below=r.warn_below, max_stacks=r.max_stacks, color=r.color, order=10,
+                                  group=r.group_name, sound=r.sound, icon=r.icon or name, cond=r.cond)
                         self.items[it.key] = it
                     it.stacks = ev.value.amount
             elif tgt is not None:
@@ -381,6 +416,23 @@ class Engine:
             out.append(Item("fight", "fight", "Fight", self.fight_start, None, order=0, group="timer"))
         expired = []
         for it in self.items.values():
+            if it.key.startswith("preview:") and it.end is not None and now >= it.end:
+                expired.append(it.key)
+                continue
+            if it.kind == "cooldown" and it.meta.get("max", 1) > 1 and it.end is not None:
+                while now >= it.end and it.meta["charges"] < it.meta["max"]:
+                    it.meta["charges"] += 1
+                    it.stacks = it.meta["charges"]
+                    it.start, it.end = it.end, it.end + it.meta["seconds"]
+                if it.meta["charges"] >= it.meta["max"]:
+                    expired.append(it.key)
+                    if now < it.start + READY_FLASH_SECONDS:
+                        out.append(Item(it.key + ":ready", "flash", f"{it.label} READY", it.start,
+                                        it.start + READY_FLASH_SECONDS, color=it.color, order=20, group="alerts",
+                                        sound=it.sound, icon=it.icon))
+                    continue
+                out.append(it)
+                continue
             if it.kind == "cooldown" and it.end is not None and now >= it.end:
                 if now < it.end + READY_FLASH_SECONDS:
                     out.append(Item(it.key + ":ready", "flash", f"{it.label} READY", it.end,
@@ -411,6 +463,36 @@ class Engine:
         out += self._party_items(now)
         out.sort(key=lambda i: (i.order, i.label))
         return out
+
+    def preview(self, r: Rule, now: float):
+        """Insert a fake item for this rule so the user can see where/how it renders (expires after 5 s)."""
+        end = now + PREVIEW_SECONDS
+        name = r.effect or r.ability or "Preview"
+        key = f"preview:{r.type}:{name}"
+        common = dict(color=r.color, group=r.group_name, sound=r.sound, icon=r.icon or name, cond={})
+        if r.type == "self":
+            it = Item(key, "bar", fmt_label(r.label or "%e", name), now, end, warn_at=r.warn_at, order=30, **common)
+        elif r.type == "target":
+            lbl = fmt_label(r.label, name, "Target") if "%" in r.label else f"{r.label or name} · Target"
+            it = Item(key, "bar", lbl, now, end, warn_at=r.warn_at, order=40, target="preview", **common)
+        elif r.type == "stacks":
+            it = Item(key, "stacks", fmt_label(r.label or "%e", name), now, end, stacks=max(1, r.max_stacks or 2),
+                      warn_below=r.warn_below, max_stacks=r.max_stacks, order=10, **common)
+        elif r.type == "cooldown":
+            it = Item(key, "cooldown", fmt_label(r.label, name) if r.label else name, now, end, order=50, **common)
+            if r.charges > 1:
+                it.meta = {"charges": r.charges - 1, "max": r.charges, "seconds": PREVIEW_SECONDS}
+                it.stacks = r.charges - 1
+        elif r.type == "missing":
+            it = Item(key, "missing", r.label or f"MISSING {name}", now, end, order=5, **common)
+        elif r.type == "cleanse":
+            it = Item(key, "cleanse", "CLEANSE Target: Poisoned", now, end, order=6, target="preview", **common)
+        elif r.type == "cast":
+            it = Item(key, "flash", fmt_label(r.label, name, "Boss") if r.label else f"Boss: {name}", now, end,
+                      order=4, **common)
+        else:
+            it = Item(key, "flash", fmt_label(r.text or r.label or "%e", name), now, end, order=20, **common)
+        self.items[key] = it
 
     def _party_items(self, now: float) -> list[Item]:
         """One 'party' item per friendly roster member, with my HoTs/shields on them attached in meta."""

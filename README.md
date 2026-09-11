@@ -92,6 +92,13 @@ puts a debuff of a category you can cleanse on an ally — the log tags debuffs 
 `(Mental)`, `(Force)` — with an ignore list for slows/stuns. Medicine/Sawbones and Bodyguard/Combat Medic ship
 with Physical+Tech, Corruption/Seer with Mental+Force.
 
+**More WeakAuras bits**: `cast` rules announce what a boss starts casting (`ability: ".*"` + regex for
+everything; boss-only by default, `anymob` to include trash); cooldown rules with `charges: 2` show n/max and
+recharge one at a time; label tokens `%e` effect, `%n` target, `%r` remaining, `%s` stacks; sounds can be
+`say:Fatality` (Windows text-to-speech); groups can grow `right`/`left` as one row; the Rules tab has
+**Pick icon…** (searchable, with previews), **Pick color…** and **Test selected**, which shows a fake alert for
+the selected rule in its group for 5 s so you can place things without being in combat.
+
 **Layout groups**: every rule has a Group; each group is its own movable window with a style (`bars`, `icons`
 with real ability art, `text`), grow direction, scale, combat-only and hidden flags. Make your own groups on the
 Groups tab. Icons come from Parsely: run `overlay/tools/parsely_icons_zip.js` in a logged-in browser tab, then
