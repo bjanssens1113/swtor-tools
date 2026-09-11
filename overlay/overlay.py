@@ -13,7 +13,7 @@ from PyQt6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen
 from PyQt6.QtWidgets import QWidget
 
 import icons
-from rules import Item
+from rules import Item, item_stem
 
 COLORS = {
     "bar": QColor(70, 160, 255), "target": QColor(120, 220, 90), "cooldown": QColor(110, 110, 110),
@@ -43,7 +43,9 @@ class GroupWindow(QWidget):
         self.items: list[Item] = []
         self.now = 0.0
         self.wanted = False          # app-level: game running, enabled, combat rule...
-        self._drag = None
+        self._drag = None            # dragging the whole window
+        self._drag_item = None       # free layout: (stem, offset) while dragging one element
+        self._rects: list = []       # last laid-out (item, rect) pairs, logical units
         self.setWindowTitle(f"SWTOR overlay — {name}")
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setGeometry(*self.cfg["geometry"])
@@ -86,16 +88,36 @@ class GroupWindow(QWidget):
         self.cfg["geometry"] = [g.x(), g.y(), g.width(), g.height()]
         self.save()
 
+    def _logical(self, e):
+        s = float(self.cfg.get("scale") or 1.0)
+        pos = e.position()
+        return (pos.x() / s - 4.0, pos.y() / s - 4.0)
+
     def mousePressEvent(self, e):
-        if not self.locked and e.button() == Qt.MouseButton.LeftButton:
-            self._drag = e.globalPosition().toPoint() - self.frameGeometry().topLeft()
+        if self.locked or e.button() != Qt.MouseButton.LeftButton:
+            return
+        if self.cfg.get("layout") == "free":
+            lx, ly = self._logical(e)
+            for it, r in reversed(self._rects):
+                if r.contains(lx, ly):
+                    self._drag_item = (item_stem(it.key), (lx - r.x(), ly - r.y()))
+                    return
+        self._drag = e.globalPosition().toPoint() - self.frameGeometry().topLeft()
 
     def mouseMoveEvent(self, e):
-        if self._drag is not None:
+        if self._drag_item is not None:
+            stem, (ox, oy) = self._drag_item
+            lx, ly = self._logical(e)
+            self.cfg.setdefault("positions", {})[stem] = [round(lx - ox), round(ly - oy)]
+            self.update()
+        elif self._drag is not None:
             self.move(e.globalPosition().toPoint() - self._drag)
 
     def mouseReleaseEvent(self, e):
-        if self._drag is not None:
+        if self._drag_item is not None:
+            self._drag_item = None
+            self.save()
+        elif self._drag is not None:
             self._drag = None
             self._save_geometry()
 
@@ -124,8 +146,28 @@ class GroupWindow(QWidget):
 
     def _layout(self, W: float, H: float, gap: float = 3.0):
         """Flow cells left-to-right, wrapping; rows grow down or up. 'right'/'left' = one row, no wrap,
-        growing from the left or the right edge (icon-style groups)."""
+        growing from the left or the right edge (icon-style groups). Free layout: elements with a saved
+        position sit there; the rest flow from the top-left until dragged."""
         orient = self.cfg.get("orientation", "down")
+        if self.cfg.get("layout") == "free":
+            positions = self.cfg.get("positions", {})
+            placed, rest = [], []
+            for it in self.items:
+                pos = positions.get(item_stem(it.key))
+                if pos:
+                    cw, ch = self._cell_size(it, W)
+                    placed.append((it, QRectF(pos[0], pos[1], cw, ch)))
+                else:
+                    rest.append(it)
+            saved, self.items = self.items, rest
+            try:
+                flowed = self._layout_flow(W, H, gap, orient)
+            finally:
+                self.items = saved
+            return placed + flowed
+        return self._layout_flow(W, H, gap, orient)
+
+    def _layout_flow(self, W: float, H: float, gap: float, orient: str):
         cells = [(it, self._cell_size(it, W)) for it in self.items]
         rows, row, x, rowh = [], [], 0.0, 0.0
         wrap = orient in ("down", "up")
@@ -179,7 +221,13 @@ class GroupWindow(QWidget):
             p.drawText(QRectF(pad, H - 16, W - 2 * pad, 14), Qt.AlignmentFlag.AlignRight, self.name)
         style = self.cfg.get("style", "bars")
         p.translate(pad, pad)
-        for it, r in self._layout(W - 2 * pad, H - 2 * pad - (16 if not self.locked else 0)):
+        self._rects = self._layout(W - 2 * pad, H - 2 * pad - (16 if not self.locked else 0))
+        if not self.locked and self.cfg.get("layout") == "free":
+            p.setPen(QPen(QColor(255, 210, 40, 120), 1, Qt.PenStyle.DotLine))
+            p.setBrush(Qt.BrushStyle.NoBrush)
+            for _, r in self._rects:
+                p.drawRect(r)
+        for it, r in self._rects:
             if it.kind == "party":
                 self._draw_party_row(p, it, r)
             elif style == "icons":

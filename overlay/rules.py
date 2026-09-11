@@ -83,6 +83,38 @@ RULE_TYPES = ["self", "target", "stacks", "proc", "cooldown", "missing", "cleans
 PREVIEW_SECONDS = 5.0
 
 
+def item_stem(key: str) -> str:
+    """Stable identity of an item across targets/instances, used for free-layout positions:
+    'tgt:Corrosive Dart:12345' -> 'tgt:Corrosive Dart', 'cd:Shiv:ready' -> 'cd:Shiv'."""
+    if key.endswith(":ready"):
+        key = key[:-6]
+    parts = key.split(":")
+    if parts[0] in ("tgt", "cl", "preview") and len(parts) >= 3:
+        return ":".join(parts[:2]) if parts[0] != "preview" else ":".join(parts[1:3])
+    if parts[0] == "cast" and len(parts) >= 3:
+        return "cast:" + parts[-1]
+    return key
+
+
+def append_rule_to_file(path: Path, rule: dict, profile_dir: Path = PROFILE_DIR) -> Path:
+    """Append a rule to a profile file. A generated (auto/mirrored) profile is first copied to a hand-written
+    file in profile_dir, which then takes priority. Returns the path that was written."""
+    doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    target = Path(path)
+    if doc.get("_auto"):
+        m = doc["match"]
+        doc["name"] = re.sub(r"\s*\((auto|mirrored)\)$", "", doc["name"])
+        doc.pop("_auto", None)
+        doc.pop("_kind", None)
+        doc["_source"] = f"hand-edited copy of generated profile. {doc.get('_source', '')}"
+        target = profile_dir / (f"{m['class']}_{m['discipline']}".lower().replace(" ", "_") + ".json")
+        if target.exists():
+            doc = json.loads(target.read_text(encoding="utf-8"))
+    doc.setdefault("rules", []).append(rule)
+    target.write_text(json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8")
+    return target
+
+
 def fmt_label(template: str, effect: str = "", target: str = "") -> str:
     """Static label tokens: %e = effect/ability name, %n = target name. (%r remaining and %s stacks are
     substituted at draw time by the window.)"""
@@ -468,7 +500,9 @@ class Engine:
         """Insert a fake item for this rule so the user can see where/how it renders (expires after 5 s)."""
         end = now + PREVIEW_SECONDS
         name = r.effect or r.ability or "Preview"
-        key = f"preview:{r.type}:{name}"
+        prefix = {"self": "self", "target": "tgt", "stacks": "stk", "cooldown": "cd", "missing": "miss",
+                  "cleanse": "cl", "cast": "cast", "proc": "proc"}.get(r.type, r.type)
+        key = f"preview:{prefix}:{name}"   # same stem as the real item, so free-layout positions carry over
         common = dict(color=r.color, group=r.group_name, sound=r.sound, icon=r.icon or name, cond={})
         if r.type == "self":
             it = Item(key, "bar", fmt_label(r.label or "%e", name), now, end, warn_at=r.warn_at, order=30, **common)

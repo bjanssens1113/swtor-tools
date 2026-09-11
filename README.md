@@ -99,6 +99,12 @@ recharge one at a time; label tokens `%e` effect, `%n` target, `%r` remaining, `
 **Pick icon…** (searchable, with previews), **Pick color…** and **Test selected**, which shows a fake alert for
 the selected rule in its group for 5 s so you can place things without being in combat.
 
+**Single abilities, placed by hand**: tray → **Quick add ability…** (or the button on the Rules tab). Search any
+ability or effect for your current discipline (your log data plus Parsely's list, with icons), choose what to
+track (cooldown / buff / stacks / on target / proc / missing), pick a group or type a new one, Add. It lands in
+the profile and previews on screen. Set a group's **Layout** to `free` and, while unlocked, drag each element to
+its own spot inside the group; the group frame still moves them all together (WeakAuras "group" vs "dynamic group").
+
 **Layout groups**: every rule has a Group; each group is its own movable window with a style (`bars`, `icons`
 with real ability art, `text`), grow direction, scale, combat-only and hidden flags. Make your own groups on the
 Groups tab. Icons come from Parsely: run `overlay/tools/parsely_icons_zip.js` in a logged-in browser tab, then

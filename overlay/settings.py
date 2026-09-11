@@ -28,6 +28,8 @@ GROUP_DEFAULTS = {
     "columns": 6,             # icons: tiles per row before wrapping
     "low_hp": 35,             # party: flash a member below this percent
     "show_companions": True,  # party: include my companion when solo
+    "layout": "flow",         # flow: auto-arranged; free: each element keeps its own offset (drag while unlocked)
+    "positions": {},          # free layout: item stem -> [x, y] inside the group window
 }
 # starting positions for the default groups, stacked down the left edge
 DEFAULT_GROUP_LAYOUT = {

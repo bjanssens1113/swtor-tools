@@ -287,6 +287,12 @@ class ConfigWindow(QDialog):
         btns = QHBoxLayout()
         b_add, b_del, b_save = QPushButton("Add rule…"), QPushButton("Remove selected"), QPushButton("Save profile")
         b_icon, b_color, b_test = QPushButton("Pick icon…"), QPushButton("Pick color…"), QPushButton("Test selected")
+        b_quick = QPushButton("Quick add…")
+        b_quick.clicked.connect(self.app.open_quick_add)
+        btns_pre = QHBoxLayout()
+        btns_pre.addWidget(b_quick)
+        btns_pre.addStretch(1)
+        v.addLayout(btns_pre)
         b_add.clicked.connect(self._add_rule)
         b_del.clicked.connect(self._remove_rule)
         b_save.clicked.connect(self._save_profile)
@@ -490,13 +496,16 @@ class ConfigWindow(QDialog):
         self.note.setText(f"Saved {target.relative_to(ROOT)} and reloaded.")
 
     # ---- groups tab -----------------------------------------------------------------------------
-    GCOLS = ["Group", "Style", "Grow", "Scale", "Icon px", "Columns", "Combat only", "Hidden", "Low HP %", "Companions"]
+    GCOLS = ["Group", "Style", "Grow", "Layout", "Scale", "Icon px", "Columns", "Combat only", "Hidden", "Low HP %",
+             "Companions"]
 
     def _groups_tab(self) -> QWidget:
         w = QWidget()
         v = QVBoxLayout(w)
         v.addWidget(QLabel("Each group is its own movable window. Unlock (General tab or tray) to drag them. "
                            "Style: bars = classic, icons = square tiles with countdown, text = big alert lines. "
+                           "Layout: flow = auto-arranged; free = drag each element to its own spot while unlocked, "
+                           "the group frame still moves them all together. "
                            "Make your own group (e.g. 'defensives'), then put rules in it via the Group column on the Rules tab."))
         self.gtable = QTableWidget(0, len(self.GCOLS))
         self.gtable.setHorizontalHeaderLabels(self.GCOLS)
@@ -563,15 +572,19 @@ class ConfigWindow(QDialog):
             grow.addItems(ORIENTATIONS)
             grow.setCurrentText(cfg.get("orientation", "down"))
             self.gtable.setCellWidget(r, 2, grow)
-            self.gtable.setItem(r, 3, QTableWidgetItem(str(cfg.get("scale", 1.0))))
-            self.gtable.setItem(r, 4, QTableWidgetItem(str(cfg.get("icon_size", 48))))
-            self.gtable.setItem(r, 5, QTableWidgetItem(str(cfg.get("columns", 6))))
-            for col, key in ((6, "combat_only"), (7, "hidden"), (9, "show_companions")):
+            layout = QComboBox()
+            layout.addItems(["flow", "free"])
+            layout.setCurrentText(cfg.get("layout", "flow"))
+            self.gtable.setCellWidget(r, 3, layout)
+            self.gtable.setItem(r, 4, QTableWidgetItem(str(cfg.get("scale", 1.0))))
+            self.gtable.setItem(r, 5, QTableWidgetItem(str(cfg.get("icon_size", 48))))
+            self.gtable.setItem(r, 6, QTableWidgetItem(str(cfg.get("columns", 6))))
+            for col, key in ((7, "combat_only"), (8, "hidden"), (10, "show_companions")):
                 c = QTableWidgetItem()
                 c.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
                 c.setCheckState(Qt.CheckState.Checked if cfg.get(key) else Qt.CheckState.Unchecked)
                 self.gtable.setItem(r, col, c)
-            self.gtable.setItem(r, 8, QTableWidgetItem(str(cfg.get("low_hp", 35))))
+            self.gtable.setItem(r, 9, QTableWidgetItem(str(cfg.get("low_hp", 35))))
 
     def _apply_groups(self):
         for r in range(self.gtable.rowCount()):
@@ -579,18 +592,19 @@ class ConfigWindow(QDialog):
             cfg = settings_mod.group_cfg(self.app.settings, name)
             cfg["style"] = self.gtable.cellWidget(r, 1).currentText()
             cfg["orientation"] = self.gtable.cellWidget(r, 2).currentText()
-            for col, key, cast, default in ((3, "scale", float, 1.0), (4, "icon_size", int, 48), (5, "columns", int, 6)):
+            cfg["layout"] = self.gtable.cellWidget(r, 3).currentText()
+            for col, key, cast, default in ((4, "scale", float, 1.0), (5, "icon_size", int, 48), (6, "columns", int, 6)):
                 try:
                     cfg[key] = cast(self.gtable.item(r, col).text())
                 except (ValueError, AttributeError):
                     cfg[key] = default
-            cfg["combat_only"] = self.gtable.item(r, 6).checkState() == Qt.CheckState.Checked
-            cfg["hidden"] = self.gtable.item(r, 7).checkState() == Qt.CheckState.Checked
+            cfg["combat_only"] = self.gtable.item(r, 7).checkState() == Qt.CheckState.Checked
+            cfg["hidden"] = self.gtable.item(r, 8).checkState() == Qt.CheckState.Checked
             try:
-                cfg["low_hp"] = float(self.gtable.item(r, 8).text())
+                cfg["low_hp"] = float(self.gtable.item(r, 9).text())
             except (ValueError, AttributeError):
                 cfg["low_hp"] = 35
-            cfg["show_companions"] = self.gtable.item(r, 9).checkState() == Qt.CheckState.Checked
+            cfg["show_companions"] = self.gtable.item(r, 10).checkState() == Qt.CheckState.Checked
         self.app.apply_settings()
         self.note.setText("Groups applied.")
 

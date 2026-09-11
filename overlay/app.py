@@ -92,6 +92,8 @@ class TrayApp(QObject):
         self.a_locked.triggered.connect(self._toggle_locked)
         a_settings = QAction("Settings…", menu)
         a_settings.triggered.connect(self.open_settings)
+        a_quick = QAction("Quick add ability…", menu)
+        a_quick.triggered.connect(self.open_quick_add)
         a_reload = QAction("Reload profiles", menu)
         a_reload.triggered.connect(self.reload_profiles)
         a_folder = QAction("Open profiles folder", menu)
@@ -100,7 +102,7 @@ class TrayApp(QObject):
         a_reset.triggered.connect(self.reset_positions)
         a_quit = QAction("Quit", menu)
         a_quit.triggered.connect(qapp.quit)
-        for a in (self.a_enabled, self.a_locked, a_settings, a_reload, a_folder, a_reset):
+        for a in (self.a_enabled, self.a_locked, a_quick, a_settings, a_reload, a_folder, a_reset):
             menu.addAction(a)
         menu.addSeparator()
         menu.addAction(a_quit)
@@ -281,6 +283,13 @@ class TrayApp(QObject):
     def reset_positions(self):
         for name, w in self.windows.items():
             w.reset_position(settings_mod.DEFAULT_GROUP_LAYOUT.get(name, [400, 200, 300, 140]))
+
+    def open_quick_add(self):
+        from quick_add import QuickAddDialog
+        self.quick = QuickAddDialog(self)   # fresh each time so the candidate list matches the current profile
+        self.quick.show()
+        self.quick.raise_()
+        self.quick.activateWindow()
 
     def open_settings(self):
         from config_window import ConfigWindow
