@@ -24,8 +24,9 @@ press, right side is the SWTOR keybind of the ability. Tune `CLICK_TO_CAST_DELAY
 ### Tool B — overlay
 **Launching:** double-click `SWTOR Overlay.bat` in the repo root, or the **SWTOR Overlay** desktop shortcut.
 Tick **Start with Windows** in Settings → General and it starts at login and waits in the tray for the game.
-A second launch just exits (single instance). If it won't start, run `SWTOR Overlay (with console).bat` to see
-the error.
+Launching it again while it runs opens the settings window of the running copy (single instance), so the
+desktop shortcut doubles as "open settings". If it won't start at all, run `SWTOR Overlay (with console).bat`
+to see the error.
 
 Python 3.13 + PyQt6 live in `python\` inside the repo (self-contained, git-ignored; nothing outside the folder is
 needed at run time). If `python\` is ever missing or broken, run `overlay\tools\setup_python.cmd` to rebuild it.
