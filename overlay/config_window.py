@@ -243,12 +243,36 @@ class ConfigWindow(QDialog):
         self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
         self.doc: dict = {}
         self.doc_path: Path | None = None
-        tabs = QTabWidget()
-        tabs.addTab(self._rules_tab(), "Rules")
-        tabs.addTab(self._groups_tab(), "Groups")
-        tabs.addTab(self._general_tab(), "General")
+        self.tabs = QTabWidget()
+        self.tabs.addTab(self._rules_tab(), "Rules")
+        self.tabs.addTab(self._groups_tab(), "Groups")
+        self.tabs.addTab(self._general_tab(), "General")
         lay = QVBoxLayout(self)
-        lay.addWidget(tabs)
+        top = QHBoxLayout()
+        self.b_configure = QPushButton()
+        self.b_configure.setCheckable(True)
+        self.b_configure.setMinimumHeight(34)
+        self.b_configure.clicked.connect(lambda on: self.app.set_configure(on))
+        top.addWidget(self.b_configure, 1)
+        lay.addLayout(top)
+        lay.addWidget(self.tabs)
+        self.sync_configure_button()
+
+    def sync_configure_button(self):
+        on = bool(self.app.settings.get("configure"))
+        self.b_configure.setChecked(on)
+        self.b_configure.setText("✓  DONE — hide frames and lock everything" if on
+                                 else "✎  CONFIGURE LAYOUT — show frames, move and resize boxes")
+        self.b_configure.setStyleSheet("font-weight:bold; background:#2f6e3a; color:white;" if on
+                                       else "font-weight:bold; background:#8a6d00; color:white;")
+
+    def show_group(self, name: str):
+        """Jump to the Groups tab with this group's row selected."""
+        self.tabs.setCurrentIndex(1)
+        for r in range(self.gtable.rowCount()):
+            if self.gtable.item(r, 0).text() == name:
+                self.gtable.selectRow(r)
+                break
         g = self.app.settings.get("config_geometry")
         if g and len(g) == 4:
             self.setGeometry(*g)
@@ -502,10 +526,10 @@ class ConfigWindow(QDialog):
     def _groups_tab(self) -> QWidget:
         w = QWidget()
         v = QVBoxLayout(w)
-        v.addWidget(QLabel("Each group is its own movable window. Unlock (General tab or tray) to drag them. "
+        v.addWidget(QLabel("Each group is its own box. Press CONFIGURE LAYOUT (top) to see the boxes: drag to move, "
+                           "corner grip to resize, ✎ on a box opens it here, ✓ or DONE hides all frames again. "
                            "Style: bars = classic, icons = square tiles with countdown, text = big alert lines. "
-                           "Layout: flow = auto-arranged; free = drag each element to its own spot while unlocked, "
-                           "the group frame still moves them all together. "
+                           "Layout: flow = auto-arranged; free = drag each element to its own spot inside the box. "
                            "Make your own group (e.g. 'defensives'), then put rules in it via the Group column on the Rules tab."))
         self.gtable = QTableWidget(0, len(self.GCOLS))
         self.gtable.setHorizontalHeaderLabels(self.GCOLS)
@@ -614,13 +638,11 @@ class ConfigWindow(QDialog):
         form = QFormLayout(w)
         self.c_game = QCheckBox("Show the overlay only while the game is running")
         self.c_start = QCheckBox("Start with Windows (shortcut in the Startup folder)")
-        self.c_lock = QCheckBox("Locked (click-through). Unlock to drag groups around.")
         self.c_auto = QCheckBox("Follow discipline changes in the log")
         self.forced = QComboBox()
         self.exe = QLineEdit()
         form.addRow(self.c_game)
         form.addRow(self.c_start)
-        form.addRow(self.c_lock)
         form.addRow(self.c_auto)
         form.addRow("Pinned profile (when not following)", self.forced)
         form.addRow("Game process name", self.exe)
@@ -645,8 +667,8 @@ class ConfigWindow(QDialog):
         s = self.app.settings
         self.c_game.setChecked(bool(s.get("show_only_in_game", True)))
         self.c_start.setChecked(bool(s.get("start_with_windows", False)))
-        self.c_lock.setChecked(bool(s.get("locked", False)))
         self.c_auto.setChecked(bool(s.get("auto_switch", True)))
+        self.sync_configure_button()
         self.exe.setText(s.get("game_exe", "swtor.exe"))
         self.forced.clear()
         self.forced.addItems(self.app.engine.profile_names)
@@ -657,7 +679,6 @@ class ConfigWindow(QDialog):
         s = self.app.settings
         s["show_only_in_game"] = self.c_game.isChecked()
         s["start_with_windows"] = self.c_start.isChecked()
-        s["locked"] = self.c_lock.isChecked()
         s["auto_switch"] = self.c_auto.isChecked()
         s["forced_profile"] = self.forced.currentText()
         s["game_exe"] = self.exe.text().strip() or "swtor.exe"

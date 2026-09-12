@@ -37,10 +37,14 @@ python\python.exe overlay\main.py
 ```
 
 - Runs as a **tray app** (blue square). The overlay appears while `swtor.exe` is running and hides when the game
-  exits. Tray menu: enable, lock (click-through), **Settings…**, reload profiles, open profiles folder, quit.
-  Double-click the tray icon for Settings.
-- **Settings → General**: start with Windows (Startup-folder shortcut), show only in game, lock, follow
-  discipline changes or pin a profile, overlay scale.
+  exits. Tray menu: enable, **Configure layout**, Quick add, **Settings…**, reload profiles, open profiles
+  folder, quit. Double-click the tray icon for Settings.
+- **Two modes.** Playing: no frames, everything click-through, only live alerts are drawn. **Configure layout**
+  (big button at the top of Settings, or the tray): every box shows a dashed frame with its name, drag to move,
+  corner grip to resize, ✎ opens that group's settings, ✓ or the DONE button returns to playing mode. In a
+  `free`-layout box you also drag individual elements. Nothing is editable outside configure mode.
+- **Settings → General**: start with Windows (Startup-folder shortcut), show only in game, follow discipline
+  changes or pin a profile, desktop shortcuts.
 - **Settings → Rules**: pick any profile, enable/disable rules, edit durations / cooldowns / warn thresholds /
   labels / colors, add rules from a picker fed by your own logs, save. Saving a generated profile writes a
   hand-written copy into `overlay\profiles\` which then takes priority.
@@ -110,7 +114,7 @@ the selected rule in its group for 5 s so you can place things without being in 
 **Single abilities, placed by hand**: tray → **Quick add ability…** (or the button on the Rules tab). Search any
 ability or effect for your current discipline (your log data plus Parsely's list, with icons), choose what to
 track (cooldown / buff / stacks / on target / proc / missing), pick a group or type a new one, Add. It lands in
-the profile and previews on screen. Set a group's **Layout** to `free` and, while unlocked, drag each element to
+the profile and previews on screen. Set a group's **Layout** to `free` and, in configure mode, drag each element to
 its own spot inside the group; the group frame still moves them all together (WeakAuras "group" vs "dynamic group").
 
 **Layout groups**: every rule has a Group; each group is its own movable window with a style (`bars`, `icons`

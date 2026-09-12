@@ -45,7 +45,10 @@ class GroupWindow(QWidget):
         self.wanted = False          # app-level: game running, enabled, combat rule...
         self._drag = None            # dragging the whole window
         self._drag_item = None       # free layout: (stem, offset) while dragging one element
+        self._resize = None          # (start global pos, start size) while dragging the corner grip
         self._rects: list = []       # last laid-out (item, rect) pairs, logical units
+        self.on_edit = None          # callback(name) when the window's edit button is clicked
+        self.on_done = None          # callback() when the Done button is clicked
         self.setWindowTitle(f"SWTOR overlay — {name}")
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setGeometry(*self.cfg["geometry"])
@@ -54,7 +57,20 @@ class GroupWindow(QWidget):
     # ---- window plumbing ----------------------------------------------------------------------
     @property
     def locked(self) -> bool:
-        return bool(self.settings.get("locked"))
+        """Locked = normal play mode: click-through, no frames. Unlocked = configure mode."""
+        return not bool(self.settings.get("configure"))
+
+    # configure-mode chrome (logical units)
+    BTN = 16.0
+    GRIP = 14.0
+
+    def _chrome(self, W: float, H: float) -> dict:
+        b = self.BTN
+        return {
+            "edit": QRectF(W - 2 * b - 8, 2, b, b),
+            "done": QRectF(W - b - 4, 2, b, b),
+            "grip": QRectF(W - self.GRIP, H - self.GRIP, self.GRIP, self.GRIP),
+        }
 
     def _apply_flags(self):
         flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
@@ -88,13 +104,29 @@ class GroupWindow(QWidget):
         self.cfg["geometry"] = [g.x(), g.y(), g.width(), g.height()]
         self.save()
 
-    def _logical(self, e):
+    def _logical(self, e, pad: float = 4.0):
         s = float(self.cfg.get("scale") or 1.0)
         pos = e.position()
-        return (pos.x() / s - 4.0, pos.y() / s - 4.0)
+        top = pad + (16.0 if (pad and not self.locked) else 0.0)
+        return (pos.x() / s - pad, pos.y() / s - top)
 
     def mousePressEvent(self, e):
         if self.locked or e.button() != Qt.MouseButton.LeftButton:
+            return
+        s = float(self.cfg.get("scale") or 1.0)
+        W, H = self.width() / s, self.height() / s
+        rx, ry = self._logical(e, 0.0)
+        ch = self._chrome(W, H)
+        if ch["done"].contains(rx, ry):
+            if self.on_done:
+                self.on_done()
+            return
+        if ch["edit"].contains(rx, ry):
+            if self.on_edit:
+                self.on_edit(self.name)
+            return
+        if ch["grip"].contains(rx, ry):
+            self._resize = (e.globalPosition().toPoint(), (self.width(), self.height()))
             return
         if self.cfg.get("layout") == "free":
             lx, ly = self._logical(e)
@@ -105,21 +137,42 @@ class GroupWindow(QWidget):
         self._drag = e.globalPosition().toPoint() - self.frameGeometry().topLeft()
 
     def mouseMoveEvent(self, e):
-        if self._drag_item is not None:
+        if self._resize is not None:
+            start, (w0, h0) = self._resize
+            d = e.globalPosition().toPoint() - start
+            self.resize(max(60, w0 + d.x()), max(30, h0 + d.y()))
+        elif self._drag_item is not None:
             stem, (ox, oy) = self._drag_item
             lx, ly = self._logical(e)
             self.cfg.setdefault("positions", {})[stem] = [round(lx - ox), round(ly - oy)]
             self.update()
         elif self._drag is not None:
             self.move(e.globalPosition().toPoint() - self._drag)
+        elif not self.locked:
+            s = float(self.cfg.get("scale") or 1.0)
+            rx, ry = self._logical(e, 0.0)
+            ch = self._chrome(self.width() / s, self.height() / s)
+            if ch["grip"].contains(rx, ry):
+                self.setCursor(Qt.CursorShape.SizeFDiagCursor)
+            elif ch["edit"].contains(rx, ry) or ch["done"].contains(rx, ry):
+                self.setCursor(Qt.CursorShape.PointingHandCursor)
+            else:
+                self.setCursor(Qt.CursorShape.SizeAllCursor)
 
     def mouseReleaseEvent(self, e):
-        if self._drag_item is not None:
+        if self._resize is not None:
+            self._resize = None
+            self._save_geometry()
+        elif self._drag_item is not None:
             self._drag_item = None
             self.save()
         elif self._drag is not None:
             self._drag = None
             self._save_geometry()
+
+    def mouseDoubleClickEvent(self, e):
+        if not self.locked and self.on_edit:
+            self.on_edit(self.name)
 
     def set_items(self, items: list[Item], now: float):
         self.items, self.now = items, now
@@ -213,15 +266,12 @@ class GroupWindow(QWidget):
         W, H = self.width() / s, self.height() / s
         pad = 4.0
         if not self.locked:
-            p.setPen(QPen(COLORS["flash"], 1.5, Qt.PenStyle.DashLine))
-            p.setBrush(QColor(0, 0, 0, 80))
-            p.drawRoundedRect(QRectF(1, 1, W - 2, H - 2), 6, 6)
-            p.setPen(COLORS["flash"])
-            p.setFont(QFont("Segoe UI", 8))
-            p.drawText(QRectF(pad, H - 16, W - 2 * pad, 14), Qt.AlignmentFlag.AlignRight, self.name)
+            self._draw_chrome(p, W, H)
         style = self.cfg.get("style", "bars")
         p.translate(pad, pad)
-        self._rects = self._layout(W - 2 * pad, H - 2 * pad - (16 if not self.locked else 0))
+        if not self.locked:
+            p.translate(0, 16)   # leave the title row free
+        self._rects = self._layout(W - 2 * pad, H - 2 * pad - (32 if not self.locked else 0))
         if not self.locked and self.cfg.get("layout") == "free":
             p.setPen(QPen(QColor(255, 210, 40, 120), 1, Qt.PenStyle.DotLine))
             p.setBrush(Qt.BrushStyle.NoBrush)
@@ -277,6 +327,31 @@ class GroupWindow(QWidget):
                 p.setFont(QFont("Segoe UI", 7, QFont.Weight.Bold))
                 self._outlined(p, box, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignRight, str(stacks))
             x -= 18
+
+    def _draw_chrome(self, p: QPainter, W: float, H: float):
+        """Configure-mode frame: dashed border, name, [edit] and [done] buttons, corner resize grip."""
+        p.setPen(QPen(COLORS["flash"], 1.5, Qt.PenStyle.DashLine))
+        p.setBrush(QColor(0, 0, 0, 80))
+        p.drawRoundedRect(QRectF(1, 1, W - 2, H - 2), 6, 6)
+        p.setPen(COLORS["flash"])
+        p.setFont(QFont("Segoe UI", 8, QFont.Weight.Bold))
+        p.drawText(QRectF(6, 2, W - 50, 16), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.name)
+        ch = self._chrome(W, H)
+        for key, glyph, col in (("edit", "✎", QColor(255, 210, 40)), ("done", "✓", QColor(120, 255, 120))):
+            r = ch[key]
+            p.setPen(Qt.PenStyle.NoPen)
+            p.setBrush(QColor(0, 0, 0, 200))
+            p.drawRoundedRect(r, 3, 3)
+            p.setPen(col)
+            p.setFont(QFont("Segoe UI Symbol", 9, QFont.Weight.Bold))
+            p.drawText(r, Qt.AlignmentFlag.AlignCenter, glyph)
+        g = ch["grip"]
+        p.setPen(QPen(COLORS["flash"], 1.5))
+        for i in (3, 7, 11):
+            p.drawLine(int(g.right() - i), int(g.bottom() - 1), int(g.right() - 1), int(g.bottom() - i))
+        p.setPen(QColor(255, 210, 40, 160))
+        p.setFont(QFont("Segoe UI", 7))
+        p.drawText(QRectF(6, H - 15, W - 24, 12), Qt.AlignmentFlag.AlignLeft, "drag to move · ✎ edit · ✓ done")
 
     def _fmt_rem(self, it: Item) -> str:
         rem = it.remaining(self.now)

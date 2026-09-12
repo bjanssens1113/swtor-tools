@@ -18,7 +18,10 @@ def test_settings_defaults_merge(tmp_path, monkeypatch):
     d["scale"] = 1.5
     settings_mod.save(d)
     assert json.loads((tmp_path / "s.json").read_text())["scale"] == 1.5
-    assert settings_mod.load()["locked"] is False
+    assert settings_mod.load()["configure"] is False
+    # old files with the pre-configure 'locked' flag migrate: unlocked used to mean editing
+    (tmp_path / "s.json").write_text(json.dumps({"locked": False}))
+    assert settings_mod.load()["configure"] is True and "locked" not in settings_mod.load()
 
 
 def test_running_exes_lists_this_python():

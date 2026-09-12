@@ -101,9 +101,9 @@ class TrayApp(QObject):
         menu = QMenu()
         self.a_enabled = QAction("Overlay enabled", menu, checkable=True, checked=True)
         self.a_enabled.triggered.connect(self._toggle_enabled)
-        self.a_locked = QAction("Lock overlay (click-through)", menu, checkable=True,
-                                checked=bool(self.settings.get("locked")))
-        self.a_locked.triggered.connect(self._toggle_locked)
+        self.a_configure = QAction("Configure layout (move / resize boxes)", menu, checkable=True,
+                                   checked=bool(self.settings.get("configure")))
+        self.a_configure.triggered.connect(self.set_configure)
         a_settings = QAction("Settings…", menu)
         a_settings.triggered.connect(self.open_settings)
         a_quick = QAction("Quick add ability…", menu)
@@ -116,7 +116,7 @@ class TrayApp(QObject):
         a_reset.triggered.connect(self.reset_positions)
         a_quit = QAction("Quit", menu)
         a_quit.triggered.connect(qapp.quit)
-        for a in (self.a_enabled, self.a_locked, a_quick, a_settings, a_reload, a_folder, a_reset):
+        for a in (self.a_enabled, self.a_configure, a_quick, a_settings, a_reload, a_folder, a_reset):
             menu.addAction(a)
         menu.addSeparator()
         menu.addAction(a_quit)
@@ -148,7 +148,7 @@ class TrayApp(QObject):
 
     def _status(self):
         prof = self.engine.profile.name if self.engine.profile else "no profile"
-        state = "locked" if self.settings.get("locked") else "UNLOCKED"
+        state = "CONFIGURE MODE" if self.settings.get("configure") else "playing"
         self.tray.setToolTip(f"SWTOR overlay — {prof} — {state}")
 
     def group_names(self) -> list[str]:
@@ -158,7 +158,10 @@ class TrayApp(QObject):
         for name in self.group_names():
             if name not in self.windows:
                 cfg = settings_mod.group_cfg(self.settings, name)
-                self.windows[name] = GroupWindow(name, cfg, self.settings, self.save_settings)
+                w = GroupWindow(name, cfg, self.settings, self.save_settings)
+                w.on_edit = self.edit_group
+                w.on_done = lambda: self.set_configure(False)
+                self.windows[name] = w
         self.save_settings()
 
     def add_group(self, name: str) -> bool:
@@ -197,7 +200,7 @@ class TrayApp(QObject):
         for name, w in self.windows.items():
             w.cfg = settings_mod.group_cfg(self.settings, name)
             w.apply_settings()
-        self.a_locked.setChecked(bool(self.settings.get("locked")))
+        self.a_configure.setChecked(bool(self.settings.get("configure")))
         self.engine.reload(self.profiles, self._forced())
         self._settings_stamp = self._settings_mtime()
 
@@ -236,12 +239,22 @@ class TrayApp(QObject):
     def _toggle_enabled(self, checked):
         self.enabled = bool(checked)
 
-    def _toggle_locked(self, checked):
-        self.settings["locked"] = bool(checked)
+    def set_configure(self, on: bool):
+        """Configure mode: frames visible, boxes draggable/resizable, elements draggable in free layout.
+        Off: click-through, no frames, only live alerts."""
+        self.settings["configure"] = bool(on)
         self.save_settings()
+        self.a_configure.setChecked(bool(on))
         for w in self.windows.values():
             w.apply_settings()
+        if self.config is not None:
+            self.config.sync_configure_button()
         self._status()
+
+    def edit_group(self, name: str):
+        """✎ on a box: open Settings on the Groups tab with that group selected."""
+        self.open_settings()
+        self.config.show_group(name)
 
     def check_game(self):
         self.game_running = gamewatch.is_running(self.settings.get("game_exe", "swtor.exe"))
@@ -278,7 +291,7 @@ class TrayApp(QObject):
     def apply_settings(self):
         """Settings dict was edited by the config window."""
         self.save_settings()
-        self.a_locked.setChecked(bool(self.settings.get("locked")))
+        self.a_configure.setChecked(bool(self.settings.get("configure")))
         for w in self.windows.values():
             w.apply_settings()
         try:

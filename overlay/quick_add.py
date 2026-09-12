@@ -182,4 +182,4 @@ class QuickAddDialog(QDialog):
         self.app.reload_profiles()
         self.app.preview_rule(r)
         self.hint.setText(f"Added '{name}' as {t} to {written.name} in group '{g or 'default'}'. "
-                          "Unlock to drag it (free layout lets you place it on its own).")
+                          "Press CONFIGURE LAYOUT to drag it (free layout lets you place it on its own).")

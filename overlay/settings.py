@@ -7,14 +7,14 @@ from pathlib import Path
 SETTINGS_PATH = Path(__file__).resolve().parent / "settings.json"
 DEFAULTS = {
     "geometry": [60, 200, 340, 420],
-    "locked": False,
+    "configure": False,            # True = configure mode: frames visible, draggable, resizable
     "show_only_in_game": True,     # hide the overlay while swtor.exe is not running
     "start_with_windows": False,
     "scale": 1.0,
     "auto_switch": True,           # follow DisciplineChanged in the log
     "forced_profile": "",          # profile name to pin when auto_switch is off
     "game_exe": "swtor.exe",
-    "groups": {},                  # per layout group: geometry, locked, style, orientation, scale, combat_only, hidden
+    "groups": {},                  # per layout group: geometry, style, orientation, scale, combat_only, hidden, ...
 }
 
 GROUP_DEFAULTS = {
@@ -23,12 +23,11 @@ GROUP_DEFAULTS = {
     "scale": 1.0,
     "combat_only": False,
     "hidden": False,
-    "locked": False,
     "icon_size": 48,
     "columns": 6,             # icons: tiles per row before wrapping
     "low_hp": 35,             # party: flash a member below this percent
     "show_companions": True,  # party: include my companion when solo
-    "layout": "flow",         # flow: auto-arranged; free: each element keeps its own offset (drag while unlocked)
+    "layout": "flow",         # flow: auto-arranged; free: each element keeps its own offset (drag in configure mode)
     "positions": {},          # free layout: item stem -> [x, y] inside the group window
 }
 # starting positions for the default groups, stacked down the left edge
@@ -61,6 +60,8 @@ def load() -> dict:
         d.update(json.loads(SETTINGS_PATH.read_text(encoding="utf-8")))
     except (OSError, ValueError):
         pass
+    if "locked" in d:  # pre-2026-09-12 flag: locked=False meant "editing"
+        d["configure"] = not d.pop("locked")
     return d
 
 
