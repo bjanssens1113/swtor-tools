@@ -12,3 +12,4 @@ build/
 overlay/settings.json
 overlay/data/icons/
 python/
+overlay/.open_settings

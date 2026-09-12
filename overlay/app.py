@@ -65,6 +65,9 @@ def play_sound(spec: str):
         pass
 
 
+SIGNAL_FILE = Path(__file__).resolve().parent / ".open_settings"   # written by a second launch
+
+
 def already_running() -> bool:
     """Single-instance guard: a named Windows mutex that lives as long as this process."""
     try:
@@ -245,6 +248,14 @@ class TrayApp(QObject):
         self._status()
 
     def check_reload(self):
+        if SIGNAL_FILE.exists():
+            try:
+                SIGNAL_FILE.unlink()
+            except OSError:
+                pass
+            state = "showing over the game" if self.game_running else "waiting in the tray for SWTOR to start"
+            self.tray.showMessage("SWTOR overlay", f"Already running — {state}.", QSystemTrayIcon.MessageIcon.Information)
+            self.open_settings()
         stamp = self._profiles_mtime()
         if stamp != self._profiles_stamp:
             self._profiles_stamp = stamp

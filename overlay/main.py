@@ -77,9 +77,11 @@ def main():
         run_headless(engine, source, a.duration)
         return
     from PyQt6.QtWidgets import QApplication  # imported late so headless mode needs no Qt
-    from app import TrayApp, already_running
+    from app import SIGNAL_FILE, TrayApp, already_running
     if not a.replay and already_running():
-        print("SWTOR overlay is already running (look for the blue square in the tray).")
+        # Tell the running instance to show itself (settings window + tray balloon) instead of failing silently.
+        SIGNAL_FILE.write_text("open", encoding="utf-8")
+        print("SWTOR overlay is already running; asked it to open its settings window.")
         return
     qapp = QApplication(sys.argv)
     qapp.setQuitOnLastWindowClosed(False)
