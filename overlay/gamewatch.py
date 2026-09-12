@@ -70,7 +70,7 @@ def set_startup(enabled: bool) -> None:
             SHORTCUT.unlink()
         return
     root = Path(__file__).resolve().parents[1]
-    _make_shortcut(SHORTCUT, root / ".venv" / "Scripts" / "pythonw.exe", f'"{root / "overlay" / "main.py"}"',
+    _make_shortcut(SHORTCUT, root / "python" / "pythonw.exe", f'"{root / "overlay" / "main.py"}"',
                    root, "SWTOR combat-log overlay")
 
 
@@ -82,7 +82,7 @@ def make_desktop_shortcuts() -> list[Path]:
         desktop = Path(os.environ.get("USERPROFILE", "~")).expanduser() / "OneDrive" / "Desktop"
     out = []
     ov = desktop / "SWTOR Overlay.lnk"
-    _make_shortcut(ov, root / ".venv" / "Scripts" / "pythonw.exe", f'"{root / "overlay" / "main.py"}"', root,
+    _make_shortcut(ov, root / "python" / "pythonw.exe", f'"{root / "overlay" / "main.py"}"', root,
                    "SWTOR combat-log overlay (tray app)", "%SystemRoot%\\System32\\shell32.dll,165")
     out.append(ov)
     ahk = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "AutoHotkey" / "v2" / "AutoHotkey64.exe"

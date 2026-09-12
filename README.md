@@ -27,10 +27,12 @@ Tick **Start with Windows** in Settings → General and it starts at login and w
 A second launch just exits (single instance). If it won't start, run `SWTOR Overlay (with console).bat` to see
 the error.
 
-Python 3.13 + PyQt6 live in `.venv` (created with `uv`). Equivalent command from the repo root:
+Python 3.13 + PyQt6 live in `python\` inside the repo (self-contained, git-ignored; nothing outside the folder is
+needed at run time). If `python\` is ever missing or broken, run `overlay\tools\setup_python.cmd` to rebuild it.
+Equivalent command from the repo root:
 
 ```
-.venv\Scripts\python.exe overlay\main.py
+python\python.exe overlay\main.py
 ```
 
 - Runs as a **tray app** (blue square). The overlay appears while `swtor.exe` is running and hides when the game
@@ -49,14 +51,14 @@ Python 3.13 + PyQt6 live in `.venv` (created with `uv`). Equivalent command from
 Test without the game by replaying a saved log:
 
 ```
-.venv\Scripts\python.exe overlay\main.py --replay overlay\samples\combat_2025-02-08_09_22_00_862785.txt --skip-to 09:23:40 --speed 4
-.venv\Scripts\python.exe overlay\main.py --headless --replay <log> --skip-to HH:MM:SS --speed 6   # text mode
+python\python.exe overlay\main.py --replay overlay\samples\combat_2025-02-08_09_22_00_862785.txt --skip-to 09:23:40 --speed 4
+python\python.exe overlay\main.py --headless --replay <log> --skip-to HH:MM:SS --speed 6   # text mode
 ```
 
-Tests: `.venv\Scripts\python.exe -m pytest overlay\tests`
+Tests: `python\python.exe -m pytest overlay\tests`
 
 Regenerate the "what do I actually use" catalog from every log on this PC:
-`.venv\Scripts\python.exe overlay\catalog.py` → `docs\CATALOG.md` + `overlay\catalog.json`.
+`python\python.exe overlay\catalog.py` → `docs\CATALOG.md` + `overlay\catalog.json`.
 
 ## Profiles (what the overlay shows)
 Every one of the 48 disciplines has a profile. Three tiers, best wins:

@@ -11,3 +11,4 @@ build/
 *.log
 overlay/settings.json
 overlay/data/icons/
+python/
