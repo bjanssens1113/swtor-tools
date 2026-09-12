@@ -65,6 +65,17 @@ def play_sound(spec: str):
         pass
 
 
+def already_running() -> bool:
+    """Single-instance guard: a named Windows mutex that lives as long as this process."""
+    try:
+        import ctypes
+        global _MUTEX
+        _MUTEX = ctypes.windll.kernel32.CreateMutexW(None, False, "Local\\SWTOR_Overlay_Tray")
+        return ctypes.windll.kernel32.GetLastError() == 183  # ERROR_ALREADY_EXISTS
+    except Exception:
+        return False
+
+
 class TrayApp(QObject):
     def __init__(self, qapp: QApplication, source, replay: bool = False, open_settings: bool = False):
         super().__init__()

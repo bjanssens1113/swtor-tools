@@ -628,7 +628,18 @@ class ConfigWindow(QDialog):
         b = QPushButton("Apply")
         b.clicked.connect(self._apply_general)
         form.addRow(b)
+        b_desk = QPushButton("Create desktop shortcuts (overlay + macro)")
+        b_desk.clicked.connect(self._desktop_shortcuts)
+        form.addRow(b_desk)
         return w
+
+    def _desktop_shortcuts(self):
+        try:
+            import gamewatch
+            paths = gamewatch.make_desktop_shortcuts()
+            self.note.setText("Created: " + ", ".join(p.name for p in paths))
+        except Exception as e:
+            QMessageBox.warning(self, "Shortcuts", str(e))
 
     def _refresh_general(self):
         s = self.app.settings

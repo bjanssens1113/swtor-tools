@@ -22,7 +22,12 @@ AutoHotkey v2 is installed at `%LOCALAPPDATA%\Programs\AutoHotkey\v2`. Double-cl
 press, right side is the SWTOR keybind of the ability. Tune `CLICK_TO_CAST_DELAY_MS` (start at 60).
 
 ### Tool B — overlay
-Python 3.13 + PyQt6 live in `.venv` (created with `uv`). From the repo root:
+**Launching:** double-click `SWTOR Overlay.bat` in the repo root, or the **SWTOR Overlay** desktop shortcut.
+Tick **Start with Windows** in Settings → General and it starts at login and waits in the tray for the game.
+A second launch just exits (single instance). If it won't start, run `SWTOR Overlay (with console).bat` to see
+the error.
+
+Python 3.13 + PyQt6 live in `.venv` (created with `uv`). Equivalent command from the repo root:
 
 ```
 .venv\Scripts\python.exe overlay\main.py

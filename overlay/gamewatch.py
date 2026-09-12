@@ -54,18 +54,40 @@ def startup_enabled() -> bool:
     return SHORTCUT.exists()
 
 
+def _make_shortcut(path: Path, target: Path, args: str, workdir: Path, description: str, icon: str = "") -> None:
+    ps = (
+        f"$s=(New-Object -ComObject WScript.Shell).CreateShortcut('{path}');"
+        f"$s.TargetPath='{target}';$s.Arguments='{args}';$s.WorkingDirectory='{workdir}';"
+        f"$s.Description='{description}';" + (f"$s.IconLocation='{icon}';" if icon else "") + "$s.Save()"
+    )
+    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", ps], check=True,
+                   creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+
+
 def set_startup(enabled: bool) -> None:
     if not enabled:
         if SHORTCUT.exists():
             SHORTCUT.unlink()
         return
     root = Path(__file__).resolve().parents[1]
-    pythonw = root / ".venv" / "Scripts" / "pythonw.exe"
-    main = root / "overlay" / "main.py"
-    ps = (
-        f"$s=(New-Object -ComObject WScript.Shell).CreateShortcut('{SHORTCUT}');"
-        f"$s.TargetPath='{pythonw}';$s.Arguments='\"{main}\"';$s.WorkingDirectory='{root}';"
-        f"$s.Description='SWTOR combat-log overlay';$s.Save()"
-    )
-    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", ps], check=True,
-                   creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    _make_shortcut(SHORTCUT, root / ".venv" / "Scripts" / "pythonw.exe", f'"{root / "overlay" / "main.py"}"',
+                   root, "SWTOR combat-log overlay")
+
+
+def make_desktop_shortcuts() -> list[Path]:
+    """Desktop shortcuts for the overlay and the macro. Returns the paths written."""
+    root = Path(__file__).resolve().parents[1]
+    desktop = Path(os.environ.get("USERPROFILE", "~")).expanduser() / "Desktop"
+    if not desktop.exists():
+        desktop = Path(os.environ.get("USERPROFILE", "~")).expanduser() / "OneDrive" / "Desktop"
+    out = []
+    ov = desktop / "SWTOR Overlay.lnk"
+    _make_shortcut(ov, root / ".venv" / "Scripts" / "pythonw.exe", f'"{root / "overlay" / "main.py"}"', root,
+                   "SWTOR combat-log overlay (tray app)", "%SystemRoot%\\System32\\shell32.dll,165")
+    out.append(ov)
+    ahk = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "AutoHotkey" / "v2" / "AutoHotkey64.exe"
+    if ahk.exists():
+        mac = desktop / "SWTOR Mouseover Macro.lnk"
+        _make_shortcut(mac, ahk, f'"{root / "macro" / "mouseover.ahk"}"', root, "SWTOR mouseover macro (AutoHotkey)")
+        out.append(mac)
+    return out
